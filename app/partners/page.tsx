@@ -33,7 +33,7 @@ export default function PartnersPage() {
 
       <section className="contact-terminal">
         <div className="section-shell">
-          <div data-reveal><p className="eyebrow"><span />Direct Contact</p><h2>Bring the Right People into the Room.</h2><p>Share your organization, mandate, potential site or investment interest and the Humpback Hydro team can direct the conversation appropriately.</p><div className="terminal-data"><span>VANCOUVER, BC</span><span>ENERGY INFRASTRUCTURE</span><span>ENGINEERING VALIDATED</span><span>PILOT PARTNERS SOUGHT</span></div></div>
+          <div data-reveal><p className="eyebrow"><span />Direct Contact</p><h2>Bring the Right People into the Room.</h2><p>Share your organization, mandate, potential site or investment interest and the Humpback Hydro team can direct the conversation appropriately.</p><div className="terminal-data"><span>VANCOUVER, BC</span><span>ENERGY INFRASTRUCTURE</span><span>IEEE-PUBLISHED ARCHITECTURE</span><span>PILOT PARTNERS SOUGHT</span></div></div>
           <PartnerForm />
         </div>
       </section>

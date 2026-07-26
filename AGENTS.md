@@ -18,8 +18,8 @@
 ## Required Validation
 
 - Use Node.js `>=22.13.0` and the locked `package-lock.json`.
-- Preferred Linux workflow: `npm run install:ci`, `npm run build`, `npm test`, and `npm run lint`.
-- The shell wrappers require Linux tooling. On Windows, use the locked install, run the underlying Vinext build, validate `dist/server/index.js` and `dist/.openai/hosting.json`, then run `node --test tests/rendered-html.test.mjs`.
+- Preferred workflow on Windows and Linux: use the locked install, then run `npm run build`, `npm test`, and `npm run lint`.
+- `npm run build` invokes the pinned Vinext CLI through Node, applies the bounded build timeout, and validates `dist/server/index.js` plus `dist/.openai/hosting.json`.
 - Before committing: review the scoped diff, build/test results, and `git status`; stage only intended files.
 - Never commit secrets, `.env*`, credentials, `node_modules`, `dist`, `.next`, `.wrangler`, `.sites-runtime`, or other generated output.
 

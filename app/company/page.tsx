@@ -14,7 +14,7 @@ export default function CompanyPage() {
       <section className="company-story section-shell">
         <div className="chapter-label"><span>01</span>THE MISSION</div>
         <div className="story-statement" data-reveal><p>Ocean-powered infrastructure for</p><h2>Energy Security,<br />Water Security<br /><span>and Climate Resilience.</span></h2></div>
-        <div className="story-columns" data-reveal><p>Humpback Hydro began in Vancouver, British Columbia, with a patented approach to marine pumped-hydro infrastructure.</p><p>The company is now seeking the capital, sites, engineering capacity and implementation partners required to advance from engineering validation toward pilot deployment.</p></div>
+        <div className="story-columns" data-reveal><p>Humpback Hydro began in Vancouver, British Columbia, with a patented approach to marine pumped-hydro infrastructure.</p><p>The technical foundation includes an IEEE-published architecture and university proof-of-concept studies. Further independent engineering and site-specific validation are still required before pilot deployment.</p></div>
       </section>
 
       <section className="leadership-section" id="leadership">

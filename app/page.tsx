@@ -1,6 +1,6 @@
 import ApplicationSelector from "./components/ApplicationSelector";
 import { Arrow } from "./components/Icons";
-import SystemExplorer from "./components/SystemExplorer";
+import OpshExperience from "./components/OpshExperience";
 import { evidence, roadmap } from "./data";
 
 export default function Home() {
@@ -30,7 +30,7 @@ export default function Home() {
             <span><small>01</small>GENERATE</span><i /><span><small>02</small>STORE</span><i /><span><small>03</small>DISPATCH</span>
           </div>
           <div className="command-proof">
-            <div><small>DEVELOPMENT STAGE</small><strong>Engineering Validated</strong></div>
+            <div><small>TECHNICAL FOUNDATION</small><strong>IEEE-Published Architecture</strong></div>
             <div><small>INTELLECTUAL PROPERTY</small><strong>U.S. Patent 8823195 B2</strong></div>
           </div>
           <a href="/evidence">Interrogate the Evidence <Arrow /></a>
@@ -76,11 +76,11 @@ export default function Home() {
         <div className="section-shell">
           <div className="chapter-label light"><span>02</span>THE PLATFORM</div>
           <div className="section-intro inverse" data-reveal>
-            <p className="eyebrow"><span />One Integrated Operating Cycle</p>
-            <h2>Turn Water into Dependable Infrastructure.</h2>
-            <p>Patented marine pumped-hydro architecture designed to capture energy, store it gravitationally and return power when demand requires it.</p>
+            <p className="eyebrow"><span />Static Offshore Pumped Hydro</p>
+            <h2>See the Complete Water Cycle.</h2>
+            <p>A fixed offshore structure places two engineered reservoirs vertically inside one cutaway system. Follow how it stores energy and generates through two turbine stages.</p>
           </div>
-          <SystemExplorer />
+          <OpshExperience variant="guided" />
         </div>
       </section>
 
@@ -99,7 +99,7 @@ export default function Home() {
           <div className="evidence-lead" data-reveal>
             <p className="eyebrow"><span />Institutional Evidence</p>
             <h2>Belief Is Not Enough.<br />Open the Record.</h2>
-            <p>Humpback Hydro is grounded in patented engineering, technical authorship, university evaluation and industry recognition.</p>
+            <p>Humpback Hydro is grounded in a public patent record, an IEEE-published architecture and university proof-of-concept studies. Modeled results are presented with their limitations.</p>
           </div>
 
           <div className="evidence-ledger">

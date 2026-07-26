@@ -1,24 +1,24 @@
 import type { Metadata } from "next";
 import RouteHero from "../components/RouteHero";
-import SystemExplorer from "../components/SystemExplorer";
+import OpshExperience from "../components/OpshExperience";
 import { Arrow } from "../components/Icons";
 
 export const metadata: Metadata = {
   title: "Technology",
-  description: "Explore Humpback Hydro's patented marine pumped-hydro operating architecture and planned modular platform.",
+  description: "Explore Humpback Hydro's fixed offshore pumped-hydro concept, two engineered reservoirs, two turbine stages and lower-reservoir pump system.",
 };
 
 export default function TechnologyPage() {
   return (
     <main>
-      <RouteHero index="01" eyebrow="Technology" title="Energy Held in Motion." copy="A patented marine pumped-hydro architecture designed to combine generation, long-duration storage and dispatchable power in one modular platform." image="/system-cutaway.webp" nextHref="#operating-cycle" nextLabel="Enter the Operating Cycle" />
+      <RouteHero index="01" eyebrow="Technology" title="The Mountain, Rebuilt at Sea." copy="A fixed offshore pumped-hydro concept that creates vertical separation inside one structure, without depending on mountainous terrain." image="/hero-ocean-infrastructure.png" nextHref="#operating-cycle" nextLabel="Enter the Operating Cycle" />
       <section className="route-intro section-shell" id="operating-cycle">
         <div className="chapter-label"><span>01</span>OPERATING PRINCIPLE</div>
         <div className="section-intro split" data-reveal>
-          <div><p className="eyebrow dark"><span />The Complete Cycle</p><h2>Capture. Store. Dispatch. Repeat.</h2></div>
-          <p>The system uses water and elevation to store energy as gravitational potential, then returns that energy through a reversible turbine when dependable power is required.</p>
+          <div><p className="eyebrow dark"><span />Interactive Static Structure</p><h2>Store. Generate. Reset.</h2></div>
+          <p>Explore the composite concept model, reveal its internal components and follow the source-supported water paths. The model explains the architecture and is not to scale.</p>
         </div>
-        <SystemExplorer />
+        <OpshExperience variant="explorer" />
       </section>
 
       <section className="technical-anatomy">
@@ -27,10 +27,10 @@ export default function TechnologyPage() {
           <div className="anatomy-grid">
             <div className="anatomy-visual" data-reveal><img src="/turbine-macro.webp" alt="Concept visualization of a reversible hydro turbine" loading="lazy" decoding="async" /><span className="concept-tag">CONCEPT VISUALIZATION</span></div>
             <div className="anatomy-list">
-              <article data-reveal><span>01</span><div><small>STORAGE</small><h3>Upper Reservoir</h3><p>Holds elevated water as gravitational potential energy.</p></div></article>
-              <article data-reveal><span>02</span><div><small>CONVERSION</small><h3>Reversible Pump Turbine</h3><p>Moves water into storage and returns power during discharge.</p></div></article>
-              <article data-reveal><span>03</span><div><small>TRANSFER</small><h3>Engineered Conduit</h3><p>Creates the controlled hydraulic pathway between reservoirs.</p></div></article>
-              <article data-reveal><span>04</span><div><small>FOUNDATION</small><h3>Marine Environment</h3><p>Uses an ocean, lake or bay as part of the system architecture.</p></div></article>
+              <article data-reveal><span>01</span><div><small>STORAGE</small><h3>Two Engineered Reservoirs</h3><p>Upper and lower reservoirs create vertical separation inside the fixed structure.</p></div></article>
+              <article data-reveal><span>02</span><div><small>GENERATION</small><h3>Two Turbine Stages</h3><p>Three representative turbines are shown at each stage, reflecting the later static design study.</p></div></article>
+              <article data-reveal><span>03</span><div><small>TRANSFER</small><h3>Dedicated Penstocks</h3><p>Upper and lower hydraulic paths control flow through their respective turbine stages.</p></div></article>
+              <article data-reveal><span>04</span><div><small>STORAGE CYCLE</small><h3>Lower Pump Array</h3><p>Pumps return water to the upper reservoir when energy is available for storage.</p></div></article>
             </div>
           </div>
         </div>
@@ -39,10 +39,10 @@ export default function TechnologyPage() {
       <section className="principles section-shell">
         <div className="chapter-label"><span>03</span>DESIGN PRINCIPLES</div>
         <div className="principle-list">
-          <article data-reveal><span>01</span><h3>Dispatchability</h3><p>Designed to provide power when infrastructure needs it, not only when generation is available.</p></article>
-          <article data-reveal><span>02</span><h3>Long Duration</h3><p>Gravitational storage architecture intended for extended energy-management requirements.</p></article>
-          <article data-reveal><span>03</span><h3>Modularity</h3><p>A phased delivery concept intended to align infrastructure capacity with customer demand.</p></article>
-          <article data-reveal><span>04</span><h3>Industrialization</h3><p>A planned pathway toward repeatable manufacturing and deployment.</p></article>
+          <article data-reveal><span>01</span><h3>Fixed Offshore Siting</h3><p>Designed for a continental-shelf setting where the structure supplies the vertical separation.</p></article>
+          <article data-reveal><span>02</span><h3>Gravitational Storage</h3><p>Stores energy by lifting water rather than relying on electrochemical storage media.</p></article>
+          <article data-reveal><span>03</span><h3>Two-Stage Generation</h3><p>Uses separate upper and lower flow paths to drive two turbine stages during generation.</p></article>
+          <article data-reveal><span>04</span><h3>Site-Specific Engineering</h3><p>Materials, intake screening, foundations and environmental performance require detailed site validation.</p></article>
         </div>
         <a className="button primary" href="/evidence">Review the Engineering Foundation <Arrow /></a>
       </section>
