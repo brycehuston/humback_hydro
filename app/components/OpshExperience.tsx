@@ -222,7 +222,7 @@ export default function OpshExperience({
         const index = Number((visible.target as HTMLElement).dataset.opshStage ?? 0);
         setStage(index);
       },
-      { rootMargin: "-25% 0px -50%", threshold: [0.2, 0.5, 0.8] },
+      { rootMargin: "-25% 0px -50%", threshold: 0.01 },
     );
     cards.forEach((card) => observer.observe(card));
     return () => observer.disconnect();
