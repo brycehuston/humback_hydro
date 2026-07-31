@@ -13,10 +13,10 @@ export default function Home() {
         <div className="hero-depth-rings" aria-hidden="true"><i /><i /><i /><span /></div>
         <div className="hero-water-scan" aria-hidden="true"><i /><i /></div>
         <div className="hero-copy" data-reveal>
-          <p className="eyebrow"><span />Patented Marine Pumped-Hydro Architecture</p>
+          <p className="eyebrow"><span />Marine Pumped-Hydro Architecture</p>
           <h1><span>Energy</span><span>Re-Engineered</span><span>Around Water.</span></h1>
           <p className="hero-lede">
-            Designed to store clean energy gravitationally and dispatch it for grids, industry, AI infrastructure and water systems.
+            A Canadian energy infrastructure technology company advancing a hydroelectric generation and long-duration energy-storage architecture toward independent engineering validation and pilot deployment.
           </p>
           <div className="hero-actions">
             <a className="button primary" href="#platform">See the Operating Cycle <Arrow direction="down" /></a>
@@ -31,7 +31,7 @@ export default function Home() {
           </div>
           <div className="command-proof">
             <div><small>TECHNICAL FOUNDATION</small><strong>IEEE-Published Architecture</strong></div>
-            <div><small>INTELLECTUAL PROPERTY</small><strong>U.S. Patent 8823195 B2</strong></div>
+            <div><small>PUBLIC PATENT RECORD</small><strong>U.S. Patent 8823195 B2</strong></div>
           </div>
           <a href="/evidence">Interrogate the Evidence <Arrow /></a>
         </div>
@@ -42,10 +42,10 @@ export default function Home() {
       </section>
 
       <section className="status-rail" aria-label="Humpback Hydro status">
-        <div><span>01</span><strong>Patented Architecture</strong><small>U.S. 8823195 B2</small></div>
+        <div><span>01</span><strong>Public Patent Record</strong><small>U.S. 8823195 B2</small></div>
         <div><span>02</span><strong>Long-Duration Platform</strong><small>Generate. Store. Dispatch.</small></div>
-        <div><span>03</span><strong>Pilot Pathway</strong><small>Strategic Partners Sought</small></div>
-        <div><span>04</span><strong>Global Mission</strong><small>Energy. Water. Humanity.</small></div>
+        <div><span>03</span><strong>Validation &amp; Pilot Pathway</strong><small>Qualified Partners Sought</small></div>
+        <div><span>04</span><strong>Evidence-Led Development</strong><small>Validate Before Scale</small></div>
       </section>
 
       <section className="thesis-section section-shell">
@@ -116,7 +116,7 @@ export default function Home() {
         <div className="chapter-label"><span>05</span>THE PATHWAY</div>
         <div className="section-intro split" data-reveal>
           <div><p className="eyebrow dark"><span />Planned Deployment Roadmap</p><h2>From First Pilot to Industrialized Scale.</h2></div>
-          <p>The approved company teaser sets out a phased manufacturing and deployment pathway. Each phase remains planned and subject to partner and company approval.</p>
+          <p>Company-supplied materials set out a phased manufacturing and deployment pathway. Every scale and phase remains forward-looking and subject to engineering, financing, partner and company approval.</p>
         </div>
         <div className="roadmap-line">
           {roadmap.map((item) => (
@@ -144,8 +144,8 @@ export default function Home() {
         <div className="final-cta-main">
           <div className="final-cta-copy" data-reveal>
             <p className="eyebrow"><span />The Next Operating Chapter</p>
-            <h2>Build the First Deployment.</h2>
-            <p>Humpback Hydro is seeking pilot sites, strategic capital, engineering capacity and implementation partners.</p>
+            <h2>Advance the First Pilot.</h2>
+            <p>Humpback Hydro is seeking qualified pilot sites, strategic capital, engineering capacity and independent validation partners.</p>
             <div className="hero-actions"><a className="button energy" href="/partners">Choose Your Pathway <Arrow /></a><a className="button secondary" href="mailto:info@humpbackenergy.com">Contact the Team</a></div>
           </div>
 
@@ -153,7 +153,7 @@ export default function Home() {
             <img src="/grid-data-center-night.webp" alt="Concept visualization of a coastal data-center power campus" loading="lazy" decoding="async" />
             <div className="cta-visual-shade" />
             <div className="cta-sonar" aria-hidden="true"><i /><i /><i /><span /></div>
-            <div className="cta-visual-status"><small>PILOT PATHWAY</small><strong>Strategic Partners Sought</strong></div>
+            <div className="cta-visual-status"><small>VALIDATION &amp; PILOT PATHWAY</small><strong>Qualified Partners Sought</strong></div>
             <span className="concept-tag">CONCEPT VISUALIZATION</span>
           </div>
         </div>

@@ -9,14 +9,31 @@ export const metadata: Metadata = {
     "Meet the Humpback Hydro leadership and delivery network advancing marine clean-energy infrastructure.",
 };
 
+const publishedLeadership = leadership.filter(
+  (member) =>
+    member.publicationStatus === "published-qualified" ||
+    member.publicationStatus === "confirmed",
+);
+
+function initials(name: string) {
+  return name
+    .replace(/\([^)]*\)/g, "")
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0])
+    .join("")
+    .toUpperCase();
+}
+
 export default function CompanyPage() {
   return (
     <main>
       <RouteHero
-        index="05"
+        index="06"
         eyebrow="Company"
         title="Built to Move Infrastructure."
-        copy="An early-stage Vancouver energy company bringing together invention, operations, advanced materials, electrical engineering and industrial delivery."
+        copy="Founded in Vancouver, British Columbia, Humpback Hydro is a Canadian energy infrastructure technology company advancing a hydroelectric generation and long-duration energy-storage architecture documented in U.S. Patent No. 8,823,195 B2."
         image="/manufacturing-campus.webp"
         nextHref="#leadership"
         nextLabel="Meet the Leadership"
@@ -24,29 +41,32 @@ export default function CompanyPage() {
 
       <section className="company-story section-shell">
         <div className="chapter-label">
-          <span>01</span>THE MISSION
+          <span>01</span>POSITIONING
         </div>
         <div className="story-statement" data-reveal>
-          <p>Ocean-powered infrastructure for</p>
+          <p>Purpose</p>
           <h2>
-            Energy Security,
-            <br />
-            Water Security
-            <br />
-            <span>and Climate Resilience.</span>
+            Engineering Infrastructure
+            <br /><span>That Powers Humanity.</span>
           </h2>
         </div>
+        <div className="mt-12 border border-[#061c28]/15 bg-white/55 p-6 md:p-8" data-reveal>
+          <small className="font-mono text-[0.68rem] font-semibold tracking-[0.16em] text-[#168da8] uppercase">Development Stage</small>
+          <p className="mt-3 text-xl font-medium leading-8 text-[#061c28]">Advancing Toward Independent Engineering Validation and Pilot Deployment.</p>
+        </div>
         <div className="story-columns" data-reveal>
-          <p>
-            Humpback Hydro began in Vancouver, British Columbia, with a
-            patented approach to marine pumped-hydro infrastructure.
-          </p>
-          <p>
-            The technical foundation includes an IEEE-published architecture
-            and university proof-of-concept studies. Further independent
-            engineering and site-specific validation are still required before
-            pilot deployment.
-          </p>
+          <div>
+            <small className="font-mono text-[0.68rem] font-semibold tracking-[0.16em] text-[#168da8] uppercase">Mission</small>
+            <p className="mt-4">
+              To advance reliable, dispatchable hydroelectric infrastructure that strengthens energy security, supports water resilience and improves climate resilience through engineering excellence, strategic partnerships and long-term operational stewardship.
+            </p>
+          </div>
+          <div>
+            <small className="font-mono text-[0.68rem] font-semibold tracking-[0.16em] text-[#168da8] uppercase">Vision</small>
+            <p className="mt-4">
+              A future in which communities and critical infrastructure can access reliable clean energy and resilient water systems.
+            </p>
+          </div>
         </div>
       </section>
 
@@ -56,12 +76,20 @@ export default function CompanyPage() {
             <span>02</span>LEADERSHIP
           </div>
 
+          <p className="mb-10 max-w-3xl border-l-2 border-[#59acc2] pl-5 text-sm leading-7 text-[#8ca7af]" data-reveal>
+            Leadership titles, roles and career summaries are company supplied and remain subject to source confirmation unless linked to a verified public record. Production renders published profiles only.
+          </p>
+
           <div className="leadership-list">
-            {leadership.map((member, index) => (
+            {publishedLeadership.map((member, index) => (
               <article key={member.name} data-reveal>
                 <span>0{index + 1}</span>
                 <div className="leader-image">
-                  <img src={member.image} alt={member.name} />
+                  {member.image ? (
+                    <img src={member.image} alt={member.imageAlt} />
+                  ) : (
+                    <span className="leader-monogram" aria-hidden="true">{initials(member.name)}</span>
+                  )}
                 </div>
                 <div>
                   <small>{member.role}</small>
@@ -89,8 +117,10 @@ export default function CompanyPage() {
             <h2>From Engineered Material to Operating Asset.</h2>
           </div>
           <p>
-            The approved teaser identifies a delivery network spanning
-            construction, advanced materials and electrical engineering.
+            Company-supplied materials identify specialist capability spanning
+            construction, advanced materials and electrical engineering. Names,
+            roles, organizations and public-use approval remain subject to
+            confirmation.
           </p>
         </div>
         <div className="network-list">

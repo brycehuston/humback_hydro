@@ -28,7 +28,7 @@ export default function TechnologyPage() {
             <div className="anatomy-visual" data-reveal><img src="/turbine-macro.webp" alt="Concept visualization of a reversible hydro turbine" loading="lazy" decoding="async" /><span className="concept-tag">CONCEPT VISUALIZATION</span></div>
             <div className="anatomy-list">
               <article data-reveal><span>01</span><div><small>STORAGE</small><h3>Two Engineered Reservoirs</h3><p>Upper and lower reservoirs create vertical separation inside the fixed structure.</p></div></article>
-              <article data-reveal><span>02</span><div><small>GENERATION</small><h3>Two Turbine Stages</h3><p>Three representative turbines are shown at each stage, reflecting the later static design study.</p></div></article>
+              <article data-reveal><span>02</span><div><small>GENERATION</small><h3>Bilateral Turbine Stages</h3><p>The concept model shows paired upper and lower turbine paths without asserting final equipment count or scale.</p></div></article>
               <article data-reveal><span>03</span><div><small>TRANSFER</small><h3>Dedicated Penstocks</h3><p>Upper and lower hydraulic paths control flow through their respective turbine stages.</p></div></article>
               <article data-reveal><span>04</span><div><small>STORAGE CYCLE</small><h3>Lower Pump Array</h3><p>Pumps return water to the upper reservoir when energy is available for storage.</p></div></article>
             </div>
@@ -44,7 +44,10 @@ export default function TechnologyPage() {
           <article data-reveal><span>03</span><h3>Two-Stage Generation</h3><p>Uses separate upper and lower flow paths to drive two turbine stages during generation.</p></article>
           <article data-reveal><span>04</span><h3>Site-Specific Engineering</h3><p>Materials, intake screening, foundations and environmental performance require detailed site validation.</p></article>
         </div>
-        <a className="button primary" href="/evidence">Review the Engineering Foundation <Arrow /></a>
+        <div className="hero-actions">
+          <a className="button primary" href="/evidence">Review the Engineering Foundation <Arrow /></a>
+          <a className="text-link" href="/impact">Review Potential Impact <Arrow /></a>
+        </div>
       </section>
     </main>
   );

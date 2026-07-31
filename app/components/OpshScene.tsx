@@ -892,10 +892,7 @@ function HydroSystem({
     const velocityBoost = clamp01(runtime.velocity ?? 0) * 0.08;
 
     const intakeSupply = 1 - smoothStep(0.2, 0.31, progress);
-    const lowerGeneration = Math.max(
-      windowSignal(progress, 0.14, 0.37, 0.055),
-      windowSignal(progress, 0.48, 0.76, 0.06),
-    );
+    const lowerGeneration = windowSignal(progress, 0.14, 0.37, 0.055);
     const pumping = windowSignal(progress, 0.31, 0.54, 0.065);
     const release = windowSignal(progress, 0.48, 0.79, 0.065);
     const evidence = smoothStep(0.76, 0.9, progress);
@@ -907,37 +904,37 @@ function HydroSystem({
     updateFlow(
       flowMaterialsRef.current.intakeLeft,
       time,
-      intakeIntensity + velocityBoost,
+      intakeIntensity > 0.001 ? intakeIntensity + velocityBoost : 0,
     );
     updateFlow(
       flowMaterialsRef.current.intakeRight,
       time,
-      intakeIntensity + velocityBoost,
+      intakeIntensity > 0.001 ? intakeIntensity + velocityBoost : 0,
     );
     updateFlow(
       flowMaterialsRef.current.lowerLeft,
       time,
-      lowerGeneration + velocityBoost,
+      lowerGeneration > 0.001 ? lowerGeneration + velocityBoost : 0,
     );
     updateFlow(
       flowMaterialsRef.current.lowerRight,
       time,
-      lowerGeneration + velocityBoost,
+      lowerGeneration > 0.001 ? lowerGeneration + velocityBoost : 0,
     );
     updateFlow(
       flowMaterialsRef.current.pump,
       time,
-      pumping + velocityBoost,
+      pumping > 0.001 ? pumping + velocityBoost : 0,
     );
     updateFlow(
       flowMaterialsRef.current.releaseLeft,
       time,
-      release + velocityBoost,
+      release > 0.001 ? release + velocityBoost : 0,
     );
     updateFlow(
       flowMaterialsRef.current.releaseRight,
       time,
-      release + velocityBoost,
+      release > 0.001 ? release + velocityBoost : 0,
     );
 
     if (!motionReduced) {
@@ -976,14 +973,19 @@ function HydroSystem({
       lowerSurfaceRef.current.position.set(0, LOWER_FLOOR + lowerHeight, 0);
     }
 
-    [upperWaterMaterialRef.current, lowerWaterMaterialRef.current].forEach(
-      (material) => {
-        if (!material) return;
-        material.uniforms.uTime.value = time;
-        material.uniforms.uMotion.value = motionReduced ? 0 : 1;
-        material.uniforms.uEvidence.value = evidence;
-      },
-    );
+    const upperWaterMaterial = upperWaterMaterialRef.current;
+    if (upperWaterMaterial) {
+      upperWaterMaterial.uniforms.uTime.value = time;
+      upperWaterMaterial.uniforms.uMotion.value = motionReduced ? 0 : 1;
+      upperWaterMaterial.uniforms.uEvidence.value = evidence;
+    }
+
+    const lowerWaterMaterial = lowerWaterMaterialRef.current;
+    if (lowerWaterMaterial) {
+      lowerWaterMaterial.uniforms.uTime.value = time;
+      lowerWaterMaterial.uniforms.uMotion.value = motionReduced ? 0 : 1;
+      lowerWaterMaterial.uniforms.uEvidence.value = evidence;
+    }
 
     if (oceanMaterialRef.current) {
       oceanMaterialRef.current.uniforms.uTime.value = time;

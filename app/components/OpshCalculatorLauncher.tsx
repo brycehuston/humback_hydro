@@ -28,7 +28,7 @@ function CalculatorLoadingState() {
       className="flex min-h-72 items-center justify-center rounded-[1.75rem] border border-cyan-100/15 bg-[#03141f] px-8 text-center text-sm text-slate-400"
       role="status"
     >
-      Preparing the illustrative scenario model…
+      Preparing the project-scale scenario model…
     </div>
   );
 }
@@ -40,7 +40,17 @@ export default function OpshCalculatorLauncher() {
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const previousFocusRef = useRef<HTMLElement | null>(null);
 
-  const closeCalculator = useCallback(() => setOpen(false), []);
+  const closeCalculator = useCallback(() => {
+    setOpen(false);
+    window.setTimeout(() => {
+      const focusReturnTarget =
+        previousFocusRef.current ?? triggerRef.current;
+
+      if (focusReturnTarget?.isConnected) {
+        focusReturnTarget.focus({ preventScroll: true });
+      }
+    }, 0);
+  }, []);
 
   const openCalculator = useCallback(() => {
     previousFocusRef.current =
@@ -74,7 +84,11 @@ export default function OpshCalculatorLauncher() {
       window.cancelAnimationFrame(focusFrame);
       document.removeEventListener("keydown", handleEscape);
       document.body.style.overflow = previousOverflow;
-      window.requestAnimationFrame(() => focusReturnTarget?.focus());
+      window.requestAnimationFrame(() => {
+        if (focusReturnTarget?.isConnected) {
+          focusReturnTarget.focus({ preventScroll: true });
+        }
+      });
     };
   }, [closeCalculator, open]);
 
@@ -140,7 +154,7 @@ export default function OpshCalculatorLauncher() {
             >
               <div className="sticky top-3 z-30 flex h-0 justify-end pr-3">
                 <button
-                  aria-label="Close Investment and Impact Calculator"
+                  aria-label="Close Project Economics and Impact Model"
                   autoFocus
                   className="flex size-11 items-center justify-center rounded-full border border-white/15 bg-[#071b25] text-slate-200 shadow-lg transition hover:border-cyan-200/40 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300"
                   onClick={closeCalculator}
@@ -186,9 +200,9 @@ export default function OpshCalculatorLauncher() {
           type="button"
         >
           <span>
-            Model Investment &amp; Impact
+            Open Project Economics &amp; Impact Model
             <small className="mt-1 block text-[0.62rem] font-medium normal-case tracking-normal text-slate-400">
-              Explore illustrative financial and environmental scenarios
+              Explore a provisional 10–1,000 MW infrastructure scenario
             </small>
           </span>
 

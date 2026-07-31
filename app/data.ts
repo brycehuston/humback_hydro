@@ -1,25 +1,44 @@
 export const brandmark = "/brandmark.webp";
 
+export type LeadershipPublicationStatus =
+  | "published-qualified"
+  | "confirmed"
+  | "review-only";
+
+export interface LeadershipProfile {
+  name: string;
+  role: string;
+  image?: string;
+  imageAlt?: string;
+  focus: string;
+  publicationStatus: LeadershipPublicationStatus;
+}
+
 export const navItems = [
   { label: "Technology", href: "/technology" },
   { label: "Applications", href: "/applications" },
+  { label: "Impact", href: "/impact" },
   { label: "Economics", href: "/economics" },
   { label: "Evidence", href: "/evidence" },
   { label: "Company", href: "/company" },
 ];
 
-export const leadership = [
+export const leadership: readonly LeadershipProfile[] = [
   {
     name: "Mark Legacy",
     role: "Founder & Chief Executive Officer",
     image: "/mark-legacy.webp",
-    focus: "Inventor, U.S. patent holder and IEEE-published author",
+    imageAlt: "Mark Legacy",
+    focus: "Company founder; patent and IEEE public records are linked below",
+    publicationStatus: "published-qualified",
   },
   {
     name: "Col. Bryan Green (Ret.)",
     role: "Operations & Infrastructure Delivery",
     image: "/bryan-green.webp",
+    imageAlt: "Col. Bryan Green (Ret.)",
     focus: "Former USACE operations commander and infrastructure delivery leader",
+    publicationStatus: "published-qualified",
   },
 ];
 
@@ -46,7 +65,7 @@ export const evidence = [
     index: "01",
     category: "Intellectual Property",
     title: "U.S. Patent 8823195 B2",
-    description: "Patented pumped-storage power plant architecture.",
+    description: "Public record for U.S. Patent No. 8,823,195 B2.",
     status: "Verified Public Record",
     href: "https://patents.google.com/patent/US8823195B2/en",
   },
@@ -68,9 +87,9 @@ export const evidence = [
   {
     index: "04",
     category: "Industry Recognition",
-    title: "Top 3 GLOBE Emerging Technology",
-    description: "Recognized as a top-three emerging-technology finalist.",
-    status: "Publicly Stated",
+    title: "GLOBE Emerging-Technology Recognition",
+    description: "Company-supplied recognition language awaiting a primary event record and exact category confirmation.",
+    status: "Source Confirmation Pending",
   },
 ];
 

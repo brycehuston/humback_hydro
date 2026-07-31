@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
+import OpshCalculatorLauncher from "../components/OpshCalculatorLauncher";
 import RouteHero from "../components/RouteHero";
+import { ILLUSTRATIVE_PROJECT_ASSUMPTIONS } from "../economics-model";
 
 export const metadata: Metadata = {
   title: "Economics",
@@ -7,16 +9,48 @@ export const metadata: Metadata = {
     "Review a provisional illustrative economics scenario for 100 MW and 1,000 MW Humpback Hydro facilities.",
 };
 
+const model = ILLUSTRATIVE_PROJECT_ASSUMPTIONS;
+
 const assumptions = [
-  ["Electricity Sale Price", "US$120.00/MWh"],
-  ["Humpback Royalty", "US$8.80/MWh"],
-  ["Humpback O&M", "US$15.00/MWh"],
-  ["Debt Servicing", "US$30.00/MWh"],
-  ["Total Deductions", "US$53.80/MWh"],
-  ["Client Retains", "US$66.20/MWh"],
-  ["Capacity Factor", "90%"],
-  ["Annual Production", "7,884 MWh/MW"],
-  ["Capital Cost", "US$5.0M/MW"],
+  ["Electricity Sale Price", `US$${model.electricityPricePerMwh.toFixed(2)}/MWh`],
+  ["Royalty Scenario Input", `US$${model.royaltyPerMwh.toFixed(2)}/MWh`],
+  ["O&M Scenario Input", `US$${model.operationsAndMaintenancePerMwh.toFixed(2)}/MWh`],
+  ["Debt-Service Scenario Input", `US$${model.debtServicePerMwh.toFixed(2)}/MWh`],
+  ["Total Deductions", `US$${(model.royaltyPerMwh + model.operationsAndMaintenancePerMwh + model.debtServicePerMwh).toFixed(2)}/MWh`],
+  ["Modeled Retained Value", `US$${(model.electricityPricePerMwh - model.royaltyPerMwh - model.operationsAndMaintenancePerMwh - model.debtServicePerMwh).toFixed(2)}/MWh`],
+  ["Capacity Factor", `${(model.capacityFactor * 100).toFixed(0)}%`],
+  ["Annual Hours", model.annualHours.toLocaleString("en-US")],
+  ["Annual Throughput", `${(model.annualHours * model.capacityFactor).toLocaleString("en-US")} MWh/MW`],
+  ["Capital-Cost Scenario Input", `US$${(model.capitalCostPerMw / 1_000_000).toFixed(1)}M/MW`],
+  ["Carbon-Displacement Factor", `${model.co2TonsPerMwh.toFixed(2)} tCO₂/MWh`],
+] as const;
+
+const revenueStreams = [
+  {
+    index: "01",
+    title: "Energy Sales and Time-Shifting",
+    copy: "Potential project-owner value from electricity delivery and energy time-shifting depends on the applicable market, dispatch profile and offtake structure.",
+  },
+  {
+    index: "02",
+    title: "Capacity and Grid Services",
+    copy: "Potential capacity, balancing or grid-support value requires equipment qualification, interconnection approval and market-specific eligibility.",
+  },
+  {
+    index: "03",
+    title: "Technology Licensing and Royalties",
+    copy: "The intended Humpback commercial model may include licensing and output-linked royalties. Final terms remain project-specific and unapproved.",
+  },
+  {
+    index: "04",
+    title: "Lifecycle Operations and Maintenance",
+    copy: "Long-term operating support, monitoring and maintenance may create recurring service value once scope, responsibilities and pricing are validated.",
+  },
+  {
+    index: "05",
+    title: "Water and Industrial Integration",
+    copy: "Potential co-location with water or industrial infrastructure remains outside the primary model pending separate technical and commercial validation.",
+  },
 ] as const;
 
 const perMwEconomics = [
@@ -117,7 +151,7 @@ export default function EconomicsPage() {
   return (
     <main>
       <RouteHero
-        index="03"
+        index="04"
         eyebrow="Economics"
         title="The Economics of Scale."
         copy="A provisional illustrative scenario showing how calculated annual project value changes across 100 MW and 1,000 MW facilities."
@@ -208,10 +242,32 @@ export default function EconomicsPage() {
         </div>
       </section>
 
+      <section className="bg-[#020d14] text-white">
+        <div className="section-shell">
+          <div className="chapter-label light">
+            <span>02</span>INTERACTIVE PROJECT MODEL
+          </div>
+          <div className="grid gap-10 lg:grid-cols-[minmax(0,0.72fr)_minmax(0,1.28fr)] lg:items-end lg:gap-20" data-reveal>
+            <div>
+              <p className="eyebrow"><span />Controlled Scenario Exploration</p>
+              <h2 className="mt-7 text-[clamp(3rem,5vw,5.8rem)] font-medium leading-[0.94] tracking-[-0.06em]">
+                Change Project Scale. Keep the Assumptions Visible.
+              </h2>
+            </div>
+            <div>
+              <p className="mb-7 max-w-2xl text-base leading-8 text-[#a9bbc1]">
+                Explore installed capacity from 10 MW to 1,000 MW using the same provisional operating case documented on this page. The model calculates project-level arithmetic, not securities ownership or direct investor returns.
+              </p>
+              <OpshCalculatorLauncher />
+            </div>
+          </div>
+        </div>
+      </section>
+
       <section className="bg-[#031721] text-white">
         <div className="section-shell">
           <div className="chapter-label light">
-            <span>02</span>FACILITY COMPARISON
+            <span>03</span>FACILITY COMPARISON
           </div>
 
           <div className="mb-12 max-w-4xl" data-reveal>
@@ -301,7 +357,45 @@ export default function EconomicsPage() {
 
       <section className="section-shell bg-[var(--ice)]">
         <div className="chapter-label">
-          <span>03</span>LONG-TERM VALUE
+          <span>04</span>COMMERCIAL MODEL
+        </div>
+        <div className="grid gap-12 lg:grid-cols-[minmax(0,0.72fr)_minmax(0,1.28fr)] lg:gap-24">
+          <div data-reveal>
+            <p className="eyebrow dark"><span />Potential Revenue Categories</p>
+            <h2 className="mt-7 text-[clamp(3rem,5vw,5.8rem)] font-medium leading-[0.94] tracking-[-0.06em] text-[#061c28]">
+              Value Must Be Proven Project by Project.
+            </h2>
+            <p className="mt-8 max-w-xl text-base leading-8 text-[#607780]">
+              These categories describe potential commercial pathways rather than contracted revenue, verified eligibility or offered pricing.
+            </p>
+          </div>
+          <div className="border-t border-[#061c28]/15" data-reveal>
+            {revenueStreams.map((stream) => (
+              <article className="grid gap-4 border-b border-[#061c28]/15 py-6 sm:grid-cols-[42px_1fr]" key={stream.index}>
+                <span className="font-mono text-xs font-semibold text-[#168da8]">{stream.index}</span>
+                <div>
+                  <h3 className="text-xl font-medium tracking-[-0.03em] text-[#061c28]">{stream.title}</h3>
+                  <p className="mt-3 text-sm leading-7 text-[#607780]">{stream.copy}</p>
+                </div>
+              </article>
+            ))}
+          </div>
+        </div>
+
+        <details className="mt-14 border border-[#061c28]/15 bg-white/50 p-6 md:p-8" data-reveal>
+          <summary className="cursor-pointer text-xl font-semibold tracking-[-0.025em] text-[#061c28] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#168da8]">
+            What a Project-Specific Model Must Test
+          </summary>
+          <div className="mt-6 grid gap-7 border-t border-[#061c28]/10 pt-6 text-sm leading-7 text-[#607780] md:grid-cols-2">
+            <p>Electricity price, dispatch profile, capacity factor, capital cost, operating cost, construction contingency, equipment replacement, curtailment and degradation.</p>
+            <p>Financing terms, interest rates, taxes, insurance, interconnection, site costs and market eligibility before calculating NPV, IRR, DSCR, LCOE or LCOS.</p>
+          </div>
+        </details>
+      </section>
+
+      <section className="section-shell bg-[var(--ice)]">
+        <div className="chapter-label">
+          <span>05</span>LONG-TERM VALUE
         </div>
 
         <div className="grid gap-12 lg:grid-cols-[minmax(0,0.72fr)_minmax(0,1.28fr)] lg:gap-24">
@@ -341,7 +435,7 @@ export default function EconomicsPage() {
 
         <div className="section-shell relative">
           <div className="chapter-label light">
-            <span>04</span>RETURN ON INVESTMENT
+            <span>06</span>ILLUSTRATIVE PAYBACK
           </div>
 
           <div className="grid gap-6 lg:grid-cols-2">
@@ -373,7 +467,7 @@ export default function EconomicsPage() {
             >
               <div>
                 <small className="font-mono text-[0.68rem] font-semibold tracking-[0.16em] text-[#83c4d2] uppercase">
-                  Annual Cash Flow After Debt
+                  Illustrative Annual Cash Flow After Debt
                 </small>
                 <p className="mt-6 font-mono text-[clamp(3.8rem,8vw,7.5rem)] font-semibold leading-none tracking-[-0.08em] text-white tabular-nums">
                   $758.4M

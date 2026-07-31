@@ -461,14 +461,15 @@ svg { width: 1em; fill: none; stroke: currentColor; stroke-width: 1.65; stroke-l
 .story-columns { max-width: 780px; margin: 70px 0 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 50px; }
 .story-columns p { margin: 0; color: #5e757d; font-size: 14px; line-height: 1.8; }
 .leadership-section { color: white; background: #031721; }
-.leadership-list { border-top: 1px solid var(--line-light); }
-.leadership-list article { min-height: 360px; padding: 28px 0; display: grid; grid-template-columns: 70px 280px 1fr; gap: clamp(28px,5vw,80px); align-items: center; border-bottom: 1px solid var(--line-light); }
-.leadership-list article > span { color: var(--energy); font: 600 9px var(--font-geist-mono); }
-.leader-image { height: 300px; overflow: hidden; background: #0a2a36; }
+.leadership-list { display: grid; grid-template-columns: repeat(auto-fit,minmax(220px,1fr)); border-top: 1px solid var(--line-light); border-left: 1px solid var(--line-light); }
+.leadership-list article { min-width: 0; min-height: 460px; padding: 22px; display: flex; flex-direction: column; border-right: 1px solid var(--line-light); border-bottom: 1px solid var(--line-light); }
+.leadership-list article > span { margin-bottom: 18px; color: var(--energy); font: 600 9px var(--font-geist-mono); }
+.leader-image { height: 270px; margin-bottom: 24px; display: grid; place-items: center; overflow: hidden; background: #0a2a36; }
 .leader-image img { width: 100%; height: 100%; object-fit: cover; filter: saturate(.72) contrast(1.04); transition: transform .6s ease, filter .4s ease; }
+.leader-monogram { color: #83c4d2; font: 600 42px var(--font-geist-mono); letter-spacing: -.04em; }
 .leadership-list article:hover img { transform: scale(1.035); filter: saturate(1); }
 .leadership-list small { color: var(--aqua); font: 620 7px var(--font-geist-mono); letter-spacing: .14em; text-transform: uppercase; }
-.leadership-list h3 { margin: 14px 0 15px; font-size: clamp(36px,4vw,60px); letter-spacing: -.055em; font-weight: 560; }
+.leadership-list h3 { margin: 14px 0 15px; font-size: clamp(30px,3vw,44px); line-height: .98; letter-spacing: -.055em; font-weight: 560; }
 .leadership-list p { margin: 0; color: #8ca7af; font-size: 13px; }
 .delivery-network { background: var(--ice); }
 .network-list { margin-top: 70px; border-top: 1px solid var(--line); }
@@ -639,7 +640,7 @@ svg { width: 1em; fill: none; stroke: currentColor; stroke-width: 1.65; stroke-l
   .route-hero { min-height: 720px; height: 90svh; }.route-hero > img { object-position: 62% center; }.route-hero-overlay { background: linear-gradient(180deg,rgba(2,13,20,.55),rgba(2,13,20,.9) 60%); }.route-index { right: -15px; top: 30%; font-size: 55vw; }.route-hero-copy { left: 22px; right: 22px; top: auto; bottom: 58px; width: auto; transform: none; }.route-hero-copy h1 { font-size: 58px; }.route-hero-copy > p:not(.eyebrow) { font-size: 13px; }
   .anatomy-grid { grid-template-columns: 1fr; }.anatomy-visual { height: 520px; }.principle-list article { padding: 25px 0; grid-template-columns: 40px 1fr; }.principle-list p { grid-column: 2; margin: 0; }
   .vault-list article { padding: 25px 0; grid-template-columns: 35px 1fr; gap: 15px; }.claim-status,.vault-list article > a,.locked { grid-column: 2; }.claim-policy-grid { grid-template-columns: 1fr; }.claim-policy-grid article { min-height: 230px; }.claim-policy-grid h3 { margin-top: 70px; }
-  .story-columns { grid-template-columns: 1fr; gap: 25px; }.leadership-list article { padding: 28px 0 42px; grid-template-columns: 35px 1fr; }.leader-image { grid-column: 2; height: 390px; }.leadership-list article > div:last-child { grid-column: 2; }.network-list article { padding: 26px 0; grid-template-columns: 35px 1fr; }.network-list article p { grid-column: 2; }
+  .story-columns { grid-template-columns: 1fr; gap: 25px; }.leadership-list { grid-template-columns: 1fr; }.leadership-list article { min-height: 0; padding: 22px; }.leader-image { height: 390px; }.network-list article { padding: 26px 0; grid-template-columns: 35px 1fr; }.network-list article p { grid-column: 2; }
   .pathway-list article { padding: 30px 0; grid-template-columns: 35px 1fr; gap: 13px; }.pathway-list article > *:not(span) { grid-column: 2; }.pathway-list article p,.pathway-list article a { grid-column: 2; }.contact-terminal .section-shell { min-height: 750px; grid-template-columns: 1fr; }.partner-form { grid-template-columns: 1fr; padding: 25px 20px; }.partner-form .wide { grid-column: auto; }
   .footer-primary,.footer-grid { grid-template-columns: 1fr; text-align: left; }.footer-primary > p,.footer-email { text-align: left; }.footer-legal { flex-direction: column; }
   @keyframes mobile-copy-enter { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
@@ -697,7 +698,7 @@ svg { width: 1em; fill: none; stroke: currentColor; stroke-width: 1.65; stroke-l
 .opsh-model-hud span { display: flex; align-items: center; gap: 8px; }.opsh-model-hud i { width: 7px; height: 7px; border-radius: 50%; background: var(--energy); box-shadow: 0 0 14px var(--energy); }
 .opsh-model-hud strong { color: var(--energy); font-weight: 650; }
 .opsh-component-key { position: absolute; z-index: 8; left: 20px; bottom: 20px; display: grid; gap: 8px; pointer-events: none; }
-.opsh-component-key span { width: max-content; padding-left: 15px; position: relative; color: #b8d0d5; font: 620 7px var(--font-geist-mono); letter-spacing: .1em; text-transform: uppercase; text-shadow: 0 2px 9px #001018; }
+.opsh-component-key span { width: max-content; padding-left: 15px; position: relative; color: #b8d0d5; font: 620 8px var(--font-geist-mono); letter-spacing: .1em; text-transform: uppercase; text-shadow: 0 2px 9px #001018; }
 .opsh-component-key span::before { content: ""; position: absolute; left: 0; top: 50%; width: 7px; height: 1px; background: var(--energy); box-shadow: 0 0 8px var(--energy); }
 .opsh-stage-tabs { display: grid; grid-template-columns: repeat(4,1fr); border-top: 1px solid rgba(133,211,223,.18); }
 .opsh-stage-tabs button { position: relative; min-height: 74px; padding: 0 16px; display: grid; grid-template-columns: 24px 1fr; gap: 9px; align-items: center; border: 0; border-right: 1px solid rgba(133,211,223,.14); color: #6f8d95; background: rgba(1,13,20,.78); text-align: left; cursor: pointer; transition: color .25s ease,background .25s ease; }
@@ -751,8 +752,8 @@ svg { width: 1em; fill: none; stroke: currentColor; stroke-width: 1.65; stroke-l
 
 @media (max-width: 760px) {
   .opsh-experience { margin-top: 48px; }.opsh-guided .opsh-visual { top: 70px; margin-left: -22px; margin-right: -22px; }.opsh-guided .opsh-model-frame,.opsh-explorer .opsh-model-frame { height: 330px; min-height: 330px; }
-  .opsh-model-hud { top: 12px; left: 12px; right: 12px; font-size: 6.5px; }.opsh-model-hud span { display: none; }.opsh-component-key { left: 12px; bottom: 12px; grid-template-columns: 1fr 1fr; gap: 6px 14px; }.opsh-component-key span { font-size: 5.7px; }
-  .opsh-stage-tabs button { min-height: 58px; padding: 8px; grid-template-columns: 1fr; gap: 3px; text-align: center; }.opsh-stage-tabs button span { font-size: 6.5px; }.opsh-stage-tabs button strong { font-size: 8px; }
+  .opsh-model-hud { top: 12px; left: 12px; right: 12px; font-size: 6.5px; }.opsh-model-hud span { display: none; }.opsh-component-key { left: 12px; bottom: 12px; grid-template-columns: 1fr 1fr; gap: 6px 14px; }.opsh-component-key span { font-size: 6.5px; }
+  .opsh-stage-tabs button { min-height: 58px; padding: 8px; grid-template-columns: 1fr; gap: 3px; text-align: center; }.opsh-stage-tabs button span { font-size: 7px; }.opsh-stage-tabs button strong { font-size: 9px; }
   .opsh-guided-stages { margin-top: -18vh; }.opsh-guided-stages > article { min-height: 76vh; padding-top: 34vh; }.opsh-stage-copy h3 { font-size: 40px; }.opsh-stage-copy > p { font-size: 14px; }.opsh-stage-copy .opsh-stage-detail { font-size: 12px; }
   .opsh-flow-readout span { font-size: 6.6px; line-height: 1.5; }.opsh-evidence-notes article p { font-size: 10.5px; }.opsh-citation { padding-bottom: 50px; }
   .opsh-explorer { margin-left: -22px; margin-right: -22px; }.opsh-explorer-copy { padding: 42px 22px; }.opsh-explorer-tools span { font-size: 6px; }

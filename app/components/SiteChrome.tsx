@@ -82,7 +82,7 @@ export default function SiteChrome({ children }: { children: React.ReactNode }) 
         </nav>
 
         <Link className="header-cta" href="/partners">
-          Partner With Us <Arrow />
+          Explore a Partnership <Arrow />
         </Link>
 
         <button
@@ -102,7 +102,7 @@ export default function SiteChrome({ children }: { children: React.ReactNode }) 
                 <span>0{index + 1}</span>{item.label}<Arrow />
               </Link>
             ))}
-            <Link href="/partners" onClick={() => setMenuOpen(false)}><span>06</span>Partner With Us<Arrow /></Link>
+            <Link href="/partners" onClick={() => setMenuOpen(false)}><span>{String(navItems.length + 1).padStart(2, "0")}</span>Explore a Partnership<Arrow /></Link>
           </nav>
           <small>Vancouver, British Columbia, Canada</small>
         </div>
