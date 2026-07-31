@@ -1,5 +1,5 @@
 import { spawn } from "node:child_process";
-import { access, readFile } from "node:fs/promises";
+import { access, readFile, writeFile } from "node:fs/promises";
 import { constants } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
@@ -81,6 +81,21 @@ async function runBuild() {
   });
 }
 
+async function repairVinextFontPaths() {
+  const workerPath = resolve(projectRoot, "dist", "server", "index.js");
+  const absoluteFontPrefix = /\/[^)"'\s]*\/\.vinext\/fonts\//g;
+  const workerSource = await readFile(workerPath, "utf8");
+  const repairedSource = workerSource.replaceAll(
+    absoluteFontPrefix,
+    "/assets/_vinext_fonts/",
+  );
+
+  if (repairedSource === workerSource) return;
+
+  await writeFile(workerPath, repairedSource, "utf8");
+  console.log("Repaired Vinext font asset URLs in the Worker artifact.");
+}
+
 async function validateArtifact() {
   const workerPath = resolve(projectRoot, "dist", "server", "index.js");
   const hostingPath = resolve(projectRoot, "dist", ".openai", "hosting.json");
@@ -88,6 +103,11 @@ async function validateArtifact() {
   await requireFile(workerPath, "Missing Worker entry: dist/server/index.js");
   await requireFile(hostingPath, "Missing packaged hosting manifest: dist/.openai/hosting.json");
   JSON.parse(await readFile(hostingPath, "utf8"));
+
+  const workerSource = await readFile(workerPath, "utf8");
+  if (workerSource.includes("/.vinext/fonts/")) {
+    throw new Error("Worker artifact contains unrepaired Vinext font asset URLs.");
+  }
 
   const workerUrl = pathToFileURL(workerPath);
   workerUrl.searchParams.set("artifact-validation", `${process.pid}-${Date.now()}`);
@@ -104,6 +124,7 @@ async function validateArtifact() {
 try {
   if (!validateOnly) {
     await runBuild();
+    await repairVinextFontPaths();
   }
   await validateArtifact();
 } catch (error) {

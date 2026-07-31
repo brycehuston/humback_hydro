@@ -10,6 +10,7 @@ const publicRoutes = [
   "/technology",
   "/applications",
   "/evidence",
+  "/economics",
   "/company",
   "/partners",
 ];
@@ -64,6 +65,18 @@ test("publishes qualified evidence and the complete IEEE reference", async () =>
   assert.match(combined, /two-stage static structure designed for 10\.6 MW and continuous operation as needed/);
   assert.match(combined, /not measured output from an operating facility/i);
   assert.match(combined, /Concept Model — Not to Scale/);
+});
+
+test("labels economics as provisional and distinguishes calculated outputs", async () => {
+  const worker = await loadWorker();
+  const { html } = await fetchRoute(worker, "/economics");
+
+  assert.match(html, /provisional assumptions/i);
+  assert.match(html, /calculated outputs/i);
+  assert.match(html, /9\.6/);
+  assert.match(html, /\$758\.4M/);
+  assert.match(html, /not measured operating performance/i);
+  assert.match(html, /investment offering/i);
 });
 
 test("excludes simulated telemetry, unsupported validation and prohibited system copy", async () => {

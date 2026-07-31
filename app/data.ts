@@ -3,6 +3,7 @@ export const brandmark = "/brandmark.webp";
 export const navItems = [
   { label: "Technology", href: "/technology" },
   { label: "Applications", href: "/applications" },
+  { label: "Economics", href: "/economics" },
   { label: "Evidence", href: "/evidence" },
   { label: "Company", href: "/company" },
 ];

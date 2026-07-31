@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 export default function EvidencePage() {
   return (
     <main>
-      <RouteHero index="03" eyebrow="Engineering Foundation" title="Evidence Before Scale." copy="The public record, modeled study results and the limitations that still apply before operating or commercial claims can be made." image="/turbine-macro.webp" nextHref="#vault" nextLabel="Open the Evidence Vault" />
+      <RouteHero index="04" eyebrow="Engineering Foundation" title="Evidence Before Scale." copy="The public record, modeled study results and the limitations that still apply before operating or commercial claims can be made." image="/turbine-macro.webp" nextHref="#vault" nextLabel="Open the Evidence Vault" />
       <section className="evidence-vault section-shell" id="vault">
         <div className="chapter-label"><span>01</span>CLAIMS REGISTER</div>
         <div className="section-intro split" data-reveal>

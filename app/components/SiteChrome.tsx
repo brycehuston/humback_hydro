@@ -102,7 +102,7 @@ export default function SiteChrome({ children }: { children: React.ReactNode }) 
                 <span>0{index + 1}</span>{item.label}<Arrow />
               </Link>
             ))}
-            <Link href="/partners" onClick={() => setMenuOpen(false)}><span>05</span>Partner With Us<Arrow /></Link>
+            <Link href="/partners" onClick={() => setMenuOpen(false)}><span>06</span>Partner With Us<Arrow /></Link>
           </nav>
           <small>Vancouver, British Columbia, Canada</small>
         </div>
