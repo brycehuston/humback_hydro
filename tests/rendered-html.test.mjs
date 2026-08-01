@@ -147,6 +147,44 @@ test("publishes qualified impact and company positioning", async () => {
   assert.doesNotMatch(combined, /★|☆/);
 });
 
+test("renders the approved local team portraits including Bryan Green", async () => {
+  const worker = await loadWorker();
+  const { html } = await fetchRoute(worker, "/company");
+  const teamFiles = await readdir(new URL("../public/team/", import.meta.url));
+
+  for (const file of [
+    "bryce-huston.jpg",
+    "chris-calvin.jpg",
+    "col-bryan-green.jpg",
+    "gustavo-varela-latouche.jpg",
+    "mark-legacy.jpg",
+    "rich-burgess.jpg",
+  ]) {
+    assert.ok(teamFiles.includes(file), `missing public/team/${file}`);
+  }
+
+  for (const required of [
+    /\/team\/mark-legacy\.jpg/,
+    /\/team\/bryce-huston\.jpg/,
+    /\/team\/rich-burgess\.jpg/,
+    /\/team\/chris-calvin\.jpg/,
+    /\/team\/gustavo-varela-latouche\.jpg/,
+    /\/team\/col-bryan-green\.jpg/,
+    /Portrait of Mark Legacy/,
+    /Portrait of Bryce Huston/,
+    /Portrait of Rich Burgess/,
+    /Portrait of Chris Calvin/,
+    /Portrait of Gustavo Varela Latouche/,
+    /Portrait of Col\. Bryan Green \(Ret\.\)/,
+    /Chief Information Security Officer, Humpback Hydro/,
+    /Information security, systems architecture, platform resilience and digital infrastructure\./,
+  ]) {
+    assert.match(html, required);
+  }
+
+  assert.doesNotMatch(html, /\/(?:mark-legacy|bryan-green)\.webp/);
+});
+
 test("preserves the exact footer attribution and safe external target", async () => {
   const worker = await loadWorker();
   const { html } = await fetchRoute(worker, "/");
@@ -256,17 +294,14 @@ test("publishes an infrastructure model without retail-return framing", async ()
 
   for (const required of [
     /Project Economics &(?:amp;|) Impact Model/i,
-    /Installed Capacity/i,
+    /Project Scale/i,
     /Operating Horizon/i,
     /10 MW/i,
-    /100 MW/i,
-    /500 MW/i,
-    /1,000 MW/i,
-    /Provisional Scenario Inputs/i,
+    /MODEL DETAILS & ASSUMPTIONS/i,
     /Illustrative Capital Requirement/i,
     /Annual Modeled Energy Throughput/i,
     /Annual Retained Cash Flow/i,
-    /Cumulative Retained Cash Flow With the Debt-Service Input Applied/i,
+    /Cumulative Retained Cash Flow/i,
     /Simple Payback/i,
     /Post-Debt Retained Cash Flow/i,
     /Approximate CO₂ Displacement/i,

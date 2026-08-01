@@ -10,8 +10,20 @@ export interface LeadershipProfile {
   role: string;
   image?: string;
   imageAlt?: string;
+  imagePosition?: string;
+  initials?: string;
   focus: string;
   publicationStatus: LeadershipPublicationStatus;
+}
+
+export interface DeliveryPartnerProfile {
+  name: string;
+  discipline: string;
+  organization: string;
+  image?: string;
+  imageAlt?: string;
+  imagePosition?: string;
+  initials?: string;
 }
 
 export const navItems = [
@@ -27,36 +39,57 @@ export const leadership: readonly LeadershipProfile[] = [
   {
     name: "Mark Legacy",
     role: "Founder & Chief Executive Officer",
-    image: "/mark-legacy.webp",
-    imageAlt: "Mark Legacy",
+    image: "/team/mark-legacy.jpg",
+    imageAlt: "Portrait of Mark Legacy",
+    imagePosition: "50% 28%",
     focus: "Company founder; patent and IEEE public records are linked below",
     publicationStatus: "published-qualified",
   },
   {
     name: "Col. Bryan Green (Ret.)",
     role: "Operations & Infrastructure Delivery",
-    image: "/bryan-green.webp",
-    imageAlt: "Col. Bryan Green (Ret.)",
+    image: "/team/col-bryan-green.jpg",
+    imageAlt: "Portrait of Col. Bryan Green (Ret.)",
+    imagePosition: "50% 28%",
     focus: "Former USACE operations commander and infrastructure delivery leader",
+    publicationStatus: "published-qualified",
+  },
+  {
+    name: "Bryce Huston",
+    role: "Chief Information Security Officer, Humpback Hydro",
+    image: "/team/bryce-huston.jpg",
+    imageAlt: "Portrait of Bryce Huston",
+    imagePosition: "50% 30%",
+    focus:
+      "Information security, systems architecture, platform resilience and digital infrastructure.",
     publicationStatus: "published-qualified",
   },
 ];
 
-export const deliveryPartners = [
+export const deliveryPartners: readonly DeliveryPartnerProfile[] = [
   {
     name: "Rich Burgess",
     discipline: "Construction & Advanced Materials",
     organization: "President, Cor-Tuf UHPC | Virginia, USA",
+    image: "/team/rich-burgess.jpg",
+    imageAlt: "Portrait of Rich Burgess",
+    imagePosition: "50% 28%",
   },
   {
     name: "Chris Calvin",
     discipline: "Advanced Materials",
     organization: "President, Lightweight Concrete Solutions | Ontario, Canada",
+    image: "/team/chris-calvin.jpg",
+    imageAlt: "Portrait of Chris Calvin",
+    imagePosition: "50% 30%",
   },
   {
     name: "Gustavo Varela Latouche",
     discipline: "Electrical Engineering",
     organization: "Director General, COMTEL Ingeniería | Costa Rica",
+    image: "/team/gustavo-varela-latouche.jpg",
+    imageAlt: "Portrait of Gustavo Varela Latouche",
+    imagePosition: "50% 32%",
   },
 ];
 

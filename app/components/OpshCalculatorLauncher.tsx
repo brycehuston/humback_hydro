@@ -144,7 +144,7 @@ export default function OpshCalculatorLauncher() {
               aria-describedby="opsh-calculator-description"
               aria-labelledby="opsh-calculator-title"
               aria-modal="true"
-              className="relative max-h-[92dvh] w-full overflow-y-auto overscroll-contain rounded-t-[1.75rem] outline-none lg:max-h-[calc(100dvh-3rem)] lg:w-[min(760px,calc(100vw-3rem))] lg:rounded-[1.75rem]"
+              className="relative flex h-[100dvh] max-h-[100dvh] w-full flex-col overflow-hidden rounded-none outline-none lg:h-[min(920px,calc(100dvh-16px))] lg:max-h-[calc(100dvh-16px)] lg:w-[min(1500px,calc(100vw-24px))] lg:rounded-[1.75rem]"
               data-opsh-calculator-dialog
               id="opsh-calculator-dialog"
               onKeyDown={trapDialogFocus}
@@ -156,7 +156,7 @@ export default function OpshCalculatorLauncher() {
                 <button
                   aria-label="Close Project Economics and Impact Model"
                   autoFocus
-                  className="flex size-11 items-center justify-center rounded-full border border-white/15 bg-[#071b25] text-slate-200 shadow-lg transition hover:border-cyan-200/40 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300"
+                  className="flex size-11 items-center justify-center rounded-full border border-cyan-400/40 bg-[#0a202d] text-cyan-200 shadow-lg transition hover:bg-[#0b2434] hover:text-white hover:border-cyan-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300"
                   onClick={closeCalculator}
                   ref={closeButtonRef}
                   type="button"
@@ -188,39 +188,50 @@ export default function OpshCalculatorLauncher() {
 
   return (
     <>
-      <div className="border-t border-cyan-100/15 bg-[#03141f]/95 p-3">
-        <button
-          aria-controls="opsh-calculator-dialog"
-          aria-expanded={open}
-          aria-haspopup="dialog"
-          className="flex min-h-12 w-full items-center justify-between gap-4 rounded-xl border border-cyan-200/25 bg-cyan-200/[0.07] px-4 py-3 text-left text-xs font-bold uppercase tracking-[0.12em] text-cyan-50 transition hover:border-cyan-200/45 hover:bg-cyan-200/[0.11] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300 focus-visible:ring-offset-2 focus-visible:ring-offset-[#03141f]"
-          data-opsh-calculator-trigger
-          onClick={openCalculator}
-          ref={triggerRef}
-          type="button"
-        >
-          <span>
-            Open Project Economics &amp; Impact Model
-            <small className="mt-1 block text-[0.62rem] font-medium normal-case tracking-normal text-slate-400">
-              Explore a provisional 10–1,000 MW infrastructure scenario
-            </small>
-          </span>
-
-          <svg
-            aria-hidden="true"
-            className="size-4 shrink-0 text-cyan-200"
-            fill="none"
-            viewBox="0 0 24 24"
+      <div className="border-t border-cyan-100/15 bg-[#03141f] px-4 py-6 lg:px-8">
+        <div className="mx-auto w-full max-w-[min(1160px,94vw)]">
+          <button
+            aria-controls="opsh-calculator-dialog"
+            aria-expanded={open}
+            aria-haspopup="dialog"
+            className="group relative flex w-full flex-row items-center justify-between gap-4 overflow-hidden rounded-xl border border-cyan-400/40 bg-[#081d2a] p-4 text-left transition-colors duration-300 hover:border-cyan-300 hover:bg-[#0b2434] focus-visible:border-cyan-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300 focus-visible:ring-offset-2 focus-visible:ring-offset-[#03141f] sm:p-5 lg:p-6"
+            data-opsh-calculator-trigger
+            onClick={openCalculator}
+            ref={triggerRef}
+            type="button"
           >
-            <path
-              d="M5 12h14m-5-5 5 5-5 5"
-              stroke="currentColor"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="1.8"
-            />
-          </svg>
-        </button>
+            <div className="relative flex flex-col items-start gap-1">
+              <span className="text-[0.65rem] font-bold uppercase tracking-[0.2em] text-cyan-400">
+                Project Economics
+              </span>
+
+              <span className="text-lg font-semibold tracking-tight text-white sm:text-xl">
+                Explore the Interactive Model
+              </span>
+
+              <span className="text-[0.7rem] font-medium tracking-widest text-slate-300 uppercase">
+                10–1,000 MW live scenario
+              </span>
+            </div>
+
+            <div className="relative flex size-10 shrink-0 items-center justify-center rounded-full border border-cyan-400/30 bg-cyan-400/10 text-cyan-300 transition-colors group-hover:border-cyan-400/50 group-hover:bg-cyan-400/20">
+              <svg
+                aria-hidden="true"
+                className="size-5 transition-transform duration-300 group-hover:translate-x-[4px]"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M5 12h14m-5-5 5 5-5 5"
+                  stroke="currentColor"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                />
+              </svg>
+            </div>
+          </button>
+        </div>
       </div>
 
       {dialog}

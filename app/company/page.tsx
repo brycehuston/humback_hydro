@@ -1,3 +1,4 @@
+import type { CSSProperties } from "react";
 import type { Metadata } from "next";
 import MarkLegacyBio from "../components/MarkLegacyBio";
 import RouteHero from "../components/RouteHero";
@@ -86,14 +87,24 @@ export default function CompanyPage() {
                 <span>0{index + 1}</span>
                 <div className="leader-image">
                   {member.image ? (
-                    <img src={member.image} alt={member.imageAlt} />
+                    <img
+                      src={member.image}
+                      alt={member.imageAlt}
+                      style={{ objectPosition: member.imagePosition }}
+                    />
                   ) : (
-                    <span className="leader-monogram" aria-hidden="true">{initials(member.name)}</span>
+                    <span
+                      className="leader-monogram"
+                      role="img"
+                      aria-label={`Portrait placeholder for ${member.name}`}
+                    >
+                      {member.initials ?? initials(member.name)}
+                    </span>
                   )}
                 </div>
                 <div>
-                  <small>{member.role}</small>
-                  <h3>{member.name}</h3>
+                  <small className="uppercase tracking-wider">{member.role}</small>
+                  <h3 className="tracking-widest">{member.name}</h3>
                   <p>{member.focus}</p>
                 </div>
               </article>
@@ -128,6 +139,25 @@ export default function CompanyPage() {
             <article key={partner.name} data-reveal>
               <span>0{index + 1}</span>
               <small>{partner.discipline}</small>
+              <div className="network-portrait">
+                {partner.image ? (
+                  <img
+                    src={partner.image}
+                    alt={partner.imageAlt}
+                    style={
+                      { objectPosition: partner.imagePosition } as CSSProperties
+                    }
+                  />
+                ) : (
+                  <span
+                    className="leader-monogram"
+                    role="img"
+                    aria-label={`Portrait placeholder for ${partner.name}`}
+                  >
+                    {partner.initials ?? initials(partner.name)}
+                  </span>
+                )}
+              </div>
               <h3>{partner.name}</h3>
               <p>{partner.organization}</p>
             </article>

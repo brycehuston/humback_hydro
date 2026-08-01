@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { brandmark, navItems } from "../data";
@@ -9,6 +9,7 @@ import { Arrow } from "./Icons";
 export default function SiteChrome({ children }: { children: React.ReactNode }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const pathname = usePathname();
+  const markRef = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
     let ticking = false;
@@ -61,12 +62,78 @@ export default function SiteChrome({ children }: { children: React.ReactNode }) 
     };
   }, [pathname]);
 
+  // Logo energy-activation animation
+  useEffect(() => {
+    const wrap = markRef.current;
+    if (!wrap) return;
+    // Respect reduced-motion preference — skip animation entirely
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    let animating = false;
+    let idleTimer: ReturnType<typeof setTimeout>;
+
+    function play() {
+      if (animating) return;
+      animating = true;
+      wrap!.classList.add("logo-energise");
+    }
+
+    function scheduleIdle() {
+      clearTimeout(idleTimer);
+      // Cycle every 10–11 s (slight jitter so it never feels mechanical)
+      idleTimer = setTimeout(playIdle, 10000 + Math.random() * 1000);
+    }
+
+    function playIdle() {
+      play();
+      scheduleIdle();
+    }
+
+    function onAnimationEnd() {
+      wrap!.classList.remove("logo-energise");
+      animating = false;
+    }
+
+    // Hover: play once per enter; does not restart while pointer stays
+    function onPointerEnter() { play(); }
+
+    // Keyboard focus replay
+    function onFocus() { play(); }
+
+    wrap.addEventListener("animationend", onAnimationEnd);
+    // Attach interaction listeners to the parent brand link
+    const brand = wrap.closest(".brand");
+    brand?.addEventListener("pointerenter", onPointerEnter);
+    brand?.addEventListener("focus", onFocus, true);
+
+    // Initial activation — allow the header to finish its entrance first
+    const initialTimer = setTimeout(() => { play(); scheduleIdle(); }, 1800);
+
+    return () => {
+      clearTimeout(initialTimer);
+      clearTimeout(idleTimer);
+      wrap.removeEventListener("animationend", onAnimationEnd);
+      brand?.removeEventListener("pointerenter", onPointerEnter);
+      brand?.removeEventListener("focus", onFocus, true);
+    };
+  }, []);
+
   return (
     <>
       <div className="page-progress" aria-hidden="true" />
       <header className="site-header">
         <Link className="brand" href="/" aria-label="Humpback Hydro home">
-          <img src={brandmark} alt="" />
+          <span className="brandmark-wrap" ref={markRef} aria-hidden="true">
+            <img src={brandmark} alt="" />
+            <svg className="logo-energy-svg" viewBox="0 0 48 42" aria-hidden="true">
+              <circle className="energy-charge charge-l" cx="22.5" cy="40" r="1.5" />
+              <circle className="energy-charge charge-r" cx="25.5" cy="40" r="1.5" />
+              <path className="energy-path stem-l" d="M 22.5,40 C 22.5,28 18,22 8,16" pathLength="100" />
+              <path className="energy-path stem-r" d="M 25.5,40 C 25.5,28 30,22 40,16" pathLength="100" />
+              <path className="energy-path curve-l" d="M 8,16 C 4,12 4,6 10,5 C 16,4 20,9 24,14" pathLength="100" />
+              <path className="energy-path curve-r" d="M 40,16 C 44,12 44,6 38,5 C 32,4 28,9 24,14" pathLength="100" />
+            </svg>
+          </span>
           <span>
             <strong>HUMPBACK HYDRO</strong>
             <small>Energy. Water. Humanity.</small>
@@ -113,7 +180,9 @@ export default function SiteChrome({ children }: { children: React.ReactNode }) 
       <footer className="site-footer">
         <div className="footer-primary">
           <Link className="brand footer-brand" href="/">
-            <img src={brandmark} alt="" />
+            <span className="brandmark-wrap" aria-hidden="true">
+              <img src={brandmark} alt="" />
+            </span>
             <span><strong>HUMPBACK HYDRO</strong><small>Energy. Water. Humanity.</small></span>
           </Link>
           <p>Industrialized clean-energy infrastructure for the AI era.</p>
