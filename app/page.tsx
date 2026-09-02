@@ -1,7 +1,13 @@
 import ApplicationSelector from "./components/ApplicationSelector";
 import { Arrow } from "./components/Icons";
-import SystemExplorer from "./components/SystemExplorer";
-import { evidence, roadmap } from "./data";
+import PremiumDigitalTwin from "./components/PremiumDigitalTwin";
+import {
+  engineeringPillars,
+  evidence,
+  roadmap,
+  standards,
+  standardsRoadmap,
+} from "./data";
 
 export default function Home() {
   return (
@@ -13,10 +19,11 @@ export default function Home() {
         <div className="hero-depth-rings" aria-hidden="true"><i /><i /><i /><span /></div>
         <div className="hero-water-scan" aria-hidden="true"><i /><i /></div>
         <div className="hero-copy" data-reveal>
-          <p className="eyebrow"><span />Patented Marine Pumped-Hydro Architecture</p>
-          <h1><span>Energy</span><span>Re-Engineered</span><span>Around Water.</span></h1>
+          <p className="eyebrow"><span />Marine Pumped-Hydro Infrastructure</p>
+          <h1 className="home-positioning-title">Modular Pumped-Storage Hydroelectric Generation and Energy Storage Infrastructure</h1>
+          <p className="hero-platform-line">Generation • Storage • Automated Dispatch</p>
           <p className="hero-lede">
-            Designed to store clean energy gravitationally and dispatch it for grids, industry, AI infrastructure and water systems.
+            A Canadian energy technology company developing modular hydroelectric generation and long-duration energy storage infrastructure.
           </p>
           <div className="hero-actions">
             <a className="button primary" href="#platform">See the Operating Cycle <Arrow direction="down" /></a>
@@ -30,8 +37,8 @@ export default function Home() {
             <span><small>01</small>GENERATE</span><i /><span><small>02</small>STORE</span><i /><span><small>03</small>DISPATCH</span>
           </div>
           <div className="command-proof">
-            <div><small>DEVELOPMENT STAGE</small><strong>Engineering Validated</strong></div>
-            <div><small>INTELLECTUAL PROPERTY</small><strong>U.S. Patent 8823195 B2</strong></div>
+            <div><small>TECHNICAL FOUNDATION</small><strong>IEEE-Published Architecture</strong></div>
+            <div><small>PUBLIC PATENT RECORD</small><strong>U.S. Patent 8823195 B2</strong></div>
           </div>
           <a href="/evidence">Interrogate the Evidence <Arrow /></a>
         </div>
@@ -42,10 +49,10 @@ export default function Home() {
       </section>
 
       <section className="status-rail" aria-label="Humpback Hydro status">
-        <div><span>01</span><strong>Patented Architecture</strong><small>U.S. 8823195 B2</small></div>
+        <div><span>01</span><strong>Public Patent Record</strong><small>U.S. 8823195 B2</small></div>
         <div><span>02</span><strong>Long-Duration Platform</strong><small>Generate. Store. Dispatch.</small></div>
-        <div><span>03</span><strong>Pilot Pathway</strong><small>Strategic Partners Sought</small></div>
-        <div><span>04</span><strong>Global Mission</strong><small>Energy. Water. Humanity.</small></div>
+        <div><span>03</span><strong>Validation &amp; Pilot Pathway</strong><small>Partner Engagement Pathway</small></div>
+        <div><span>04</span><strong>Evidence-Led Development</strong><small>Validate Before Scale</small></div>
       </section>
 
       <section className="thesis-section section-shell">
@@ -76,11 +83,11 @@ export default function Home() {
         <div className="section-shell">
           <div className="chapter-label light"><span>02</span>THE PLATFORM</div>
           <div className="section-intro inverse" data-reveal>
-            <p className="eyebrow"><span />One Integrated Operating Cycle</p>
-            <h2>Turn Water into Dependable Infrastructure.</h2>
-            <p>Patented marine pumped-hydro architecture designed to capture energy, store it gravitationally and return power when demand requires it.</p>
+            <p className="eyebrow"><span />Static Offshore Pumped Hydro</p>
+            <h2>See the Complete Water Cycle.</h2>
+            <p>A fixed offshore structure places two engineered reservoirs vertically inside one cutaway system. Follow how it stores energy and generates through two turbine stages.</p>
           </div>
-          <SystemExplorer />
+          <PremiumDigitalTwin />
         </div>
       </section>
 
@@ -99,7 +106,7 @@ export default function Home() {
           <div className="evidence-lead" data-reveal>
             <p className="eyebrow"><span />Institutional Evidence</p>
             <h2>Belief Is Not Enough.<br />Open the Record.</h2>
-            <p>Humpback Hydro is grounded in patented engineering, technical authorship, university evaluation and industry recognition.</p>
+            <p>Humpback Hydro is grounded in a public patent record, an IEEE-published architecture and university proof-of-concept studies. Modeled results are presented with their limitations.</p>
           </div>
 
           <div className="evidence-ledger">
@@ -115,16 +122,57 @@ export default function Home() {
       <section className="roadmap-section section-shell">
         <div className="chapter-label"><span>05</span>THE PATHWAY</div>
         <div className="section-intro split" data-reveal>
-          <div><p className="eyebrow dark"><span />Planned Deployment Roadmap</p><h2>From First Pilot to Industrialized Scale.</h2></div>
-          <p>The approved company teaser sets out a phased manufacturing and deployment pathway. Each phase remains planned and subject to partner and company approval.</p>
+          <div><p className="eyebrow dark"><span />Evidence-Controlled Development</p><h2>Engineering &amp; Operational Roadmap</h2></div>
+          <p>The current public record supports a path toward independent validation and pilot deployment. Commercial scale, manufacturing configuration and timing remain unsupported until an approved roadmap and technical basis are available.</p>
         </div>
         <div className="roadmap-line">
           {roadmap.map((item) => (
             <article key={item.phase} data-reveal>
               <div className="roadmap-node"><span>{item.phase}</span><i /></div>
-              <small>{item.label}</small><strong>{item.scale}</strong><h3>{item.title}</h3><p>{item.copy}</p>
+              <small>{item.label}</small><strong>{item.status}</strong><h3>{item.title}</h3><p>{item.copy}</p>
             </article>
           ))}
+        </div>
+      </section>
+
+      <section className="standards-section">
+        <div className="section-shell">
+          <div className="chapter-label light"><span>06</span>INSTITUTIONAL READINESS</div>
+          <div className="section-intro split inverse" data-reveal>
+            <div><p className="eyebrow"><span />Proposed Framework</p><h2>Standards Roadmap</h2></div>
+            <div>
+              <p>This source-defined roadmap is a proposal and has not been formally approved. It does not represent current compliance, implemented management systems or certification.</p>
+              <p className="standards-source-note">The source labels Phase 1 as “Current.” That label is preserved for fidelity to the proposal and is not evidence that its activities are underway.</p>
+            </div>
+          </div>
+
+          <div className="standards-roadmap" data-reveal>
+            {standardsRoadmap.map((item) => (
+              <article key={item.phase}>
+                <small>{item.phase} · {item.sourceLabel}</small>
+                <h3>{item.title}</h3>
+                <ul>
+                  {item.actions.map((action) => <li key={action}>{action}</li>)}
+                </ul>
+              </article>
+            ))}
+          </div>
+
+          <div className="standards-register" data-reveal>
+            <div>
+              <small>Standards Named in the Proposal</small>
+              <div className="standards-list">
+                {standards.map((standard) => <span key={standard}>{standard}</span>)}
+              </div>
+            </div>
+            <div>
+              <small>Core Engineering Pillars</small>
+              <ol className="pillars-list">
+                {engineeringPillars.map((pillar) => <li key={pillar}>{pillar}</li>)}
+              </ol>
+              <p className="standards-source-note">The pillars are source-defined organizing concepts, not evidence of formal adoption or conformity.</p>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -144,8 +192,8 @@ export default function Home() {
         <div className="final-cta-main">
           <div className="final-cta-copy" data-reveal>
             <p className="eyebrow"><span />The Next Operating Chapter</p>
-            <h2>Build the First Deployment.</h2>
-            <p>Humpback Hydro is seeking pilot sites, strategic capital, engineering capacity and implementation partners.</p>
+            <h2>Advance the First Pilot.</h2>
+            <p>Humpback Hydro welcomes conversations with qualified pilot-site, strategic-capital, engineering and independent-validation organizations.</p>
             <div className="hero-actions"><a className="button energy" href="/partners">Choose Your Pathway <Arrow /></a><a className="button secondary" href="mailto:info@humpbackenergy.com">Contact the Team</a></div>
           </div>
 
@@ -153,7 +201,7 @@ export default function Home() {
             <img src="/grid-data-center-night.webp" alt="Concept visualization of a coastal data-center power campus" loading="lazy" decoding="async" />
             <div className="cta-visual-shade" />
             <div className="cta-sonar" aria-hidden="true"><i /><i /><i /><span /></div>
-            <div className="cta-visual-status"><small>PILOT PATHWAY</small><strong>Strategic Partners Sought</strong></div>
+            <div className="cta-visual-status"><small>VALIDATION &amp; PILOT PATHWAY</small><strong>Qualified Partner Engagement</strong></div>
             <span className="concept-tag">CONCEPT VISUALIZATION</span>
           </div>
         </div>

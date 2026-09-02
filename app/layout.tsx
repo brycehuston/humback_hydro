@@ -15,17 +15,17 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "Humpback Hydro | Power Without Waiting",
+    default: "Humpback Hydro | Modular Hydroelectric Infrastructure",
     template: "%s | Humpback Hydro",
   },
   description:
-    "Patented modular hydroelectric infrastructure designed to generate, store and dispatch reliable clean energy for data centers, utilities and industry.",
+    "A Canadian energy technology company developing modular hydroelectric generation and long-duration energy storage infrastructure.",
   other: {
     "codex-preview": "development",
   },
   icons: {
-    icon: "/favicon.svg",
-    shortcut: "/favicon.svg",
+    icon: "/brandmark.webp",
+    shortcut: "/brandmark.webp",
   },
 };
 

@@ -1,40 +1,183 @@
+import type { CSSProperties } from "react";
 import type { Metadata } from "next";
+import MarkLegacyBio from "../components/MarkLegacyBio";
 import RouteHero from "../components/RouteHero";
 import { deliveryPartners, leadership } from "../data";
 
 export const metadata: Metadata = {
   title: "Company",
-  description: "Meet the Humpback Hydro leadership and delivery network advancing marine clean-energy infrastructure.",
+  description:
+    "Meet the Humpback Hydro leadership and delivery network advancing marine clean-energy infrastructure.",
 };
+
+const publishedLeadership = leadership.filter(
+  (member) =>
+    member.publicationStatus === "published-qualified" ||
+    member.publicationStatus === "confirmed",
+);
+
+const bryanGreen = leadership.find((member) => member.name.includes("Bryan Green"));
+
+function initials(name: string) {
+  return name
+    .replace(/\([^)]*\)/g, "")
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0])
+    .join("")
+    .toUpperCase();
+}
 
 export default function CompanyPage() {
   return (
     <main>
-      <RouteHero index="04" eyebrow="Company" title="Built to Move Infrastructure." copy="An early-stage Vancouver energy company bringing together invention, operations, advanced materials, electrical engineering and industrial delivery." image="/manufacturing-campus.webp" nextHref="#leadership" nextLabel="Meet the Leadership" />
-      <section className="company-story section-shell">
-        <div className="chapter-label"><span>01</span>THE MISSION</div>
-        <div className="story-statement" data-reveal><p>Ocean-powered infrastructure for</p><h2>Energy Security,<br />Water Security<br /><span>and Climate Resilience.</span></h2></div>
-        <div className="story-columns" data-reveal><p>Humpback Hydro began in Vancouver, British Columbia, with a patented approach to marine pumped-hydro infrastructure.</p><p>The company is now seeking the capital, sites, engineering capacity and implementation partners required to advance from engineering validation toward pilot deployment.</p></div>
-      </section>
+      <RouteHero
+        index="06"
+        eyebrow="Company"
+        title="Built by People Who Move Infrastructure."
+        copy="Founded in Vancouver, British Columbia, Humpback Hydro brings practical construction, engineering, operations and digital-infrastructure experience to a modular hydroelectric generation and energy-storage concept."
+        image="/company/humpback-team-vancouver.jpeg"
+        imageAlt="Humpback Hydro team members meeting in Vancouver beside the British Columbia flag"
+        mediaLabel="PROJECT PHOTOGRAPH"
+        nextHref="#leadership"
+        nextLabel="Meet the Leadership"
+      />
 
-      <section className="leadership-section" id="leadership">
-        <div className="section-shell">
-          <div className="chapter-label light"><span>02</span>LEADERSHIP</div>
-          <div className="leadership-list">
-            {leadership.map((member, index) => (
-              <article key={member.name} data-reveal>
-                <span>0{index + 1}</span><div className="leader-image"><img src={member.image} alt={member.name} /></div><div><small>{member.role}</small><h3>{member.name}</h3><p>{member.focus}</p></div>
-              </article>
-            ))}
+      <section className="company-story section-shell">
+        <div className="chapter-label">
+          <span>01</span>POSITIONING
+        </div>
+        <div className="story-statement" data-reveal>
+          <p>Purpose</p>
+          <h2>
+            Engineering Infrastructure
+            <br /><span>That Powers Humanity.</span>
+          </h2>
+        </div>
+        <div className="mt-12 border border-[#061c28]/15 bg-white/55 p-6 md:p-8" data-reveal>
+          <small className="font-mono text-[0.68rem] font-semibold tracking-[0.16em] text-[#168da8] uppercase">Development Stage</small>
+          <p className="mt-3 text-xl font-medium leading-8 text-[#061c28]">Advancing Toward Independent Engineering Validation and Pilot Deployment.</p>
+        </div>
+        <div className="story-columns" data-reveal>
+          <div>
+            <small className="font-mono text-[0.68rem] font-semibold tracking-[0.16em] text-[#168da8] uppercase">Mission</small>
+            <p className="mt-4">
+              To advance reliable, dispatchable hydroelectric infrastructure that strengthens energy security, supports water resilience and improves climate resilience through engineering excellence, strategic partnerships and long-term operational stewardship.
+            </p>
+          </div>
+          <div>
+            <small className="font-mono text-[0.68rem] font-semibold tracking-[0.16em] text-[#168da8] uppercase">Vision</small>
+            <p className="mt-4">
+              A future in which communities and critical infrastructure can access reliable clean energy and resilient water systems.
+            </p>
           </div>
         </div>
       </section>
 
+      <section className="leadership-section" id="leadership">
+        <div className="section-shell">
+          <div className="chapter-label light">
+            <span>02</span>LEADERSHIP
+          </div>
+
+          <p className="mb-10 max-w-3xl border-l-2 border-[#59acc2] pl-5 text-sm leading-7 text-[#8ca7af]" data-reveal>
+            Leadership titles, roles and career summaries are company supplied and remain subject to source confirmation unless linked to a verified public record. Production renders published profiles only.
+          </p>
+
+          <div className="leadership-list">
+            {publishedLeadership.map((member, index) => (
+              <article key={member.name} data-reveal>
+                <span>0{index + 1}</span>
+                <div className="leader-image">
+                  {member.image ? (
+                    <img
+                      src={member.image}
+                      alt={member.imageAlt}
+                      style={{ objectPosition: member.imagePosition }}
+                    />
+                  ) : (
+                    <span
+                      className="leader-monogram"
+                      role="img"
+                      aria-label={`Portrait placeholder for ${member.name}`}
+                    >
+                      {member.initials ?? initials(member.name)}
+                    </span>
+                  )}
+                </div>
+                <div>
+                  <small className="uppercase tracking-wider">{member.role}</small>
+                  <h3 className="tracking-widest">{member.name}</h3>
+                  <p>{member.focus}</p>
+                </div>
+              </article>
+            ))}
+          </div>
+
+          {bryanGreen?.biography ? (
+            <section className="bryan-profile" aria-labelledby="bryan-green-profile" data-reveal>
+              <div>
+                <small>Operations &amp; Infrastructure Profile</small>
+                <h2 id="bryan-green-profile">Col. Bryan Green (Ret.)</h2>
+              </div>
+              <div>
+                {bryanGreen.biography.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
+              </div>
+            </section>
+          ) : null}
+
+          <MarkLegacyBio />
+        </div>
+      </section>
+
       <section className="delivery-network section-shell">
-        <div className="chapter-label"><span>03</span>DELIVERY NETWORK</div>
-        <div className="section-intro split" data-reveal><div><p className="eyebrow dark"><span />Specialist Capability</p><h2>From Engineered Material to Operating Asset.</h2></div><p>The approved teaser identifies a delivery network spanning construction, advanced materials and electrical engineering.</p></div>
+        <div className="chapter-label">
+          <span>03</span>DELIVERY NETWORK
+        </div>
+        <div className="section-intro split" data-reveal>
+          <div>
+            <p className="eyebrow dark">
+              <span />
+              Specialist Capability
+            </p>
+            <h2>From Engineered Material to Operating Asset.</h2>
+          </div>
+          <p>
+            Company-supplied materials identify specialist capability spanning
+            construction, advanced materials and electrical engineering. Names,
+            roles, organizations and public-use approval remain subject to
+            confirmation.
+          </p>
+        </div>
         <div className="network-list">
-          {deliveryPartners.map((partner, index) => <article key={partner.name} data-reveal><span>0{index + 1}</span><small>{partner.discipline}</small><h3>{partner.name}</h3><p>{partner.organization}</p></article>)}
+          {deliveryPartners.map((partner, index) => (
+            <article key={partner.name} data-reveal>
+              <span>0{index + 1}</span>
+              <small>{partner.discipline}</small>
+              <div className="network-portrait">
+                {partner.image ? (
+                  <img
+                    src={partner.image}
+                    alt={partner.imageAlt}
+                    style={
+                      { objectPosition: partner.imagePosition } as CSSProperties
+                    }
+                  />
+                ) : (
+                  <span
+                    className="leader-monogram"
+                    role="img"
+                    aria-label={`Portrait placeholder for ${partner.name}`}
+                  >
+                    {partner.initials ?? initials(partner.name)}
+                  </span>
+                )}
+              </div>
+              <h3>{partner.name}</h3>
+              <p>{partner.organization}</p>
+            </article>
+          ))}
         </div>
       </section>
     </main>
