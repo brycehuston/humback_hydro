@@ -40,3 +40,10 @@ next-env.d.ts
 /.sites-runtime/
 /outputs/
 /work/
+
+# playwright
+/playwright-report/
+/test-results/
+
+# ts build info
+tsconfig.tsbuildinfo

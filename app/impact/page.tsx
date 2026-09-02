@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Arrow } from "../components/Icons";
+import { Arrow, Check, Plus } from "../components/Icons";
 import RouteHero from "../components/RouteHero";
 
 export const metadata: Metadata = {
@@ -8,34 +8,51 @@ export const metadata: Metadata = {
     "Review Humpback Hydro's qualified environmental profile, potential SDG alignment, material risks and validation priorities.",
 };
 
-const opportunities = [
+const establishedMechanisms = [
   {
-    title: "Operational Emissions Profile",
+    title: "No On-Site Fuel Combustion",
     summary:
-      "Near-zero operational emissions are a design objective because the proposed system would not use on-site fuel combustion.",
+      "The proposed generating process does not require on-site fuel combustion.",
     detail:
       "This is not a lifecycle-emissions claim. Materials, construction, marine operations, maintenance, grid charging and end-of-life impacts require a project-specific greenhouse-gas inventory.",
   },
   {
-    title: "Potential Siting Advantages",
+    title: "Marine and Closed-Loop Siting Options",
     summary:
       "Marine or closed-loop siting may avoid river fragmentation, large terrestrial reservoirs and extensive land disturbance.",
     detail:
       "The actual comparison depends on the selected site, foundations, grid connection, construction method and alternative project being displaced.",
   },
   {
-    title: "Potential Habitat Features",
+    title: "Habitat-Supporting Design Features",
     summary:
-      "Site-specific textures, niches or habitat modules could support marine colonization where ecologically appropriate.",
+      "Textured surfaces, niches and habitat modules can be incorporated where baseline ecology and permitting support them.",
     detail:
-      "Artificial-reef, refuge or biodiversity outcomes cannot be assumed. Baseline surveys, ecological design, permitting and long-term monitoring would be required.",
+      "This establishes a design mechanism, not an ecological outcome. Artificial-reef, refuge or biodiversity benefits require baseline surveys and long-term monitoring.",
   },
+] as const;
+
+const researchHypotheses = [
   {
-    title: "Potential Mixing and Water Quality",
+    title: "Dissolved Oxygen and Mixing",
     summary:
-      "Intake and discharge design may influence local circulation, mixing and dissolved oxygen.",
+      "Hydraulic flow may influence local circulation, mixing and dissolved oxygen.",
     detail:
       "Direction, magnitude and ecological value are unknown until hydrodynamic modelling and field measurement establish site-specific effects.",
+  },
+  {
+    title: "Biodiversity and Refuge",
+    summary:
+      "A three-dimensional marine structure may create colonization surfaces, current breaks and refuge habitat.",
+    detail:
+      "Species composition, ecological value and any net biodiversity change remain hypotheses until measured against a site baseline.",
+  },
+  {
+    title: "Carbon-Cycle Effects",
+    summary:
+      "Kelp, algae or shellfish colonization could affect local carbon cycling.",
+    detail:
+      "Net sequestration has not been established and would require defined boundaries, sampling and independent analysis.",
   },
 ] as const;
 
@@ -141,29 +158,53 @@ export default function ImpactPage() {
           <div className="chapter-label light"><span>02</span>OPPORTUNITIES AND RISKS</div>
           <div className="mb-14 grid gap-8 lg:grid-cols-2 lg:gap-20" data-reveal>
             <div>
-              <p className="eyebrow"><span />Potential Opportunities</p>
+              <p className="eyebrow"><span />Design and Research Objective</p>
               <h2 className="mt-7 text-[clamp(3rem,5vw,5.8rem)] font-medium leading-[0.94] tracking-[-0.06em]">
-                Design for Benefit. Validate Every Outcome.
+                Net Positive Marine Infrastructure
               </h2>
             </div>
             <p className="self-end text-base leading-8 text-[#a9bbc1]">
-              Opportunities and adverse effects must be evaluated together. Design intent, experience from analogous infrastructure and ecological plausibility are not substitutes for project evidence.
+              This is a future design and measurement objective, not a demonstrated outcome. Opportunities and adverse effects must be evaluated together. Design intent, analogous infrastructure and ecological plausibility are not substitutes for project evidence.
             </p>
           </div>
 
-          <div className="grid gap-6 lg:grid-cols-2">
-            <div className="space-y-3" data-reveal>
-              {opportunities.map((item) => (
+          <div className="grid gap-8 lg:grid-cols-2">
+            <div data-reveal>
+              <small className="font-mono text-[0.68rem] font-semibold tracking-[0.16em] text-[#68f5e1] uppercase">Established Design Mechanisms</small>
+              <p className="mt-3 mb-5 text-sm leading-7 text-[#78969e]">Mechanisms that can be designed into a project without claiming that a Humpback installation has produced the intended benefit.</p>
+              <div className="space-y-3">
+              {establishedMechanisms.map((item) => (
                 <details className="group border border-[#59acc2]/25 bg-[#082f40]/40 p-5" key={item.title}>
                   <summary className="cursor-pointer list-none text-lg font-semibold tracking-[-0.025em] text-white focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#59acc2]">
-                    <span className="mr-3 text-[#59acc2]">+</span>{item.title}
+                    <span className="mr-3 inline-flex h-5 w-5 align-middle text-[#59acc2]"><Check /></span>{item.title}
                   </summary>
                   <p className="mt-4 text-sm leading-7 text-[#b3c8cd]">{item.summary}</p>
                   <p className="mt-3 border-t border-white/10 pt-3 text-xs leading-6 text-[#78969e]">{item.detail}</p>
                 </details>
               ))}
+              </div>
             </div>
-            <div className="space-y-3" data-reveal>
+
+            <div data-reveal>
+              <small className="font-mono text-[0.68rem] font-semibold tracking-[0.16em] text-[#68f5e1] uppercase">Research Hypotheses</small>
+              <p className="mt-3 mb-5 text-sm leading-7 text-[#78969e]">Plausible effects that require pilot-scale measurement and independent environmental study.</p>
+              <div className="space-y-3">
+              {researchHypotheses.map((item) => (
+                <details className="group border border-[#59acc2]/25 bg-[#082f40]/40 p-5" key={item.title}>
+                  <summary className="cursor-pointer list-none text-lg font-semibold tracking-[-0.025em] text-white focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#59acc2]">
+                    <span className="mr-3 inline-flex h-5 w-5 align-middle text-[#59acc2]"><Plus /></span>{item.title}
+                  </summary>
+                  <p className="mt-4 text-sm leading-7 text-[#b3c8cd]">{item.summary}</p>
+                  <p className="mt-3 border-t border-white/10 pt-3 text-xs leading-6 text-[#78969e]">{item.detail}</p>
+                </details>
+              ))}
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-14" data-reveal>
+            <small className="font-mono text-[0.68rem] font-semibold tracking-[0.16em] text-amber-200 uppercase">Material Risks Requiring Assessment</small>
+            <div className="mt-5 grid gap-3 lg:grid-cols-2">
               {risks.map((item) => (
                 <details className="group border border-amber-100/15 bg-amber-100/[0.035] p-5" key={item.title}>
                   <summary className="cursor-pointer list-none text-lg font-semibold tracking-[-0.025em] text-white focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-amber-200">

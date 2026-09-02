@@ -13,6 +13,7 @@ export interface LeadershipProfile {
   imagePosition?: string;
   initials?: string;
   focus: string;
+  biography?: readonly string[];
   publicationStatus: LeadershipPublicationStatus;
 }
 
@@ -52,6 +53,11 @@ export const leadership: readonly LeadershipProfile[] = [
     imageAlt: "Portrait of Col. Bryan Green (Ret.)",
     imagePosition: "50% 28%",
     focus: "Former USACE operations commander and infrastructure delivery leader",
+    biography: [
+      "U.S. Army Corps of Engineers retired colonel and former commander and military laboratory director with more than 30 years of overseas, technology and construction experience across the Gulf, Africa, the Pacific and Asia, including a $22 billion military-city and power-projection construction program on the Korean Peninsula.",
+      "As a senior executive and consultant, Bryan has collaborated with senior stakeholders on nationally significant projects intended to protect lives, energize the economy and improve U.S. national security. His experience includes program building, cross-matrixed teams, innovation integration, technology transfer, commercialization, government contracting and resource management.",
+      "His research and technology-development experience spans flood control, environmental systems, power and utilities, emergency management, civil and military engineering, advanced manufacturing and 3D printing, novel materials, autonomous systems, Engineering With Nature, power resilience, data centers, high-performance computing and megaproject delivery. He has managed laboratories and facilities across the United States involving 3,000 researchers and scientists and budgets exceeding $2 billion.",
+    ],
     publicationStatus: "published-qualified",
   },
   {
@@ -129,33 +135,88 @@ export const evidence = [
 export const roadmap = [
   {
     phase: "01",
-    label: "Pilot",
-    scale: "1-10 MW",
-    title: "Prove the Operating Platform",
-    copy: "Planned deployment with existing manufacturing and engineering partners.",
+    label: "Documented Position",
+    status: "Current Public Record",
+    title: "Evidence Before Scale",
+    copy: "The public foundation consists of the patent record, the 2024 IEEE paper and qualified university-study summaries.",
   },
   {
     phase: "02",
-    label: "Regional",
-    scale: "10-100 MW",
-    title: "Repeat Modular Infrastructure",
-    copy: "Planned regional production built around repeatable delivery systems.",
+    label: "Engineering Gate",
+    status: "Pending",
+    title: "Independent Validation",
+    copy: "Independent engineering validation remains a required next gate. No completed validation report is represented here.",
   },
   {
     phase: "03",
-    label: "Manufacturing",
-    scale: "Semi-Automated",
-    title: "Expand Industrial Capacity",
-    copy: "Planned manufacturing expansion and supply-chain development.",
+    label: "Deployment Gate",
+    status: "Planned",
+    title: "Pilot Deployment",
+    copy: "A pilot remains forward-looking and dependent on site, engineering, environmental, financing and partner approvals.",
   },
   {
     phase: "04",
-    label: "Industrialized",
-    scale: "100 MW",
-    title: "Automate at Grid Scale",
-    copy: "Target fully automated production for repeatable deployment.",
+    label: "Future Gate",
+    status: "Not Yet Established",
+    title: "Commercialization",
+    copy: "Commercial scale, manufacturing configuration and deployment timing require an approved roadmap and supporting evidence.",
   },
 ];
+
+export const standardsRoadmap = [
+  {
+    phase: "Phase 1",
+    sourceLabel: "Current",
+    title: "Build the Quality-System Foundation",
+    actions: [
+      "Design Humpback processes to ISO requirements.",
+      "Write manuals and procedures using ISO terminology.",
+      "Build the quality system from the beginning.",
+    ],
+  },
+  {
+    phase: "Phase 2",
+    sourceLabel: "Prototype and Validation",
+    title: "Implement and Audit the Systems",
+    actions: [
+      "Implement the management systems.",
+      "Conduct internal audits.",
+      "Have engineering partners work within those systems.",
+    ],
+  },
+  {
+    phase: "Phase 3",
+    sourceLabel: "Commercialization",
+    title: "Pursue Accredited Certification",
+    actions: [
+      "Obtain third-party certification from an accredited registrar.",
+      "Promote certification in investor materials, utility proposals and government procurement only after it is obtained.",
+    ],
+  },
+] as const;
+
+export const standards = [
+  "ISO 9001 — Quality Management",
+  "ISO 14001 — Environmental Management",
+  "ISO 45001 — Occupational Health and Safety",
+  "ISO 55001 — Asset Management",
+  "ISO 31000 — Risk Management",
+  "ISO 27001 — Information Security",
+  "IEC 62443 — Industrial Control-System Cybersecurity",
+  "ISO 22301 — Business Continuity",
+  "ISO 50001 — Energy Management",
+  "ISO 26000 — Social Responsibility",
+  "ISO 37001 — Anti-Bribery Management",
+] as const;
+
+export const engineeringPillars = [
+  "Engineering Excellence",
+  "Environmental Stewardship",
+  "Safety",
+  "Digital Infrastructure",
+  "Corporate Governance",
+  "Operations & Maintenance",
+] as const;
 
 export const applications = [
   {
@@ -194,11 +255,11 @@ export const applications = [
   {
     id: "industry",
     kicker: "Critical Operations",
-    label: "Industry",
+    label: "Ports & Industry",
     title: "Dependable Energy for Operations That Cannot Wait.",
     description:
-      "Modular infrastructure designed for industrial customers seeking reliable clean power close to demand.",
-    points: ["Direct Offtake Potential", "On-Site Reliability", "Scalable Architecture"],
+      "Modular infrastructure designed for ports, industrial zones, and critical or defense facilities evaluating reliable power close to demand.",
+    points: ["Critical-Site Planning", "On-Site Reliability", "Scalable Architecture"],
     image: "/manufacturing-campus.webp",
     cta: "Explore Industrial Deployment",
   },

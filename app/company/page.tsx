@@ -16,6 +16,8 @@ const publishedLeadership = leadership.filter(
     member.publicationStatus === "confirmed",
 );
 
+const bryanGreen = leadership.find((member) => member.name.includes("Bryan Green"));
+
 function initials(name: string) {
   return name
     .replace(/\([^)]*\)/g, "")
@@ -33,9 +35,11 @@ export default function CompanyPage() {
       <RouteHero
         index="06"
         eyebrow="Company"
-        title="Built to Move Infrastructure."
-        copy="Founded in Vancouver, British Columbia, Humpback Hydro is a Canadian energy infrastructure technology company advancing a hydroelectric generation and long-duration energy-storage architecture documented in U.S. Patent No. 8,823,195 B2."
-        image="/manufacturing-campus.webp"
+        title="Built by People Who Move Infrastructure."
+        copy="Founded in Vancouver, British Columbia, Humpback Hydro brings practical construction, engineering, operations and digital-infrastructure experience to a modular hydroelectric generation and energy-storage concept."
+        image="/company/humpback-team-vancouver.jpeg"
+        imageAlt="Humpback Hydro team members meeting in Vancouver beside the British Columbia flag"
+        mediaLabel="PROJECT PHOTOGRAPH"
         nextHref="#leadership"
         nextLabel="Meet the Leadership"
       />
@@ -110,6 +114,18 @@ export default function CompanyPage() {
               </article>
             ))}
           </div>
+
+          {bryanGreen?.biography ? (
+            <section className="bryan-profile" aria-labelledby="bryan-green-profile" data-reveal>
+              <div>
+                <small>Operations &amp; Infrastructure Profile</small>
+                <h2 id="bryan-green-profile">Col. Bryan Green (Ret.)</h2>
+              </div>
+              <div>
+                {bryanGreen.biography.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
+              </div>
+            </section>
+          ) : null}
 
           <MarkLegacyBio />
         </div>

@@ -6,6 +6,8 @@ export default function RouteHero({
   title,
   copy,
   image,
+  imageAlt = "",
+  mediaLabel = "CONCEPT VISUALIZATION",
   nextHref,
   nextLabel,
 }: {
@@ -14,12 +16,14 @@ export default function RouteHero({
   title: string;
   copy: string;
   image: string;
+  imageAlt?: string;
+  mediaLabel?: string | null;
   nextHref?: string;
   nextLabel?: string;
 }) {
   return (
     <section className="route-hero">
-      <img src={image} alt="" fetchPriority="high" />
+      <img src={image} alt={imageAlt} fetchPriority="high" />
       <div className="route-hero-overlay" />
       <div className="route-index">{index}</div>
       <div className="route-hero-copy">
@@ -28,7 +32,7 @@ export default function RouteHero({
         <p>{copy}</p>
         {nextHref && nextLabel ? <a className="text-link light" href={nextHref}>{nextLabel}<Arrow direction="down" /></a> : null}
       </div>
-      <span className="concept-tag">CONCEPT VISUALIZATION</span>
+      {mediaLabel ? <span className="concept-tag">{mediaLabel}</span> : null}
     </section>
   );
 }

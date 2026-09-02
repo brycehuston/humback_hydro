@@ -6,6 +6,12 @@ import {
   normalizeCapacityMw,
   normalizeOperatingHorizon,
 } from "../app/economics-model.ts";
+import {
+  DIGITAL_TWIN_CYCLE_SECONDS,
+  digitalTwinSceneAt,
+  manualDigitalTwinScene,
+  reservoirLevelsAt,
+} from "../app/digital-twin.ts";
 
 const developmentPreviewMeta =
   /<meta(?=[^>]*\bname=["']codex-preview["'])(?=[^>]*\bcontent=["']development["'])[^>]*>/i;
@@ -140,6 +146,10 @@ test("publishes qualified impact and company positioning", async () => {
   assert.match(combined, /Near-Zero Operation Is an Objective, Not a Lifecycle Claim/i);
   assert.match(combined, /opportunities and adverse effects must be evaluated together/i);
   assert.match(combined, /Alignment Is Not the Same as Measured Impact/i);
+  assert.match(combined, /Net Positive Marine Infrastructure/i);
+  assert.match(combined, /future design and measurement objective, not a demonstrated outcome/i);
+  assert.match(combined, /Established Design Mechanisms/i);
+  assert.match(combined, /Research Hypotheses/i);
   assert.match(combined, /Advancing Toward Independent Engineering Validation and Pilot Deployment/i);
   assert.match(combined, /Engineering Infrastructure[\s\S]*That Powers Humanity/i);
   assert.match(combined, /Leadership titles, roles and career summaries are company supplied/i);
@@ -178,11 +188,89 @@ test("renders the approved local team portraits including Bryan Green", async ()
     /Portrait of Col\. Bryan Green \(Ret\.\)/,
     /Chief Information Security Officer, Humpback Hydro/,
     /Information security, systems architecture, platform resilience and digital infrastructure\./,
+    /\/company\/humpback-team-vancouver\.jpeg/,
+    /PROJECT PHOTOGRAPH/,
+    /U\.S\. Army Corps of Engineers retired colonel and former commander and military laboratory director/i,
+    /3,000 researchers and scientists and budgets exceeding \$2 billion/i,
   ]) {
     assert.match(html, required);
   }
 
   assert.doesNotMatch(html, /\/(?:mark-legacy|bryan-green)\.webp/);
+});
+
+test("publishes the approved homepage hierarchy and native V4 controls", async () => {
+  const worker = await loadWorker();
+  const { html } = await fetchRoute(worker, "/");
+
+  for (const required of [
+    /Modular Pumped-Storage Hydroelectric Generation and Energy Storage Infrastructure/,
+    /Generation • Storage • Automated Dispatch/,
+    /A Canadian energy technology company developing modular hydroelectric generation and long-duration energy storage infrastructure\./,
+    /data-v4-twin/,
+    /Auto Cycle/,
+    /Lower Generation/,
+    /Charging/,
+    /Upper Generation/,
+    /Cycle Summary/,
+    /Pause/,
+    /Engineering &amp; Operational Roadmap/,
+    /Standards Roadmap/,
+    /Core Engineering Pillars/,
+    /proposal and has not been formally approved/i,
+    /not evidence that its activities are underway/i,
+  ]) {
+    assert.match(html, required);
+  }
+
+  assert.doesNotMatch(html, /Planned Deployment Roadmap/i);
+  assert.doesNotMatch(html, /1-10 MW|10-100 MW|Semi-Automated/i);
+});
+
+test("uses the authoritative 29-second V4 timing and level progression", () => {
+  assert.equal(DIGITAL_TWIN_CYCLE_SECONDS, 29);
+  assert.equal(digitalTwinSceneAt(0).phase, "establish");
+  assert.equal(digitalTwinSceneAt(2).phase, "lower");
+  assert.deepEqual(
+    { phase: digitalTwinSceneAt(8).phase, from: digitalTwinSceneAt(8).from, to: digitalTwinSceneAt(8).to },
+    { phase: "handoff", from: "lower", to: "charge" },
+  );
+  assert.equal(digitalTwinSceneAt(9.5).phase, "charge");
+  assert.equal(digitalTwinSceneAt(15.5).phase, "handoff");
+  assert.equal(digitalTwinSceneAt(17).phase, "upper");
+  assert.equal(digitalTwinSceneAt(23).phase, "handoff");
+  assert.equal(digitalTwinSceneAt(24.5).phase, "summary");
+  assert.equal(digitalTwinSceneAt(29).phase, "establish");
+  assert.equal(manualDigitalTwinScene("lower").activity, 1);
+
+  assert.deepEqual(reservoirLevelsAt(0), { upper: 0.18, lower: 0.85 });
+  assert.deepEqual(reservoirLevelsAt(8), { upper: 0.18, lower: 0.79 });
+  assert.deepEqual(reservoirLevelsAt(17), { upper: 0.125, lower: 0.85 });
+  assert.deepEqual(reservoirLevelsAt(24.5), { upper: 0.18, lower: 0.85 });
+});
+
+test("removes standalone seeking language and external V4 payloads", async () => {
+  const worker = await loadWorker();
+  const rendered = [];
+  for (const route of publicRoutes) rendered.push((await fetchRoute(worker, route)).html);
+  const combined = rendered.join("\n");
+  const assetNames = await readdir(new URL("../dist/client/assets/", import.meta.url));
+  const premiumAssetNames = assetNames.filter((asset) => /^PremiumDigitalTwin-.+\.js$/.test(asset));
+  assert.ok(premiumAssetNames.length > 0, "native V4 must be emitted as a client asset");
+  const premiumSource = (
+    await Promise.all(
+      premiumAssetNames.map((asset) =>
+        readFile(new URL(`../dist/client/assets/${asset}`, import.meta.url), "utf8"),
+      ),
+    )
+  ).join("\n");
+  const v4Output = `${combined}\n${premiumSource}`;
+
+  assert.match(premiumSource, /\/digital-twin\/humpback-digital-twin-v4-premium\.jpg/);
+  assert.doesNotMatch(combined, /\bseeking\b|\bsought\b/i);
+  assert.doesNotMatch(v4Output, /humpback-digital-twin-base-v3-sunny/i);
+  assert.doesNotMatch(v4Output, /<iframe|srcdoc|data:image\/jpeg;base64/i);
+  assert.doesNotMatch(v4Output, /floating-ui|lucide(?:\.min)?\.js|unpkg\.com|cdn\.jsdelivr\.net/i);
 });
 
 test("preserves the exact footer attribution and safe external target", async () => {

@@ -18,7 +18,7 @@ const pathways = [
 export default function PartnersPage() {
   return (
     <main>
-      <RouteHero index="07" eyebrow="Partnerships" title="Choose Your Role in What Comes Next." copy="Humpback Hydro is seeking the specific capital, sites, engineering resources and institutional partners required to advance toward pilot deployment." image="/island-energy-water.webp" nextHref="#pathways" nextLabel="Select a Partnership Pathway" />
+      <RouteHero index="07" eyebrow="Partnerships" title="Choose Your Role in What Comes Next." copy="Humpback Hydro welcomes qualified organizations with the capital, sites, engineering resources or institutional capability required to advance toward pilot deployment." image="/island-energy-water.webp" nextHref="#pathways" nextLabel="Select a Partnership Pathway" />
       <section className="partner-pathways section-shell" id="pathways">
         <div className="chapter-label"><span>01</span>PARTNERSHIP PATHWAYS</div>
         <div className="section-intro split" data-reveal><div><p className="eyebrow dark"><span />The Next Operating Chapter</p><h2>A Different Conversation for Every Partner.</h2></div><p>Select the pathway that best matches your organization. Each action opens a direct, pre-addressed conversation with the Humpback Hydro team.</p></div>
@@ -33,7 +33,7 @@ export default function PartnersPage() {
 
       <section className="contact-terminal">
         <div className="section-shell">
-          <div data-reveal><p className="eyebrow"><span />Direct Contact</p><h2>Bring the Right People into the Room.</h2><p>Share your organization, mandate, potential site or investment interest and the Humpback Hydro team can direct the conversation appropriately.</p><div className="terminal-data"><span>VANCOUVER, BC</span><span>ENERGY INFRASTRUCTURE</span><span>IEEE-PUBLISHED ARCHITECTURE</span><span>PILOT PARTNERS SOUGHT</span></div></div>
+          <div data-reveal><p className="eyebrow"><span />Direct Contact</p><h2>Bring the Right People into the Room.</h2><p>Share your organization, mandate, potential site or investment interest and the Humpback Hydro team can direct the conversation appropriately.</p><div className="terminal-data"><span>VANCOUVER, BC</span><span>ENERGY INFRASTRUCTURE</span><span>IEEE-PUBLISHED ARCHITECTURE</span><span>PILOT PARTNER DIALOGUE</span></div></div>
           <PartnerForm />
         </div>
       </section>
