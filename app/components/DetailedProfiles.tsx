@@ -1,7 +1,7 @@
 export default function DetailedProfiles() {
   return (
-    <div className="flex flex-col gap-16 md:gap-24 mt-16 border-t border-white/15 pt-12 md:mt-24 md:pt-16">
-      
+    <div className="flex flex-col gap-16 md:gap-24 mt-24 border-t border-white/20 pt-16 md:mt-32 md:pt-24">
+
       {/* Mark Legacy */}
       <section aria-labelledby="mark-legacy-profile" data-reveal>
         <div className="grid gap-10 lg:grid-cols-[minmax(240px,0.38fr)_minmax(0,0.62fr)] lg:gap-20">
@@ -61,6 +61,15 @@ export default function DetailedProfiles() {
             <p className="mt-5 text-base leading-7 text-[#83c4d2]">
               Operations &amp; Infrastructure Delivery
             </p>
+
+            <div className="mt-8 border border-[#59acc2]/25 bg-[#082f40]/45 p-5">
+              <small className="font-mono text-[0.64rem] font-semibold tracking-[0.14em] text-[#78969e] uppercase">
+                Affiliation
+              </small>
+              <span className="mt-2 block text-base font-semibold text-white">
+                U.S. Army Corps of Engineers (Ret.)
+              </span>
+            </div>
           </div>
 
           <div className="grid gap-6 text-base leading-8 text-[#a9bbc1]">
@@ -90,6 +99,16 @@ export default function DetailedProfiles() {
             <p className="mt-5 text-base leading-7 text-[#83c4d2]">
               Information Security, Systems Architecture and Platform Resilience
             </p>
+
+            <div className="mt-8 border border-[#59acc2]/25 bg-[#082f40]/45 p-5">
+              <small className="font-mono text-[0.64rem] font-semibold tracking-[0.14em] text-[#78969e] uppercase">
+                Affiliation
+              </small>
+              <span className="mt-2 text-base font-semibold text-white flex items-center gap-2">
+                <span className="text-[#168da8] text-[0.45em] drop-shadow-[0_0_4px_rgba(22,141,168,0.6)]">●</span>
+                Founder &bull; Huston Solutions
+              </span>
+            </div>
           </div>
 
           <div className="grid gap-6 text-base leading-8 text-[#a9bbc1]">

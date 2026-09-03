@@ -187,22 +187,22 @@ svg { width: 1em; fill: none; stroke: currentColor; stroke-width: 1.65; stroke-l
 .brand strong { font-size: 13px; line-height: 1; letter-spacing: .055em; }
 .brand small { margin-top: 5px; color: #a9c0c8; font-size: 7.5px; letter-spacing: .17em; text-transform: uppercase; }
 .desktop-nav { margin-left: auto; display: flex; gap: clamp(23px, 2.5vw, 42px); }
-.desktop-nav a { position: relative; padding: 28px 0; color: #d4e1e4; font-size: 11px; font-weight: 670; letter-spacing: .04em; }
+.desktop-nav a { position: relative; padding: 28px 0; color: #d4e1e4; font-size: 13px; font-weight: 670; letter-spacing: .04em; }
 .desktop-nav a::before { content: ""; position: absolute; left: 0; right: 100%; bottom: 20px; height: 1px; background: var(--energy); transition: right .3s ease; }
 .desktop-nav a:hover::before,.desktop-nav a[aria-current="page"]::before { right: 0; }
 .desktop-nav a[aria-current="page"] { color: white; }
-.header-cta { min-height: 43px; padding: 0 17px; display: inline-flex; align-items: center; gap: 12px; border: 1px solid rgba(255,255,255,.32); font-size: 10px; font-weight: 720; letter-spacing: .06em; text-transform: uppercase; transition: color .25s ease, background .25s ease, border-color .25s ease; }
+.header-cta { min-height: 43px; padding: 0 17px; display: inline-flex; align-items: center; gap: 12px; border: 1px solid rgba(255,255,255,.32); font-size: 13px; font-weight: 720; letter-spacing: .06em; text-transform: uppercase; transition: color .25s ease, background .25s ease, border-color .25s ease; }
 .header-cta:hover { color: var(--abyss); background: var(--energy); border-color: var(--energy); }
 .header-cta svg { transition: transform .25s ease; }
 .header-cta:hover svg { transform: translateX(4px); }
 .menu-trigger,.mobile-panel { display: none; }
 
 .section-shell { padding: 125px clamp(24px, 5vw, 84px); }
-.chapter-label { margin-bottom: 76px; display: flex; align-items: center; gap: 16px; color: #63808b; font: 650 8.5px var(--font-geist-mono); letter-spacing: .19em; }
+.chapter-label { margin-bottom: 76px; display: flex; align-items: center; gap: 16px; color: #63808b; font: 650 12px var(--font-geist-mono); letter-spacing: .19em; }
 .chapter-label span { width: 35px; height: 35px; display: grid; place-items: center; border: 1px solid rgba(6,28,40,.22); border-radius: 50%; color: var(--teal); letter-spacing: 0; }
 .chapter-label.light { color: #7596a0; }
 .chapter-label.light span { border-color: rgba(255,255,255,.25); color: var(--energy); }
-.eyebrow { margin: 0 0 20px; display: flex; align-items: center; gap: 12px; color: #a8c8ce; font-size: 9px; font-weight: 760; letter-spacing: .19em; text-transform: uppercase; }
+.eyebrow { margin: 0 0 20px; display: flex; align-items: center; gap: 12px; color: #a8c8ce; font-size: 12px; font-weight: 760; letter-spacing: .19em; text-transform: uppercase; }
 .eyebrow > span { width: 27px; height: 1px; background: var(--aqua); }
 .eyebrow.dark { color: #5b7b85; }
 .section-intro h2,.thesis-section h2,.evidence-lead h2,.roadmap-section h2,.industrial-copy h2,.final-cta h2,.route-intro h2,.principles h2,.company-story h2,.delivery-network h2,.partner-pathways h2 {
@@ -218,7 +218,7 @@ svg { width: 1em; fill: none; stroke: currentColor; stroke-width: 1.65; stroke-l
 .section-intro.inverse { max-width: 940px; color: white; }
 .section-intro.inverse > p:last-child { max-width: 700px; margin: 28px 0 0; color: #91adb5; font-size: 15px; line-height: 1.78; }
 
-.button { min-height: 52px; padding: 0 23px; display: inline-flex; align-items: center; justify-content: center; gap: 15px; border: 1px solid transparent; font-size: 10px; font-weight: 750; letter-spacing: .085em; text-transform: uppercase; transition: transform .25s ease, background .25s ease, color .25s ease, border-color .25s ease, box-shadow .25s ease; }
+.button { min-height: 52px; padding: 0 23px; display: inline-flex; align-items: center; justify-content: center; gap: 15px; border: 1px solid transparent; font-size: 13px; font-weight: 750; letter-spacing: .085em; text-transform: uppercase; transition: transform .25s ease, background .25s ease, color .25s ease, border-color .25s ease, box-shadow .25s ease; }
 .button:hover { transform: translateY(-3px); }
 .button.primary { color: var(--abyss); background: #8bc8d5; box-shadow: 0 16px 42px rgba(67,182,204,.14); }
 .button.primary:hover,.button.energy:hover { background: #a5d7e0; box-shadow: 0 22px 55px rgba(67,182,204,.2); }
@@ -228,7 +228,7 @@ svg { width: 1em; fill: none; stroke: currentColor; stroke-width: 1.65; stroke-l
 .button.energy { color: var(--abyss); background: var(--energy); }
 .button.outline-light { color: white; border-color: rgba(255,255,255,.3); }
 .button.outline-light:hover { color: var(--abyss); background: white; }
-.text-link { padding-bottom: 7px; display: inline-flex; align-items: center; gap: 13px; border-bottom: 1px solid rgba(6,28,40,.28); font-size: 10px; font-weight: 720; letter-spacing: .08em; text-transform: uppercase; }
+.text-link { padding-bottom: 7px; display: inline-flex; align-items: center; gap: 13px; border-bottom: 1px solid rgba(6,28,40,.28); font-size: 13px; font-weight: 720; letter-spacing: .08em; text-transform: uppercase; }
 .text-link.light { color: white; border-color: rgba(255,255,255,.35); }
 .text-link svg,.button svg { transition: transform .25s ease; }
 .text-link:hover svg,.button:hover svg { transform: translateX(4px); }
@@ -615,12 +615,12 @@ svg { width: 1em; fill: none; stroke: currentColor; stroke-width: 1.65; stroke-l
 /* Legibility pass: preserve the technical density without using microtype */
 .brand strong { font-size: 14px; }
 .brand small { font-size: 9px; letter-spacing: .14em; }
-.desktop-nav a { font-size: 12.5px; }
-.header-cta { font-size: 11px; }
-.chapter-label { font-size: 10px; letter-spacing: .16em; }
-.eyebrow { font-size: 10.5px; letter-spacing: .16em; }
-.button { font-size: 11px; }
-.text-link { font-size: 11px; }
+.desktop-nav a { font-size: 14px; }
+.header-cta { font-size: 13px; }
+.chapter-label { font-size: 12px; letter-spacing: .16em; }
+.eyebrow { font-size: 12px; letter-spacing: .16em; }
+.button { font-size: 13px; }
+.text-link { font-size: 13px; }
 .command-head { font-size: 8.5px; }
 .command-cycle span { font-size: 8.5px; }
 .command-cycle small { font-size: 7.5px; }
@@ -629,11 +629,11 @@ svg { width: 1em; fill: none; stroke: currentColor; stroke-width: 1.65; stroke-l
 .hero-command > a { font-size: 9.5px; }
 .hero-side-label,.hero-scroll { font-size: 8.5px; }
 .concept-tag { font-size: 8px; }
-.status-rail span { font-size: 10px; }
-.status-rail strong { font-size: 13px; }
-.status-rail small { font-size: 9px; }
-.constraint-sequence article > span { font-size: 9.5px; }
-.constraint-sequence p { font-size: 13px; }
+.status-rail span { font-size: 12px; }
+.status-rail strong { font-size: 15px; }
+.status-rail small { font-size: 11px; }
+.constraint-sequence article > span { font-size: 12px; }
+.constraint-sequence p { font-size: 15px; }
 .system-coordinate { font-size: 8.5px; }
 .system-live span { font-size: 8.5px; }
 .system-live small { font-size: 7.5px; }
@@ -660,42 +660,42 @@ svg { width: 1em; fill: none; stroke: currentColor; stroke-width: 1.65; stroke-l
 .system-telemetry p span { font-size: 7.5px; }
 .system-telemetry p strong { font-size: 9px; }
 .system-telemetry p small { font-size: 7px; }
-.application-tabs button { font-size: 12px; }
-.application-tabs button span { font-size: 9px; }
-.application-copy > small { font-size: 9.5px; }
-.application-copy li { font-size: 10.5px; }
-.evidence-ledger small { font-size: 9px; }
-.evidence-ledger p { font-size: 9px; }
-.roadmap-line small { font-size: 8.5px; }
-.roadmap-line p { font-size: 13px; }
-.cta-visual-status small { font-size: 8.5px; }
-.cta-pathways a > span { font-size: 9.5px; }
-.cta-pathways small { font-size: 8.5px; }
-.cta-pathways strong { font-size: 15px; }
-.anatomy-list article > span { font-size: 9.5px; }
-.anatomy-list small { font-size: 8.5px; }
-.anatomy-list p,.principle-list p { font-size: 13.5px; }
-.vault-list small { font-size: 9px; }
-.vault-list p { font-size: 13.5px; }
-.claim-status { font-size: 9.5px; }
-.locked { font-size: 8.5px !important; }
-.claim-policy-grid p { font-size: 13.5px; }
-.leadership-list small { font-size: 9px; }
-.leadership-list p { font-size: 14px; }
-.network-list span { font-size: 9.5px; }
-.network-list small { font-size: 9px; }
-.network-list p { font-size: 13.5px; }
-.pathway-list article > span { font-size: 10px; }
-.pathway-list small { font-size: 9px; }
-.pathway-list p { font-size: 13.5px; }
-.pathway-list a { font-size: 10.5px; }
-.terminal-data { font-size: 9px; }
-.partner-form label { font-size: 9.5px; }
-.partner-form input,.partner-form select,.partner-form textarea { font-size: 14px; }
-.partner-form > small { font-size: 8.5px; }
-.footer-grid small { font-size: 9px; }
-.footer-grid a,.footer-grid span { font-size: 12.5px; }
-.footer-legal { font-size: 8.5px; }
+.application-tabs button { font-size: 14px; }
+.application-tabs button span { font-size: 11px; }
+.application-copy > small { font-size: 12px; }
+.application-copy li { font-size: 13px; }
+.evidence-ledger small { font-size: 11px; }
+.evidence-ledger p { font-size: 12px; }
+.roadmap-line small { font-size: 11px; }
+.roadmap-line p { font-size: 15px; }
+.cta-visual-status small { font-size: 11px; }
+.cta-pathways a > span { font-size: 12px; }
+.cta-pathways small { font-size: 11px; }
+.cta-pathways strong { font-size: 16px; }
+.anatomy-list article > span { font-size: 12px; }
+.anatomy-list small { font-size: 11px; }
+.anatomy-list p,.principle-list p { font-size: 15px; }
+.vault-list small { font-size: 11px; }
+.vault-list p { font-size: 15px; }
+.claim-status { font-size: 12px; }
+.locked { font-size: 11px !important; }
+.claim-policy-grid p { font-size: 15px; }
+.leadership-list small { font-size: 12px; }
+.leadership-list p { font-size: 15px; }
+.network-list span { font-size: 12px; }
+.network-list small { font-size: 11px; }
+.network-list p { font-size: 15px; }
+.pathway-list article > span { font-size: 12px; }
+.pathway-list small { font-size: 11px; }
+.pathway-list p { font-size: 15px; }
+.pathway-list a { font-size: 13px; }
+.terminal-data { font-size: 11px; }
+.partner-form label { font-size: 12px; }
+.partner-form input,.partner-form select,.partner-form textarea { font-size: 15px; }
+.partner-form > small { font-size: 12px; }
+.footer-grid small { font-size: 12px; }
+.footer-grid a,.footer-grid span { font-size: 14px; }
+.footer-legal { font-size: 11px; }
 
 @keyframes hero-breathe { from { transform: translate3d(0,var(--hero-shift),0) scale(1.045); } to { transform: translate3d(0,var(--hero-shift),0) scale(1.015); } }
 @keyframes route-hero-reveal { from { opacity: .92; filter: saturate(.9) contrast(1.02); } to { opacity: 1; filter: saturate(1) contrast(1.02); } }

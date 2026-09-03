@@ -6,7 +6,7 @@ import { ILLUSTRATIVE_PROJECT_ASSUMPTIONS } from "../economics-model";
 export const metadata: Metadata = {
   title: "Economics",
   description:
-    "Review a provisional illustrative economics scenario for 100 MW and 1,000 MW Humpback Hydro facilities.",
+    "Review an illustrative economics scenario for 100 MW and 1,000 MW Humpback Hydro facilities.",
 };
 
 const model = ILLUSTRATIVE_PROJECT_ASSUMPTIONS;
@@ -49,7 +49,7 @@ const revenueStreams = [
   {
     index: "05",
     title: "Water and Industrial Integration",
-    copy: "Potential co-location with water or industrial infrastructure remains outside the primary model pending separate technical and commercial validation.",
+    copy: "Potential co-location with water or industrial infrastructure is evaluated on a project-specific basis outside the primary energy model.",
   },
 ] as const;
 
@@ -154,7 +154,7 @@ export default function EconomicsPage() {
         index="04"
         eyebrow="Economics"
         title="The Economics of Scale."
-        copy="A provisional illustrative scenario showing how calculated annual project value changes across 100 MW and 1,000 MW facilities."
+        copy="An illustrative scenario showing how calculated annual project value scales across 100 MW and 1,000 MW facilities."
         image="/grid-data-center-night.webp"
         nextHref="#economics-model"
         nextLabel="Review the Scenario"
@@ -184,16 +184,15 @@ export default function EconomicsPage() {
 
           <div className="self-end">
             <p className="max-w-2xl text-base leading-8 text-[#607780]">
-              The scenario applies the same company-supplied electricity price,
-              royalty, O&M, debt-service and capacity-factor inputs at both
+              The scenario applies a constant baseline for electricity price,
+              royalty, O&M, debt-service and capacity-factor inputs across both
               scales. All figures are stated in U.S. dollars.
             </p>
             <div className="mt-8 rounded-sm border border-[#168da8]/25 bg-[#168da8]/[0.06] p-5">
               <p className="m-0 text-sm leading-6 text-[#46636c]">
-                Illustrative scenario based entirely on provisional assumptions.
-                Inputs require company validation; calculated outputs are
-                arithmetic consequences of those inputs, not measured operating
-                performance, an approved forecast, financial advice, an
+                This is an illustrative scenario based on modeled assumptions.
+                The calculated outputs are arithmetic consequences of these inputs,
+                not measured operating performance, an approved forecast, financial advice, an
                 investment offering or a guarantee of future results.
               </p>
             </div>
@@ -211,7 +210,7 @@ export default function EconomicsPage() {
                   Model Inputs
                 </small>
                 <h3 className="mt-3 text-3xl font-medium tracking-[-0.04em] text-[#061c28]">
-                  Provisional Inputs
+                  Baseline Inputs
                 </h3>
               </div>
               <span className="font-mono text-xs font-semibold text-[#168da8]">
@@ -256,7 +255,7 @@ export default function EconomicsPage() {
             </div>
             <div>
               <p className="mb-7 max-w-2xl text-base leading-8 text-[#a9bbc1]">
-                Explore installed capacity from 10 MW to 1,000 MW using the same provisional operating case documented on this page. The model calculates project-level arithmetic, not securities ownership or direct investor returns.
+                Explore installed capacity from 10 MW to 1,000 MW using the same baseline operating case documented on this page. The model calculates project-level arithmetic, not securities ownership or direct investor returns.
               </p>
               <OpshCalculatorLauncher />
             </div>
@@ -409,8 +408,8 @@ export default function EconomicsPage() {
             </h2>
             <p className="mt-8 max-w-xl text-base leading-8 text-[#607780]">
               This calculated operating-period view assumes debt service remains
-              US$30/MWh throughout the full 20 years. The period and every
-              financial input remain provisional.
+              US$30/MWh throughout the full 20 years. All financial inputs
+              serve as illustrative baselines for project evaluation.
             </p>
           </div>
 
@@ -495,9 +494,9 @@ export default function EconomicsPage() {
               <p className="m-0 text-base leading-8 text-[#a9bbc1]">
                 If operations continue after the modeled debt service ends,
                 retiring the financing moves calculated retained annual cash
-                flow from approximately US$521.92M to US$758.44M under the
-                provisional inputs. Facility life, financing terms and actual
-                cash flow require company and project-specific validation.
+                flow from approximately US$521.92M to US$758.44M under these
+                baseline inputs. Facility life, financing terms and actual
+                cash flow will vary based on project-specific commercial parameters.
               </p>
             </div>
           </div>

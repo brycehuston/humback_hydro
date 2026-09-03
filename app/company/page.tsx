@@ -78,13 +78,12 @@ export default function CompanyPage() {
           </div>
 
           <p className="mb-10 max-w-3xl border-l-2 border-[#59acc2] pl-5 text-sm leading-7 text-[#8ca7af]" data-reveal>
-            Leadership titles, roles and career summaries are company supplied and remain subject to source confirmation unless linked to a verified public record. Production renders published profiles only.
+            Humpback Hydro brings together multidisciplinary leadership across engineering innovation, infrastructure delivery, digital systems and technology development, supporting the progression from concept through execution and long-term operation.
           </p>
 
           <div className="leadership-list">
-            {publishedLeadership.map((member, index) => (
+            {publishedLeadership.map((member) => (
               <article key={member.name} data-reveal>
-                <span>0{index + 1}</span>
                 <div className="leader-image">
                   {member.image ? (
                     <img
@@ -96,7 +95,7 @@ export default function CompanyPage() {
                     <span
                       className="leader-monogram"
                       role="img"
-                      aria-label={`Portrait placeholder for ${member.name}`}
+                      aria-label={`Portrait of ${member.name}`}
                     >
                       {member.initials ?? initials(member.name)}
                     </span>
@@ -105,7 +104,14 @@ export default function CompanyPage() {
                 <div>
                   <small className="uppercase tracking-wider">{member.role}</small>
                   <h3 className="tracking-widest">{member.name}</h3>
-                  <p>{member.focus}</p>
+                  {member.name === "Bryce Huston" ? (
+                    <p className="flex items-center gap-2">
+                      <span className="text-[#168da8] text-[0.55em] drop-shadow-[0_0_4px_rgba(22,141,168,0.6)]">●</span>
+                      {member.focus}
+                    </p>
+                  ) : (
+                    <p>{member.focus}</p>
+                  )}
                 </div>
               </article>
             ))}
@@ -128,10 +134,7 @@ export default function CompanyPage() {
             <h2>From Engineered Material to Operating Asset.</h2>
           </div>
           <p>
-            Company-supplied materials identify specialist capability spanning
-            construction, advanced materials and electrical engineering. Names,
-            roles, organizations and public-use approval remain subject to
-            confirmation.
+            Humpback Hydro’s delivery model is built around multidisciplinary capability across construction, advanced materials, electrical engineering and project execution. The objective is to carry the system from engineered components through integration, deployment and operation.
           </p>
         </div>
         <div className="network-list">
@@ -152,7 +155,7 @@ export default function CompanyPage() {
                   <span
                     className="leader-monogram"
                     role="img"
-                    aria-label={`Portrait placeholder for ${partner.name}`}
+                    aria-label={`Portrait of ${partner.name}`}
                   >
                     {partner.initials ?? initials(partner.name)}
                   </span>

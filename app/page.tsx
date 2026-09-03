@@ -118,7 +118,7 @@ export default function Home() {
         <div className="chapter-label"><span>05</span>THE PATHWAY</div>
         <div className="section-intro split" data-reveal>
           <div><p className="eyebrow dark"><span />Planned Deployment Roadmap</p><h2>From First Pilot to Industrialized Scale.</h2></div>
-          <p>Company-supplied materials set out a phased manufacturing and deployment pathway. Every scale and phase remains forward-looking and subject to engineering, financing, partner and company approval.</p>
+          <p>The strategic roadmap outlines a phased manufacturing and deployment pathway. Each stage is forward-looking and requires dedicated engineering, financing, and delivery partnerships.</p>
         </div>
         <div className="roadmap-line">
           {roadmap.map((item) => (
@@ -147,7 +147,7 @@ export default function Home() {
           <div className="final-cta-copy" data-reveal>
             <p className="eyebrow"><span />The Next Operating Chapter</p>
             <h2>Advance the First Pilot.</h2>
-            <p>Humpback Hydro is seeking qualified pilot sites, strategic capital, engineering capacity and independent validation partners.</p>
+            <p>Humpback Hydro invites inquiries regarding pilot sites, strategic capital, engineering capacity and independent validation partnerships.</p>
             <div className="hero-actions"><a className="button energy" href="/partners">Choose Your Pathway <Arrow /></a><a className="button secondary" href="mailto:info@humpbackenergy.com">Contact the Team</a></div>
           </div>
 

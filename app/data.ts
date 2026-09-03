@@ -42,7 +42,7 @@ export const leadership: readonly LeadershipProfile[] = [
     image: "/team/mark-legacy.jpg",
     imageAlt: "Portrait of Mark Legacy",
     imagePosition: "50% 28%",
-    focus: "Company founder; patent and IEEE public records are linked below",
+    focus: "Inventor • Energy & Infrastructure",
     publicationStatus: "published-qualified",
   },
   {
@@ -51,17 +51,16 @@ export const leadership: readonly LeadershipProfile[] = [
     image: "/team/col-bryan-green.jpg",
     imageAlt: "Portrait of Col. Bryan Green (Ret.)",
     imagePosition: "50% 28%",
-    focus: "Former USACE operations commander and infrastructure delivery leader",
+    focus: "USACE • Megaproject Execution",
     publicationStatus: "published-qualified",
   },
   {
     name: "Bryce Huston",
-    role: "Chief Information Security Officer, Humpback Hydro",
+    role: "Chief Information Security Officer",
     image: "/team/bryce-huston.jpg",
     imageAlt: "Portrait of Bryce Huston",
     imagePosition: "50% 30%",
-    focus:
-      "Information security, systems architecture, platform resilience and digital infrastructure.",
+    focus: "Founder • Huston Solutions",
     publicationStatus: "published-qualified",
   },
 ];
@@ -117,13 +116,7 @@ export const evidence = [
     description: "Static-system results are summarized separately with their modeled status and limitations.",
     status: "Static Summaries Published",
   },
-  {
-    index: "04",
-    category: "Industry Recognition",
-    title: "GLOBE Emerging-Technology Recognition",
-    description: "Company-supplied recognition language awaiting a primary event record and exact category confirmation.",
-    status: "Source Confirmation Pending",
-  },
+
 ];
 
 export const roadmap = [

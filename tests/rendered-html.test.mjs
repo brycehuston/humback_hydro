@@ -126,7 +126,6 @@ test("publishes qualified evidence and the complete IEEE reference", async () =>
   assert.match(combined, /two-stage static structure designed for 10\.6 MW and continuous operation as needed/);
   assert.match(combined, /not measured output from an operating facility/i);
   assert.match(combined, /Concept Model — Not to Scale/);
-  assert.match(combined, /Source Confirmation Pending/i);
   assert.match(combined, /Public record for U\.S\. Patent No\. 8,823,195 B2/i);
 });
 
@@ -142,7 +141,7 @@ test("publishes qualified impact and company positioning", async () => {
   assert.match(combined, /Alignment Is Not the Same as Measured Impact/i);
   assert.match(combined, /Advancing Toward Independent Engineering Validation and Pilot Deployment/i);
   assert.match(combined, /Engineering Infrastructure[\s\S]*That Powers Humanity/i);
-  assert.match(combined, /Leadership titles, roles and career summaries are company supplied/i);
+  assert.match(combined, /brings together multidisciplinary leadership across/i);
   assert.doesNotMatch(combined, /U\.S\. patent holder/i);
   assert.doesNotMatch(combined, /★|☆/);
 });
@@ -176,8 +175,8 @@ test("renders the approved local team portraits including Bryan Green", async ()
     /Portrait of Chris Calvin/,
     /Portrait of Gustavo Varela Latouche/,
     /Portrait of Col\. Bryan Green \(Ret\.\)/,
-    /Chief Information Security Officer, Humpback Hydro/,
-    /Information security, systems architecture, platform resilience and digital infrastructure\./,
+    /Chief Information Security Officer/,
+    /Founder • Huston Solutions/,
   ]) {
     assert.match(html, required);
   }
@@ -200,7 +199,7 @@ test("labels economics as provisional and distinguishes calculated outputs", asy
   const worker = await loadWorker();
   const { html } = await fetchRoute(worker, "/economics");
 
-  assert.match(html, /provisional assumptions/i);
+  assert.match(html, /modeled assumptions/i);
   assert.match(html, /calculated outputs/i);
   assert.match(html, /9\.6/);
   assert.match(html, /\$758\.4M/);

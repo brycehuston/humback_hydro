@@ -105,8 +105,8 @@ export default function EvidencePage() {
           <div className="chapter-label light"><span>04</span>PUBLICATION STANDARD</div>
           <div className="claim-policy-grid">
             <article data-reveal><span>01</span><h3>Verified and Publishable</h3><p>Claims supported by an authoritative public record or approved primary document.</p></article>
-            <article data-reveal><span>02</span><h3>Provisional</h3><p>Qualified modeled results and company information that still require confirmation or independent review.</p></article>
-            <article data-reveal><span>03</span><h3>Internal Only</h3><p>Unapproved performance, prototype, financial and commercial-readiness claims remain off the public site.</p></article>
+            <article data-reveal><span>02</span><h3>Modeled & Qualitative</h3><p>Modeled results and engineering claims that rely on specific project assumptions or ongoing evaluation.</p></article>
+            <article data-reveal><span>03</span><h3>Strict Boundaries</h3><p>Performance, financial and commercial-readiness assertions are not claimed until formally validated.</p></article>
           </div>
           <a className="button outline-light" href="mailto:info@humpbackenergy.com?subject=Humpback%20Hydro%20Technical%20Information">Request Technical Information <Arrow /></a>
         </div>
