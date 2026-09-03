@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 export default function TechnologyPage() {
   return (
     <main>
-      <RouteHero index="01" eyebrow="Technology" title="The Mountain, Rebuilt at Sea." copy="A fixed offshore pumped-hydro concept that creates vertical separation inside one structure, without depending on mountainous terrain." image="/hero-ocean-infrastructure.png" nextHref="#operating-cycle" nextLabel="Enter the Operating Cycle" />
+      <RouteHero index="01" eyebrow="Technology" title="The Mountain, Rebuilt at Sea." copy="A fixed offshore pumped-hydro concept that creates vertical separation inside one structure, without depending on mountainous terrain." image="/hero-ocean-infrastructure.png" nextHref="#system-anatomy" nextLabel="Explore System Anatomy" />
       <section className="route-intro section-shell" id="operating-cycle">
         <div className="chapter-label"><span>01</span>OPERATING PRINCIPLE</div>
         <div className="section-intro split" data-reveal>
@@ -21,9 +21,9 @@ export default function TechnologyPage() {
         <OpshExperience variant="explorer" />
       </section>
 
-      <section className="technical-anatomy">
+      <section className="technical-anatomy" id="system-anatomy">
         <div className="section-shell">
-          <div className="chapter-label light"><span>02</span>SYSTEM ANATOMY</div>
+          <div className="chapter-label light"><span>01</span>SYSTEM ANATOMY</div>
           <div className="anatomy-grid">
             <div className="anatomy-visual" data-reveal><img src="/turbine-macro.webp" alt="Concept visualization of a reversible hydro turbine" loading="lazy" decoding="async" /><span className="concept-tag">CONCEPT VISUALIZATION</span></div>
             <div className="anatomy-list">
@@ -37,7 +37,7 @@ export default function TechnologyPage() {
       </section>
 
       <section className="principles section-shell">
-        <div className="chapter-label"><span>03</span>DESIGN PRINCIPLES</div>
+        <div className="chapter-label"><span>02</span>DESIGN PRINCIPLES</div>
         <div className="principle-list">
           <article data-reveal><span>01</span><h3>Fixed Offshore Siting</h3><p>Designed for a continental-shelf setting where the structure supplies the vertical separation.</p></article>
           <article data-reveal><span>02</span><h3>Gravitational Storage</h3><p>Stores energy by lifting water rather than relying on electrochemical storage media.</p></article>

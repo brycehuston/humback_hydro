@@ -1,6 +1,7 @@
+import OpshCalculatorLauncher from "./components/OpshCalculatorLauncher";
 import ApplicationSelector from "./components/ApplicationSelector";
 import { Arrow } from "./components/Icons";
-import OpshExperience from "./components/OpshExperience";
+import PremiumDigitalTwin from "./components/PremiumDigitalTwin";
 import { evidence, roadmap } from "./data";
 
 export default function Home() {
@@ -80,7 +81,8 @@ export default function Home() {
             <h2>See the Complete Water Cycle.</h2>
             <p>A fixed offshore structure places two engineered reservoirs vertically inside one cutaway system. Follow how it stores energy and generates through two turbine stages.</p>
           </div>
-          <OpshExperience variant="guided" />
+          <PremiumDigitalTwin />
+          <OpshCalculatorLauncher />
         </div>
       </section>
 

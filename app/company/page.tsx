@@ -1,6 +1,6 @@
 import type { CSSProperties } from "react";
 import type { Metadata } from "next";
-import MarkLegacyBio from "../components/MarkLegacyBio";
+import DetailedProfiles from "../components/DetailedProfiles";
 import RouteHero from "../components/RouteHero";
 import { deliveryPartners, leadership } from "../data";
 
@@ -111,7 +111,7 @@ export default function CompanyPage() {
             ))}
           </div>
 
-          <MarkLegacyBio />
+          <DetailedProfiles />
         </div>
       </section>
 
