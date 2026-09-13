@@ -10,6 +10,45 @@ export default function SiteChrome({ children }: { children: React.ReactNode }) 
   const [menuOpen, setMenuOpen] = useState(false);
   const pathname = usePathname();
   const markRef = useRef<HTMLSpanElement>(null);
+  const menuTrigger = useRef<HTMLButtonElement>(null);
+  const menuPanel = useRef<HTMLDivElement>(null);
+  const signatureRef = useRef<HTMLAnchorElement>(null);
+
+  useEffect(() => {
+    if (!menuOpen) return;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const background = Array.from(document.querySelectorAll<HTMLElement>("main, .site-footer"));
+    const inertState = background.map((element) => element.inert);
+    background.forEach((element) => { element.inert = true; });
+    const links = Array.from(menuPanel.current?.querySelectorAll<HTMLAnchorElement>("a") ?? []);
+    const controls = [menuTrigger.current, ...links].filter((element): element is HTMLButtonElement | HTMLAnchorElement => element !== null);
+    const focusFrame = requestAnimationFrame(() => links[0]?.focus());
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        setMenuOpen(false);
+        menuTrigger.current?.focus();
+      }
+      if (event.key === "Tab") {
+        event.preventDefault();
+        const current = controls.indexOf(document.activeElement as HTMLAnchorElement);
+        controls[(current + (event.shiftKey ? -1 : 1) + controls.length) % controls.length]?.focus();
+      }
+    };
+    const onResize = () => {
+      if (window.matchMedia("(min-width: 1101px)").matches) setMenuOpen(false);
+    };
+    document.addEventListener("keydown", onKeyDown);
+    window.addEventListener("resize", onResize);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      cancelAnimationFrame(focusFrame);
+      background.forEach((element, index) => { element.inert = inertState[index]; });
+      document.removeEventListener("keydown", onKeyDown);
+      window.removeEventListener("resize", onResize);
+    };
+  }, [menuOpen]);
 
   useEffect(() => {
     let ticking = false;
@@ -53,7 +92,11 @@ export default function SiteChrome({ children }: { children: React.ReactNode }) 
       },
       { threshold: 0.14, rootMargin: "0px 0px -7%" },
     );
-    document.querySelectorAll("[data-reveal]").forEach((element) => observer.observe(element));
+    document.querySelectorAll("[data-reveal]").forEach((element) => {
+      observer.observe(element);
+      // Server-rendered content stays visible if JavaScript cannot initialize.
+      if (element.getBoundingClientRect().top > window.innerHeight) element.classList.add("reveal-ready");
+    });
 
     return () => {
       window.removeEventListener("scroll", onScroll);
@@ -118,6 +161,32 @@ export default function SiteChrome({ children }: { children: React.ReactNode }) 
     };
   }, []);
 
+  // Footer signature animation
+  useEffect(() => {
+    const signature = signatureRef.current;
+    if (!signature) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    let timer: ReturnType<typeof setTimeout>;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          timer = setTimeout(() => {
+            signature.classList.add("is-active");
+          }, 4500);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.1 }
+    );
+    observer.observe(signature);
+
+    return () => {
+      clearTimeout(timer);
+      observer.disconnect();
+    };
+  }, []);
+
   return (
     <>
       <div className="page-progress" aria-hidden="true" />
@@ -154,6 +223,8 @@ export default function SiteChrome({ children }: { children: React.ReactNode }) 
 
         <button
           className="menu-trigger"
+          ref={menuTrigger}
+          aria-controls="mobile-navigation"
           type="button"
           aria-label={menuOpen ? "Close navigation" : "Open navigation"}
           aria-expanded={menuOpen}
@@ -162,10 +233,10 @@ export default function SiteChrome({ children }: { children: React.ReactNode }) 
           <span /><span />
         </button>
 
-        <div className={`mobile-panel ${menuOpen ? "open" : ""}`} aria-hidden={!menuOpen}>
+        <div id="mobile-navigation" ref={menuPanel} className={`mobile-panel ${menuOpen ? "open" : ""}`} aria-hidden={!menuOpen}>
           <nav aria-label="Mobile navigation">
             {navItems.map((item, index) => (
-              <Link key={item.href} href={item.href} onClick={() => setMenuOpen(false)}>
+              <Link key={item.href} href={item.href} aria-current={pathname === item.href ? "page" : undefined} onClick={() => setMenuOpen(false)}>
                 <span>0{index + 1}</span>{item.label}<Arrow />
               </Link>
             ))}
@@ -174,6 +245,8 @@ export default function SiteChrome({ children }: { children: React.ReactNode }) 
           <small>Vancouver, British Columbia, Canada</small>
         </div>
       </header>
+
+
 
       {children}
 
@@ -189,14 +262,14 @@ export default function SiteChrome({ children }: { children: React.ReactNode }) 
           <a className="footer-email" href="mailto:info@humpbackenergy.com">info@humpbackenergy.com</a>
         </div>
         <div className="footer-grid">
-          <div><small>EXPLORE</small>{navItems.map((item) => <Link key={item.href} href={item.href}>{item.label}</Link>)}</div>
+          <div><small>EXPLORE</small>{navItems.slice(0, 3).map((item) => <Link key={item.href} href={item.href}>{item.label}</Link>)}</div>
+          <div><small className="invisible hidden md:block" aria-hidden="true">&nbsp;</small>{navItems.slice(3).map((item) => <Link key={item.href} href={item.href}>{item.label}</Link>)}</div>
           <div><small>PARTNER</small><Link href="/partners#pilot">Pilot Opportunity</Link><Link href="/partners#pilot">Evaluate a Site</Link><Link href="/partners#investment">Investment</Link></div>
           <div><small>CONNECT</small><a href="https://www.linkedin.com/company/humpback-hydro/" target="_blank" rel="noreferrer">LinkedIn</a><span>Vancouver, Canada</span></div>
         </div>
         <div className="footer-legal">
-          <span>Private Design Concept</span>
           <span>Concept Imagery Does Not Depict Completed Projects</span>
-          <span className="text-balance">HUMPBACK HYDRO © 2026 | SITE BY <a href="https://www.brycehuston.com/solutions" target="_blank" rel="noreferrer">HUSTON SOLUTION INC.</a></span>
+          <span className="text-balance">© 2026 HUMPBACK HYDRO | SITE BY <a ref={signatureRef} className="huston-shimmer" href="https://www.brycehuston.com/solutions" target="_blank" rel="noreferrer">HUSTON SOLUTION Inc.</a></span>
         </div>
       </footer>
     </>

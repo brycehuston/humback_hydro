@@ -1,14 +1,10 @@
 import type { CSSProperties } from "react";
-import type { Metadata } from "next";
+import { pageMetadata } from "../page-metadata";
 import MarkLegacyBio from "../components/MarkLegacyBio";
 import RouteHero from "../components/RouteHero";
 import { deliveryPartners, leadership } from "../data";
 
-export const metadata: Metadata = {
-  title: "Company",
-  description:
-    "Meet the Humpback Hydro leadership and delivery network advancing marine clean-energy infrastructure.",
-};
+export const metadata = pageMetadata("/company", "Company", "Meet the Humpback Hydro leadership and delivery network advancing marine clean-energy infrastructure.");
 
 const publishedLeadership = leadership.filter(
   (member) =>
@@ -51,7 +47,7 @@ export default function CompanyPage() {
         eyebrow="Company"
         title="Built by People Who Move Infrastructure."
         copy="Founded in Vancouver, British Columbia, Humpback Hydro brings practical construction, engineering, operations and digital-infrastructure experience to a modular hydroelectric generation and energy-storage concept."
-        image="/company/humpback-team-vancouver.jpeg"
+        image="/company/humpback-team-vancouver.webp"
         imageAlt="Humpback Hydro team members meeting in Vancouver beside the British Columbia flag"
         mediaLabel="PROJECT PHOTOGRAPH"
         nextHref="#leadership"
@@ -107,6 +103,8 @@ export default function CompanyPage() {
                   {member.image ? (
                     <img
                       src={member.image}
+                      loading="lazy"
+                      decoding="async"
                       alt={member.imageAlt}
                       style={{ objectPosition: member.imagePosition }}
                     />
@@ -122,7 +120,7 @@ export default function CompanyPage() {
                 </div>
                 <div>
                   <small className="uppercase tracking-wider">{member.role}</small>
-                  <h3 className={member.name.includes("Bryan Green") ? "is-bryan" : "tracking-widest"}>
+                  <h3 className="tracking-widest">
                     <LeadershipName name={member.name} />
                   </h3>
                   <p>{member.focus}</p>
@@ -132,32 +130,59 @@ export default function CompanyPage() {
           </div>
 
           {bryanGreen?.biography ? (
-            <section className="bryan-profile" aria-labelledby="bryan-green-profile" data-reveal>
-              <div>
-                <small>Operations &amp; Infrastructure Profile</small>
-                <h2 className="is-bryan" id="bryan-green-profile">
-                  <LeadershipName name="Col. Bryan Green (Ret.)" />
-                </h2>
-              </div>
-              <div className="leadership-biography">
-                {bryanGreen.biography.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
+            <section className="mt-16 border-t border-white/15 pt-12 md:mt-24 md:pt-16" aria-labelledby="bryan-green-profile" data-reveal>
+              <div className="grid gap-10 lg:grid-cols-[minmax(240px,0.38fr)_minmax(0,0.62fr)] lg:gap-20">
+                <div className="self-start lg:sticky lg:top-28">
+                  <small className="font-mono text-[0.68rem] font-semibold tracking-[0.16em] text-[#83c4d2] uppercase">Operations &amp; Infrastructure Profile</small>
+                  <h2 className="mt-5 text-[clamp(3rem,5vw,5.5rem)] font-medium leading-[0.92] tracking-[-0.06em] text-white" id="bryan-green-profile">
+                    <LeadershipName name="Col. Bryan Green (Ret.)" />
+                  </h2>
+                  <div className="mt-8 border border-[#59acc2]/25 bg-[#082f40]/45 p-5">
+                    <small className="font-mono text-[0.64rem] font-semibold tracking-[0.14em] text-[#78969e] uppercase">
+                      Former Command
+                    </small>
+                    <span className="mt-2 block text-base font-semibold text-white">
+                      U.S. Army Corps of Engineers
+                    </span>
+                    <span className="mt-1 block text-sm text-[#83c4d2]">
+                      Retired Colonel and Former Commander
+                    </span>
+                  </div>
+                </div>
+                <div className="grid gap-6 text-[0.95rem] leading-8 text-[#a9bbc1]">
+                  {bryanGreen.biography.map((paragraph) => <p className="m-0" key={paragraph}>{paragraph}</p>)}
+                </div>
               </div>
             </section>
           ) : null}
 
           {bryceHuston?.biography ? (
-            <section className="bryan-profile bryce-profile" aria-labelledby="bryce-huston-profile" data-reveal>
-              <div>
-                <small>{bryceHuston.profileLabel}</small>
-                <h2 id="bryce-huston-profile">{bryceHuston.name}</h2>
-                <p className="leadership-specialty">{bryceHuston.specialty}</p>
-                <dl className="leadership-credential">
-                  <dt>{bryceHuston.credentialLabel}</dt>
-                  <dd>{bryceHuston.credentialValue}</dd>
-                </dl>
-              </div>
-              <div className="leadership-biography">
-                {bryceHuston.biography.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
+            <section className="mt-16 border-t border-white/15 pt-12 md:mt-24 md:pt-16" aria-labelledby="bryce-huston-profile" data-reveal>
+              <div className="grid gap-10 lg:grid-cols-[minmax(240px,0.38fr)_minmax(0,0.62fr)] lg:gap-20">
+                <div className="self-start lg:sticky lg:top-28">
+                  <small className="font-mono text-[0.68rem] font-semibold tracking-[0.16em] text-[#83c4d2] uppercase">{bryceHuston.profileLabel}</small>
+                  <h2 className="mt-5 text-[clamp(3rem,5vw,5.5rem)] font-medium leading-[0.92] tracking-[-0.06em] text-white" id="bryce-huston-profile">{bryceHuston.name}</h2>
+                  <p className="mt-5 text-base leading-7 text-[#83c4d2]">{bryceHuston.specialty}</p>
+                  <div className="mt-8 border border-[#59acc2]/25 bg-[#082f40]/45 p-5">
+                    <small className="font-mono text-[0.64rem] font-semibold tracking-[0.14em] text-[#78969e] uppercase">
+                      {bryceHuston.credentialLabel}
+                    </small>
+                    <a
+                      className="mt-2 block text-base font-semibold text-white underline decoration-[#59acc2]/50 underline-offset-4"
+                      href="https://www.brycehuston.com/solutions"
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      HUSTON SOLUTION Inc.
+                    </a>
+                    <span className="mt-1 block text-sm text-[#83c4d2]">
+                      Technology and Security Partner
+                    </span>
+                  </div>
+                </div>
+                <div className="grid gap-6 text-[0.95rem] leading-8 text-[#a9bbc1]">
+                  {bryceHuston.biography.map((paragraph) => <p className="m-0" key={paragraph}>{paragraph}</p>)}
+                </div>
               </div>
             </section>
           ) : null}
@@ -194,6 +219,8 @@ export default function CompanyPage() {
                 {partner.image ? (
                   <img
                     src={partner.image}
+                    loading="lazy"
+                    decoding="async"
                     alt={partner.imageAlt}
                     style={
                       { objectPosition: partner.imagePosition } as CSSProperties

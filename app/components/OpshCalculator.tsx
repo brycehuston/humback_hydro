@@ -161,7 +161,7 @@ function OpshCalculator({
             >
               Project Economics &amp; Impact Model
             </h2>
-            <p className="mt-1 text-xs text-slate-400">Model results update based on your scenario inputs.</p>
+            <p className="mt-1 max-w-xl text-xs text-slate-400">Model results update based on your scenario inputs. Charging electricity and pumping losses are excluded; outputs are not net storage returns.</p>
           </div>
         </header>
 
@@ -476,7 +476,10 @@ function OpshCalculator({
                       These values are visible, replaceable scenario inputs—not offered
                       commercial terms or verified forecasts. Calculations are simplified,
                       pre-tax and exclude project-specific financing, construction,
-                      interconnection, insurance and site costs.
+                      interconnection, insurance and site costs. Charging electricity,
+                      pumping losses and round-trip efficiency are not represented;
+                      outputs do not establish net storage margin or project returns.
+                      The emissions calculation excludes charging electricity and lifecycle impacts.
                     </p>
                     <p className="text-[0.7rem] leading-5 text-slate-500">
                       Illustrative scenario model only. Outputs are not measured operating

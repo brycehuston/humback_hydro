@@ -1,13 +1,10 @@
-import type { Metadata } from "next";
+import { pageMetadata } from "../page-metadata";
 import RouteHero from "../components/RouteHero";
 import { Arrow } from "../components/Icons";
 import { evidence } from "../data";
 import { ieeeCitation, studyEvidence } from "../opsh-data";
 
-export const metadata: Metadata = {
-  title: "Engineering Foundation",
-  description: "Review Humpback Hydro's public patent record, IEEE publication and qualified university proof-of-concept study results.",
-};
+export const metadata = pageMetadata("/evidence", "Engineering Foundation", "Review Humpback Hydro's public patent record, IEEE publication and qualified university proof-of-concept study results.");
 
 export default function EvidencePage() {
   return (
@@ -26,13 +23,13 @@ export default function EvidencePage() {
               <span>{item.index}</span>
               <div><small>{item.category}</small><h3>{item.title}</h3><p>{item.description}</p></div>
               <div className={`claim-status ${item.status.toLowerCase().includes("pending") ? "pending" : "verified"}`}><i />{item.status}</div>
-              {item.href ? <a href={item.href} target="_blank" rel="noreferrer" aria-label={`Open ${item.title}`}><Arrow /></a> : <span className="locked">SOURCE PENDING</span>}
+              {item.href ? <a href={item.href} target="_blank" rel="noreferrer" aria-label={`Open ${item.title}`}><Arrow /></a> : item.status === "Static Summaries Published" ? <a href="#technical-study-record" aria-label="Read the university study summaries"><Arrow /></a> : <span className="locked">SOURCE PENDING</span>}
             </article>
           ))}
         </div>
       </section>
 
-      <section className="study-record">
+      <section className="study-record" id="technical-study-record">
         <div className="section-shell">
           <div className="chapter-label light"><span>02</span>TECHNICAL STUDY RECORD</div>
           <div className="section-intro split inverse" data-reveal>

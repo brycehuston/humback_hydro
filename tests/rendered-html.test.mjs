@@ -119,6 +119,9 @@ test("renders all public routes and development preview metadata", async () => {
       route,
     );
     assert.match(html, developmentPreviewMeta, route);
+    assert.ok(html.includes(`rel="canonical" href="https://humpbackenergy.com${route}"`), route);
+    assert.match(html, /property="og:title"/);
+    assert.match(html, /name="twitter:card" content="summary_large_image"/);
   }
 });
 
@@ -176,12 +179,12 @@ test("renders the approved local team portraits including Bryan Green", async ()
   }
 
   for (const required of [
-    /\/team\/mark-legacy\.jpg/,
-    /\/team\/bryce-huston\.jpg/,
-    /\/team\/rich-burgess\.jpg/,
-    /\/team\/chris-calvin\.jpg/,
-    /\/team\/gustavo-varela-latouche\.jpg/,
-    /\/team\/col-bryan-green\.jpg/,
+    /\/team\/mark-legacy\.webp/,
+    /\/team\/bryce-huston\.webp/,
+    /\/team\/rich-burgess\.webp/,
+    /\/team\/chris-calvin\.webp/,
+    /\/team\/gustavo-varela-latouche\.webp/,
+    /\/team\/col-bryan-green\.webp/,
     /Portrait of Mark Legacy/,
     /Portrait of Bryce Huston/,
     /Portrait of Rich Burgess/,
@@ -189,14 +192,14 @@ test("renders the approved local team portraits including Bryan Green", async ()
     /Portrait of Gustavo Varela Latouche/,
     /Portrait of Col\. Bryan Green \(Ret\.\)/,
     /CHIEF INFORMATION SECURITY OFFICER/,
-    /Founder • HUSTON SOLUTION INC\./,
+    /Founder • HUSTON SOLUTION Inc\./,
     /SECURITY &amp; DIGITAL INFRASTRUCTURE/,
     /Information Security • AI Systems • Digital Infrastructure/,
     /FOUNDER &amp; SYSTEMS ARCHITECT/,
-    /Bryce Huston is Chief Information Security Officer at Humpback Hydro and founder of HUSTON SOLUTION INC\./,
+    /Bryce Huston is Chief Information Security Officer at Humpback Hydro and founder of HUSTON SOLUTION Inc\./,
     /A hands-on systems architect and technical operator, Bryce builds production platforms/,
     /architect the system, control the risk and build the infrastructure required to scale/,
-    /\/company\/humpback-team-vancouver\.jpeg/,
+    /\/company\/humpback-team-vancouver\.webp/,
     /PROJECT PHOTOGRAPH/,
     /U\.S\. Army Corps of Engineers retired colonel and former commander and military laboratory director/i,
     /3,000 researchers and scientists and budgets exceeding \$2 billion/i,
@@ -213,10 +216,10 @@ test("renders the approved local team portraits including Bryan Green", async ()
     "utf8",
   );
   assert.match(companySource, /Col\. Bryan Green\{" "\}[\s\S]*leadership-name-suffix[\s\S]*\(Ret\.\)/);
-  assert.match(styles, /\.leadership-name-inline\s*\{[^}]*white-space:\s*nowrap/s);
+  assert.match(styles, /\.leadership-name-inline\s*\{[^}]*flex-wrap:\s*wrap/s);
   assert.match(styles, /\.leadership-name-suffix\s*\{[^}]*font-size:\s*\.52em/s);
 
-  assert.doesNotMatch(html, /\/(?:mark-legacy|bryan-green)\.webp/);
+  assert.doesNotMatch(html, /src="\/(?:mark-legacy|bryan-green)\.webp/);
 });
 
 test("publishes the approved homepage hierarchy and native V4 controls", async () => {
@@ -224,7 +227,7 @@ test("publishes the approved homepage hierarchy and native V4 controls", async (
   const { html } = await fetchRoute(worker, "/");
 
   for (const required of [
-    /Modular Pumped-Storage Hydroelectric Generation and Energy Storage Infrastructure/,
+    /Hydropower\.[\s\S]*?Reimagined\./,
     /Generation • Storage • Automated Dispatch/,
     /A Canadian energy technology company developing modular hydroelectric generation and long-duration energy storage infrastructure\./,
     /data-v4-twin/,
@@ -376,7 +379,7 @@ test("renders the linked company credit without the obsolete website link on eve
   const worker = await loadWorker();
   for (const route of publicRoutes) {
     const { html } = await fetchRoute(worker, route);
-    assert.match(html, /<span class="text-balance">HUMPBACK HYDRO © 2026 \| SITE BY <a href="https:\/\/www\.brycehuston\.com\/solutions" target="_blank" rel="noreferrer">HUSTON SOLUTION INC\.<\/a><\/span>/, route);
+    assert.match(html, /<span class="text-balance">© 2026 HUMPBACK HYDRO \| SITE BY <a class="huston-shimmer" href="https:\/\/www\.brycehuston\.com\/solutions" target="_blank" rel="noreferrer">HUSTON SOLUTION Inc\.<\/a><\/span>/, route);
     assert.doesNotMatch(html, /Huston Solutions|Current Website/i, route);
   }
 });

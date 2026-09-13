@@ -1,12 +1,9 @@
-import type { Metadata } from "next";
+import { pageMetadata } from "../page-metadata";
 import ApplicationSelector from "../components/ApplicationSelector";
 import RouteHero from "../components/RouteHero";
 import { Arrow } from "../components/Icons";
 
-export const metadata: Metadata = {
-  title: "Applications",
-  description: "Explore potential Humpback Hydro applications across data centers, utilities, industry, island systems and water infrastructure.",
-};
+export const metadata = pageMetadata("/applications", "Applications", "Explore potential Humpback Hydro applications across data centers, utilities, industry, island systems and water infrastructure.");
 
 export default function ApplicationsPage() {
   return (

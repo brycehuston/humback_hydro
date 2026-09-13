@@ -1,4 +1,5 @@
 import ApplicationSelector from "./components/ApplicationSelector";
+import { pageMetadata } from "./page-metadata";
 import { Arrow } from "./components/Icons";
 import PremiumDigitalTwin from "./components/PremiumDigitalTwin";
 import {
@@ -8,6 +9,8 @@ import {
   standards,
   standardsRoadmap,
 } from "./data";
+
+export const metadata = pageMetadata("/", "Modular Hydroelectric Infrastructure", "A Canadian energy technology company developing modular hydroelectric generation and long-duration energy storage infrastructure.");
 
 export default function Home() {
   return (
@@ -20,7 +23,7 @@ export default function Home() {
         <div className="hero-water-scan" aria-hidden="true"><i /><i /></div>
         <div className="hero-copy" data-reveal>
           <p className="eyebrow"><span />Marine Pumped-Hydro Infrastructure</p>
-          <h1 className="home-positioning-title">Modular Pumped-Storage Hydroelectric Generation and Energy Storage Infrastructure</h1>
+          <h1 className="home-positioning-title"><span>Hydropower.</span>{" "}<span>Reimagined.</span></h1>
           <p className="hero-platform-line">Generation • Storage • Automated Dispatch</p>
           <p className="hero-lede">
             A Canadian energy technology company developing modular hydroelectric generation and long-duration energy storage infrastructure.
@@ -40,7 +43,7 @@ export default function Home() {
             <div><small>TECHNICAL FOUNDATION</small><strong>IEEE-Published Architecture</strong></div>
             <div><small>PUBLIC PATENT RECORD</small><strong>U.S. Patent 8823195 B2</strong></div>
           </div>
-          <a href="/evidence">Interrogate the Evidence <Arrow /></a>
+          <a href="/evidence">Review the Evidence <Arrow /></a>
         </div>
 
         <div className="hero-side-label">VANCOUVER, BRITISH COLUMBIA <span>49.2827° N / 123.1207° W</span></div>
@@ -115,7 +118,7 @@ export default function Home() {
               return item.href ? <a key={item.index} href={item.href} target="_blank" rel="noreferrer" data-reveal>{content}</a> : <div key={item.index} data-reveal>{content}</div>;
             })}
           </div>
-          <a className="button outline-light" href="/evidence">Enter the Evidence Vault <Arrow /></a>
+          <a className="button outline-light" href="/evidence">Review the Evidence <Arrow /></a>
         </div>
       </section>
 

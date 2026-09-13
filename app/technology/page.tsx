@@ -1,17 +1,14 @@
-import type { Metadata } from "next";
+import { pageMetadata } from "../page-metadata";
 import RouteHero from "../components/RouteHero";
 import OpshExperience from "../components/OpshExperience";
 import { Arrow } from "../components/Icons";
 
-export const metadata: Metadata = {
-  title: "Technology",
-  description: "Explore Humpback Hydro's fixed offshore pumped-hydro concept, two engineered reservoirs, two turbine stages and lower-reservoir pump system.",
-};
+export const metadata = pageMetadata("/technology", "Technology", "Explore Humpback Hydro's fixed offshore pumped-hydro concept, two engineered reservoirs, two turbine stages and lower-reservoir pump system.");
 
 export default function TechnologyPage() {
   return (
     <main>
-      <RouteHero index="01" eyebrow="Technology" title="The Mountain, Rebuilt at Sea." copy="A fixed offshore pumped-hydro concept that creates vertical separation inside one structure, without depending on mountainous terrain." image="/hero-ocean-infrastructure.png" nextHref="#operating-cycle" nextLabel="Enter the Operating Cycle" />
+      <RouteHero index="01" eyebrow="Technology" title="The Mountain, Rebuilt at Sea." copy="A fixed offshore pumped-hydro concept that creates vertical separation inside one structure, without depending on mountainous terrain." image="/hero-ocean-infrastructure.webp" nextHref="#operating-cycle" nextLabel="Enter the Operating Cycle" />
       <section className="route-intro section-shell" id="operating-cycle">
         <div className="chapter-label"><span>01</span>OPERATING PRINCIPLE</div>
         <div className="section-intro split" data-reveal>

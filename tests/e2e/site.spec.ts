@@ -2,6 +2,76 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Humpback Hydro Site Verification', () => {
 
+  test('Mobile and tablet navigation contains keyboard focus and restores scrolling', async ({ page }) => {
+    for (const width of [390, 768, 1024]) {
+      await page.setViewportSize({ width, height: 844 });
+      await page.goto('/', { waitUntil: 'networkidle' });
+      const trigger = page.getByRole('button', { name: 'Open navigation' });
+      await trigger.click();
+      await expect(page.locator('#mobile-navigation a').first()).toBeFocused();
+      await expect(page.locator('main')).toHaveAttribute('inert', '');
+      await page.keyboard.press('Shift+Tab');
+      await expect(page.getByRole('button', { name: 'Close navigation' })).toBeFocused();
+      await page.keyboard.press('Shift+Tab');
+      await expect(page.locator('#mobile-navigation a').last()).toBeFocused();
+      await page.keyboard.press('Escape');
+      await expect(trigger).toBeFocused();
+      await expect(trigger).toHaveAttribute('aria-expanded', 'false');
+      await expect(page.locator('main')).not.toHaveAttribute('inert');
+      expect(await page.evaluate(() => document.body.style.overflow)).not.toBe('hidden');
+    }
+  });
+
+  test('Application keyboard selection preserves partnership intent', async ({ page }) => {
+    await page.goto('/applications', { waitUntil: 'networkidle' });
+    const tabs = page.getByRole('tab');
+    await tabs.first().focus();
+    await page.keyboard.press('ArrowRight');
+    await expect(tabs.nth(1)).toBeFocused();
+    await expect(tabs.nth(1)).toHaveAttribute('aria-selected', 'true');
+    await expect(page.getByRole('tabpanel')).toHaveAttribute('aria-labelledby', await tabs.nth(1).getAttribute('id') as string);
+    await page.keyboard.press('End');
+    await expect(tabs.last()).toBeFocused();
+    await page.keyboard.press('Home');
+    await expect(tabs.first()).toBeFocused();
+    await page.getByRole('tabpanel').getByRole('link').click();
+    await expect(page.locator('#pathway')).toHaveValue('Data-Center Power Opportunity');
+    await expect(page.locator('#message')).toHaveValue(/data centers/i);
+    await page.goto('/partners?interest=utilities');
+    await expect(page.locator('#pathway')).toHaveValue('Utility Integration');
+    await page.goto('/partners?interest=water');
+    await expect(page.locator('#message')).toHaveValue(/water/i);
+    await page.locator('#message').fill('A site-specific inquiry.');
+    await expect(page.locator('#message')).toHaveValue('A site-specific inquiry.');
+  });
+
+  test('Homepage content remains visible without JavaScript', async ({ browser }) => {
+    const context = await browser.newContext({ javaScriptEnabled: false });
+    const page = await context.newPage();
+    await page.goto('/');
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText('Hydropower. Reimagined.');
+    expect(await page.locator('[data-reveal]').evaluateAll(elements => elements.every(element => getComputedStyle(element).opacity === '1'))).toBe(true);
+    await context.close();
+  });
+
+  test('Public routes reflow and serve canonical metadata', async ({ page }) => {
+    test.setTimeout(120000);
+    for (const width of [1440, 390]) {
+      await page.setViewportSize({ width, height: 844 });
+      for (const route of ['/', '/technology', '/applications', '/impact', '/economics', '/evidence', '/company', '/partners']) {
+        await page.goto(route);
+        await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', `https://humpbackenergy.com${route}`);
+        expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+      }
+    }
+    await page.setViewportSize({ width: 320, height: 844 });
+    await page.goto('/company');
+    expect(await page.locator('h1').evaluate(element => element.scrollWidth <= element.clientWidth)).toBe(true);
+    const sitemap = await page.request.get('/sitemap.xml');
+    expect(sitemap.ok()).toBe(true);
+    expect((await sitemap.text()).match(/<loc>/g)).toHaveLength(8);
+  });
+
   test('Homepage Desktop', async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
     const errors: string[] = [];
@@ -17,7 +87,7 @@ test.describe('Humpback Hydro Site Verification', () => {
 
     await page.goto('/');
 
-    await expect(page.getByRole('heading', { name: 'Modular Pumped-Storage Hydroelectric Generation and Energy Storage Infrastructure', level: 1 })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Hydropower. Reimagined.', level: 1 })).toBeVisible();
     await expect(page.getByText('Generation • Storage • Automated Dispatch')).toBeVisible();
     await expect(page.locator('.premium-digital-twin')).toBeVisible();
 
@@ -104,12 +174,12 @@ test.describe('Humpback Hydro Site Verification', () => {
     await page.goto('/company');
 
     await expect(page.locator('#leadership')).toBeVisible();
-    await expect(page.locator('img[src*="humpback-team-vancouver.jpeg"]')).toBeVisible();
+    await expect(page.locator('img[src*="humpback-team-vancouver.webp"]')).toBeVisible();
 
-    const gustavoImg = page.locator('img[src*="gustavo-varela-latouche.jpg"]');
+    const gustavoImg = page.locator('img[src*="gustavo-varela-latouche.webp"]');
     await gustavoImg.scrollIntoViewIfNeeded();
     await expect(gustavoImg).toBeVisible();
-    await expect(page.locator('img[src*="chris-calvin.jpg"]')).toBeVisible();
+    await expect(page.locator('img[src*="chris-calvin.webp"]')).toBeVisible();
 
     const bryan = page.getByText('Bryan Green').first();
     await bryan.scrollIntoViewIfNeeded();

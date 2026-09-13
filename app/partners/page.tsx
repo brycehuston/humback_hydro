@@ -1,12 +1,9 @@
-import type { Metadata } from "next";
+import { pageMetadata } from "../page-metadata";
 import RouteHero from "../components/RouteHero";
 import { Arrow } from "../components/Icons";
 import PartnerForm from "../components/PartnerForm";
 
-export const metadata: Metadata = {
-  title: "Partnerships",
-  description: "Explore pilot, investment, engineering and validation partnerships with Humpback Hydro.",
-};
+export const metadata = pageMetadata("/partners", "Partnerships", "Explore pilot, investment, engineering and validation partnerships with Humpback Hydro.");
 
 const pathways = [
   { id: "pilot", index: "01", label: "Pilot & Site Partners", title: "Create the First Operating Reference.", copy: "For utilities, governments, First Nations, data centers and land or marine-site partners prepared to evaluate a pilot opportunity.", subject: "Pilot or Site Opportunity" },

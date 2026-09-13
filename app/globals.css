@@ -580,7 +580,7 @@ svg { width: 1em; fill: none; stroke: currentColor; stroke-width: 1.65; stroke-l
 .leadership-list small { color: var(--aqua); font: 620 7px var(--font-geist-mono); letter-spacing: .14em; text-transform: uppercase; }
 .leadership-list h3 { margin: 14px 0 15px; font-size: clamp(30px,3vw,44px); line-height: .98; letter-spacing: -.055em; font-weight: 560; }
 .leadership-list h3.is-bryan { font-size: clamp(22px,2.35vw,34px); letter-spacing: -.045em; }
-.leadership-name-inline { max-width: 100%; display: inline-flex; align-items: baseline; white-space: nowrap; }
+.leadership-name-inline { max-width: 100%; display: inline-flex; align-items: baseline; flex-wrap: wrap; }
 .leadership-name-suffix { flex: 0 0 auto; margin-left: .24em; color: #78969e; font-size: .52em; font-weight: 500; letter-spacing: -.02em; opacity: .82; }
 .leadership-list p { margin: 0; color: #8ca7af; font-size: 13px; }
 .bryan-profile { margin-top: 64px; padding: 42px 0; display: grid; grid-template-columns: minmax(220px,.42fr) minmax(0,.58fr); gap: 60px; border-top: 1px solid rgba(255,255,255,.15); border-bottom: 1px solid rgba(255,255,255,.15); }
@@ -623,7 +623,7 @@ svg { width: 1em; fill: none; stroke: currentColor; stroke-width: 1.65; stroke-l
 .site-footer { padding: 70px clamp(24px,5vw,84px) 34px; color: white; background: var(--abyss); }
 .footer-primary { padding-bottom: 50px; display: grid; grid-template-columns: 1fr 1.2fr 1fr; gap: 40px; align-items: center; border-bottom: 1px solid var(--line-light); }
 .footer-primary > p { margin: 0; color: #829da5; font-size: 13px; text-align: center; }.footer-email { color: var(--energy); font-size: 12px; text-align: right; }
-.footer-grid { padding: 50px 0; display: grid; grid-template-columns: repeat(3,1fr); gap: 50px; border-bottom: 1px solid var(--line-light); }
+.footer-grid { padding: 50px 0; display: grid; grid-template-columns: repeat(4,1fr); gap: 50px; border-bottom: 1px solid var(--line-light); }
 .footer-grid > div { display: grid; gap: 11px; }.footer-grid small { margin-bottom: 10px; color: #587680; font: 600 7px var(--font-geist-mono); letter-spacing: .16em; }.footer-grid a,.footer-grid span { color: #a2b7bd; font-size: 11px; }.footer-grid a:hover { color: white; }
 .footer-legal { padding-top: 28px; display: flex; justify-content: space-between; gap: 25px; color: #55727b; font: 550 6.8px var(--font-geist-mono); letter-spacing: .08em; text-transform: uppercase; }
 .footer-legal a { color: #89b9c4; border-bottom: 1px solid rgba(137,185,196,.45); transition: color .25s ease,border-color .25s ease; }
@@ -1273,4 +1273,47 @@ svg { width: 1em; fill: none; stroke: currentColor; stroke-width: 1.65; stroke-l
   .premium-twin-flow-group { transition: none; }
   .premium-twin-card { transition: none; transform: none; }
   .premium-twin-controls button { transition: none; }
+}
+
+.huston-shimmer {
+  background-image: linear-gradient(
+    to right,
+    #cfab59 0%,
+    #cfab59 45%,
+    #fff8cc 50%,
+    #89b9c4 55%,
+    #89b9c4 100%
+  );
+  background-size: 250% 100%;
+  background-position: 100% 0;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  transition: all 0.25s ease;
+  border-bottom-color: rgba(137,185,196,.45);
+}
+
+.huston-shimmer.is-active {
+  animation: sweep-gold 3.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .huston-shimmer.is-active { animation: none; border-bottom-color: rgba(207,171,89,.45); background-position: 0% 0; }
+}
+
+.footer-legal a.huston-shimmer:hover {
+  background-image: none;
+  -webkit-text-fill-color: white;
+  border-bottom-color: white !important;
+}
+
+@keyframes sweep-gold {
+  0% { 
+    background-position: 100% 0; 
+    border-bottom-color: rgba(137,185,196,.45);
+  }
+  100% { 
+    background-position: 0% 0; 
+    border-bottom-color: rgba(207,171,89,.45);
+  }
 }

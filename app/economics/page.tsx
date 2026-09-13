@@ -1,13 +1,9 @@
-import type { Metadata } from "next";
+import { pageMetadata } from "../page-metadata";
 import OpshCalculatorLauncher from "../components/OpshCalculatorLauncher";
 import RouteHero from "../components/RouteHero";
 import { ILLUSTRATIVE_PROJECT_ASSUMPTIONS } from "../economics-model";
 
-export const metadata: Metadata = {
-  title: "Economics",
-  description:
-    "Review a provisional illustrative economics scenario for 100 MW and 1,000 MW Humpback Hydro facilities.",
-};
+export const metadata = pageMetadata("/economics", "Economics", "Review a provisional illustrative economics scenario for 100 MW and 1,000 MW Humpback Hydro facilities.");
 
 const model = ILLUSTRATIVE_PROJECT_ASSUMPTIONS;
 
@@ -195,6 +191,10 @@ export default function EconomicsPage() {
                 arithmetic consequences of those inputs, not measured operating
                 performance, an approved forecast, financial advice, an
                 investment offering or a guarantee of future results.
+                {" "}Charging electricity, pumping losses and round-trip efficiency
+                are not represented. These outputs do not establish net storage
+                margin or project returns; the emissions calculation excludes
+                charging electricity and lifecycle impacts.
               </p>
             </div>
           </div>
@@ -282,6 +282,9 @@ export default function EconomicsPage() {
 
           <div
             className="overflow-x-auto border border-white/15 bg-black/10"
+            role="region"
+            aria-label="Illustrative economics comparison"
+            tabIndex={0}
             data-reveal
           >
             <table className="w-full min-w-[720px] border-collapse text-left">

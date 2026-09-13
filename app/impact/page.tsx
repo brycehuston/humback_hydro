@@ -1,12 +1,8 @@
-import type { Metadata } from "next";
+import { pageMetadata } from "../page-metadata";
 import { Arrow, Check, Plus } from "../components/Icons";
 import RouteHero from "../components/RouteHero";
 
-export const metadata: Metadata = {
-  title: "Impact",
-  description:
-    "Review Humpback Hydro's qualified environmental profile, potential SDG alignment, material risks and validation priorities.",
-};
+export const metadata = pageMetadata("/impact", "Impact", "Review Humpback Hydro's qualified environmental profile, potential SDG alignment, material risks and validation priorities.");
 
 const establishedMechanisms = [
   {
