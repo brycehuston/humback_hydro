@@ -196,7 +196,7 @@ export default function SiteChrome({ children }: { children: React.ReactNode }) 
         <div className="footer-legal">
           <span>Private Design Concept</span>
           <span>Concept Imagery Does Not Depict Completed Projects</span>
-          <span>© 2026 HUMPBACK HYDRO | SITE BY <a href="https://www.brycehuston.com/solutions" target="_blank" rel="noreferrer">HUSTON SOLUTIONS</a></span>
+          <span className="text-balance">HUMPBACK HYDRO © 2026 | SITE BY HUSTON SOLUTION INC.</span>
         </div>
       </footer>
     </>

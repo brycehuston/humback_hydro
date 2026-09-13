@@ -189,11 +189,11 @@ test("renders the approved local team portraits including Bryan Green", async ()
     /Portrait of Gustavo Varela Latouche/,
     /Portrait of Col\. Bryan Green \(Ret\.\)/,
     /CHIEF INFORMATION SECURITY OFFICER/,
-    /Founder • Huston Solutions/,
+    /Founder • HUSTON SOLUTION INC\./,
     /SECURITY &amp; DIGITAL INFRASTRUCTURE/,
     /Information Security • AI Systems • Digital Infrastructure/,
     /FOUNDER &amp; SYSTEMS ARCHITECT/,
-    /Bryce Huston is Chief Information Security Officer at Humpback Hydro and founder of Huston Solutions/,
+    /Bryce Huston is Chief Information Security Officer at Humpback Hydro and founder of HUSTON SOLUTION INC\./,
     /A hands-on systems architect and technical operator, Bryce builds production platforms/,
     /architect the system, control the risk and build the infrastructure required to scale/,
     /\/company\/humpback-team-vancouver\.jpeg/,
@@ -372,15 +372,13 @@ test("removes standalone seeking language and external V4 payloads", async () =>
   assert.doesNotMatch(v4Output, /floating-ui|lucide(?:\.min)?\.js|unpkg\.com|cdn\.jsdelivr\.net/i);
 });
 
-test("preserves the exact footer attribution and safe external target", async () => {
+test("renders the exact plain-text footer credit on every public route", async () => {
   const worker = await loadWorker();
-  const { html } = await fetchRoute(worker, "/");
-
-  assert.match(html, /© 2026 HUMPBACK HYDRO \| SITE BY/);
-  assert.match(
-    html,
-    /href="https:\/\/www\.brycehuston\.com\/solutions"[^>]*target="_blank"/i,
-  );
+  for (const route of publicRoutes) {
+    const { html } = await fetchRoute(worker, route);
+    assert.match(html, /<span class="text-balance">HUMPBACK HYDRO © 2026 \| SITE BY HUSTON SOLUTION INC\.<\/span>/, route);
+    assert.doesNotMatch(html, /Huston Solutions|brycehuston\.com\/solutions/i, route);
+  }
 });
 
 test("labels economics as provisional and distinguishes calculated outputs", async () => {

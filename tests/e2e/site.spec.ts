@@ -118,7 +118,13 @@ test.describe('Humpback Hydro Site Verification', () => {
     await expect(page.getByRole('heading', { name: 'Bryce Huston', level: 2 })).toBeVisible();
     await expect(page.getByText('Information Security • AI Systems • Digital Infrastructure')).toBeVisible();
     await expect(page.getByText('FOUNDER & SYSTEMS ARCHITECT')).toBeVisible();
-    await expect(page.getByText('Huston Solutions', { exact: true }).last()).toBeVisible();
+    await expect(page.locator('.leadership-credential dd')).toHaveText('HUSTON SOLUTION INC.');
+    await expect(page.getByText('Founder • HUSTON SOLUTION INC.', { exact: true })).toBeVisible();
+    await expect(page.locator('.bryce-profile .leadership-biography p')).toHaveText([
+      'Bryce Huston is Chief Information Security Officer at Humpback Hydro and founder of HUSTON SOLUTION INC., a technology company focused on applied artificial intelligence, automation, software systems and digital infrastructure.',
+      'A hands-on systems architect and technical operator, Bryce builds production platforms that combine real-time data acquisition, quantitative analysis, automated decision systems, secure cloud infrastructure and operational monitoring. His work spans high-frequency intelligence platforms, AI-enabled business automation, full-stack digital products and security research—turning complex technical concepts into deployed systems built for reliability, speed and measurable performance.',
+      'At Humpback Hydro, Bryce leads information security and digital infrastructure strategy. His mandate is to establish the secure, scalable digital foundation supporting engineering collaboration, data integrity, operational continuity and future platform growth. He brings an execution-focused approach to the leadership team: architect the system, control the risk and build the infrastructure required to scale.',
+    ]);
 
     const assertBryanNameTreatment = async () => {
       const metrics = await page.locator('.leadership-name-inline').evaluateAll(elements => elements.map(element => {
@@ -141,8 +147,6 @@ test.describe('Humpback Hydro Site Verification', () => {
       expect(metrics.every(metric => metric?.oneLine && metric.withinViewport && metric.withinHeading)).toBe(true);
     };
 
-    await assertBryanNameTreatment();
-
     const mark = page.getByText('Mark Legacy').first();
     await mark.scrollIntoViewIfNeeded();
     await expect(mark).toBeVisible();
@@ -155,10 +159,25 @@ test.describe('Humpback Hydro Site Verification', () => {
     });
     expect(brokenImages).toBe(0);
 
-    await page.setViewportSize({ width: 390, height: 844 });
-    await expect(page.locator('#leadership')).toBeVisible();
-    await assertBryanNameTreatment();
-    expect(await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth)).toBe(false);
+    for (const width of [1440, 768, 390]) {
+      await page.setViewportSize({ width, height: width === 390 ? 844 : 900 });
+      await assertBryanNameTreatment();
+      expect(await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth)).toBe(false);
+      const credit = page.locator('.footer-legal > span').last();
+      await expect(credit).toHaveText('HUMPBACK HYDRO © 2026 | SITE BY HUSTON SOLUTION INC.');
+      await expect(page.locator('.footer-legal a, .footer-legal [tabindex], .footer-legal [role="link"]')).toHaveCount(0);
+      await expect(page.locator('a[href*="brycehuston.com/solutions"]')).toHaveCount(0);
+      for (const [name, locator] of [
+        ['leadership', page.locator('.leadership-list')],
+        ['bryce-profile', page.locator('.bryce-profile')],
+        ['footer', page.locator('.site-footer')],
+      ] as const) {
+        await locator.scrollIntoViewIfNeeded();
+        await expect(locator).toBeVisible();
+        // Exclude the fixed navigation from isolated component captures.
+        await locator.screenshot({ path: `test-results/company-${name}-${width}.png`, animations: 'disabled', style: '.site-header { visibility: hidden !important; }' });
+      }
+    }
   });
 
   test('Roadmap / Technology', async ({ page }) => {
