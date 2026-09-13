@@ -105,8 +105,8 @@ export default function Home() {
           <div className="chapter-label light"><span>04</span>THE FOUNDATION</div>
           <div className="evidence-lead" data-reveal>
             <p className="eyebrow"><span />Institutional Evidence</p>
-            <h2>Belief Is Not Enough.<br />Open the Record.</h2>
-            <p>Humpback Hydro is grounded in a public patent record, an IEEE-published architecture and university proof-of-concept studies. Modeled results are presented with their limitations.</p>
+            <h2>Evidence You Can Examine.<br />Open the Record.</h2>
+            <p>Humpback Hydro&apos;s public foundation includes a patent record, an IEEE-published architecture and university proof-of-concept studies. Modeled results are presented within their source-specific boundaries.</p>
           </div>
 
           <div className="evidence-ledger">
@@ -123,7 +123,7 @@ export default function Home() {
         <div className="chapter-label"><span>05</span>THE PATHWAY</div>
         <div className="section-intro split" data-reveal>
           <div><p className="eyebrow dark"><span />Evidence-Controlled Development</p><h2>Engineering &amp; Operational Roadmap</h2></div>
-          <p>The current public record supports a path toward independent validation and pilot deployment. Commercial scale, manufacturing configuration and timing remain unsupported until an approved roadmap and technical basis are available.</p>
+          <p>Humpback Hydro is advancing from its documented patent, publication and study foundation toward independent engineering validation and pilot deployment. An approved roadmap and supporting technical basis will define commercial scale, manufacturing configuration and timing.</p>
         </div>
         <div className="roadmap-line">
           {roadmap.map((item) => (
@@ -193,7 +193,7 @@ export default function Home() {
           <div className="final-cta-copy" data-reveal>
             <p className="eyebrow"><span />The Next Operating Chapter</p>
             <h2>Advance the First Pilot.</h2>
-            <p>Humpback Hydro welcomes conversations with qualified pilot-site, strategic-capital, engineering and independent-validation organizations.</p>
+            <p>Humpback Hydro is engaging strategic partners for validation and pilot deployment across pilot sites, capital, engineering and independent review.</p>
             <div className="hero-actions"><a className="button energy" href="/partners">Choose Your Pathway <Arrow /></a><a className="button secondary" href="mailto:info@humpbackenergy.com">Contact the Team</a></div>
           </div>
 

@@ -126,8 +126,8 @@ export default function ImpactPage() {
       <RouteHero
         index="03"
         eyebrow="Impact"
-        title="Impact Must Be Measured."
-        copy="A balanced view of the proposed environmental profile, potential development alignment and the monitoring required before project-level benefits can be claimed."
+        title="Measure Impact From the Baseline."
+        copy="A balanced framework for evaluating the proposed environmental profile, potential development alignment and the monitoring required to establish project-level outcomes."
         image="/island-energy-water.webp"
         nextHref="#impact-boundary"
         nextLabel="Review the Impact Framework"
@@ -139,12 +139,12 @@ export default function ImpactPage() {
           <div>
             <p className="eyebrow dark"><span />Operational Profile</p>
             <h2 className="text-[clamp(3rem,6vw,6.5rem)] font-medium leading-[0.92] tracking-[-0.065em] text-[#061c28]">
-              Near-Zero Operation Is an Objective, Not a Lifecycle Claim.
+              Near-Zero Operation Is the Design Objective.
             </h2>
           </div>
           <div className="self-end">
             <p className="text-base leading-8 text-[#607780]">
-              The proposed system would generate without on-site fuel combustion. Its construction materials, marine works, maintenance, electricity used for pumping and end-of-life impacts have not yet been quantified for a Humpback project.
+              The proposed system is designed to generate without on-site fuel combustion. Project-specific lifecycle analysis will quantify construction materials, marine works, maintenance, electricity used for pumping and end-of-life impacts.
             </p>
             <p className="mt-6 border-l-2 border-[#168da8] pl-5 text-sm leading-7 text-[#46636c]">
               No operating Humpback installation has demonstrated an emissions, biodiversity, oxygenation, water-quality or habitat benefit. Avoided emissions depend on the actual charging mix, displaced generation and operating profile.
@@ -164,7 +164,7 @@ export default function ImpactPage() {
               </h2>
             </div>
             <p className="self-end text-base leading-8 text-[#a9bbc1]">
-              This is a future design and measurement objective, not a demonstrated outcome. Opportunities and adverse effects must be evaluated together. Design intent, analogous infrastructure and ecological plausibility are not substitutes for project evidence.
+              Net Positive Marine Infrastructure is a future design and measurement objective. Opportunities and adverse effects must be evaluated together, with project evidence establishing outcomes beyond design intent, analogous infrastructure and ecological plausibility.
             </p>
           </div>
 
@@ -224,7 +224,7 @@ export default function ImpactPage() {
           <div data-reveal>
             <p className="eyebrow dark"><span />Development Context</p>
             <h2 className="text-[clamp(3rem,5vw,5.8rem)] font-medium leading-[0.94] tracking-[-0.06em] text-[#061c28]">
-              Alignment Is Not the Same as Measured Impact.
+              Use the SDGs as a Planning and Measurement Framework.
             </h2>
             <p className="mt-7 text-base leading-8 text-[#607780]">
               The goals provide a useful planning lens. Real contribution must be established through project delivery, monitoring and independently supportable outcomes.
@@ -276,7 +276,7 @@ export default function ImpactPage() {
 
       <section className="bg-[#020d14] text-white">
         <div className="section-shell">
-          <div className="chapter-label light"><span>04</span>MONITORING BEFORE CLAIMS</div>
+          <div className="chapter-label light"><span>04</span>MONITORING &amp; ADAPTIVE MANAGEMENT</div>
           <div className="grid gap-12 lg:grid-cols-[minmax(0,0.72fr)_minmax(0,1.28fr)] lg:gap-24">
             <div data-reveal>
               <p className="eyebrow"><span />Research and Validation</p>

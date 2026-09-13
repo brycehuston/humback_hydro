@@ -13,6 +13,10 @@ export interface LeadershipProfile {
   imagePosition?: string;
   initials?: string;
   focus: string;
+  profileLabel?: string;
+  specialty?: string;
+  credentialLabel?: string;
+  credentialValue?: string;
   biography?: readonly string[];
   publicationStatus: LeadershipPublicationStatus;
 }
@@ -62,12 +66,20 @@ export const leadership: readonly LeadershipProfile[] = [
   },
   {
     name: "Bryce Huston",
-    role: "Chief Information Security Officer, Humpback Hydro",
+    role: "CHIEF INFORMATION SECURITY OFFICER",
     image: "/team/bryce-huston.jpg",
     imageAlt: "Portrait of Bryce Huston",
     imagePosition: "50% 30%",
-    focus:
-      "Information security, systems architecture, platform resilience and digital infrastructure.",
+    focus: "Founder • Huston Solutions",
+    profileLabel: "SECURITY & DIGITAL INFRASTRUCTURE",
+    specialty: "Information Security • AI Systems • Digital Infrastructure",
+    credentialLabel: "FOUNDER & SYSTEMS ARCHITECT",
+    credentialValue: "Huston Solutions",
+    biography: [
+      "Bryce Huston is Chief Information Security Officer at Humpback Hydro and founder of Huston Solutions, a technology company focused on applied artificial intelligence, automation, software systems and digital infrastructure.",
+      "A hands-on systems architect and technical operator, Bryce builds production platforms that combine real-time data acquisition, quantitative analysis, automated decision systems, secure cloud infrastructure and operational monitoring. His work spans high-frequency intelligence platforms, AI-enabled business automation, full-stack digital products and security research—turning complex technical concepts into deployed systems built for reliability, speed and measurable performance.",
+      "At Humpback Hydro, Bryce leads information security and digital infrastructure strategy. His mandate is to establish the secure, scalable digital foundation supporting engineering collaboration, data integrity, operational continuity and future platform growth. He brings an execution-focused approach to the leadership team: architect the system, control the risk and build the infrastructure required to scale.",
+    ],
     publicationStatus: "published-qualified",
   },
 ];
@@ -143,23 +155,23 @@ export const roadmap = [
   {
     phase: "02",
     label: "Engineering Gate",
-    status: "Pending",
+    status: "Validation Pathway",
     title: "Independent Validation",
-    copy: "Independent engineering validation remains a required next gate. No completed validation report is represented here.",
+    copy: "Humpback Hydro is advancing through independent engineering validation as the next engineering gate.",
   },
   {
     phase: "03",
     label: "Deployment Gate",
-    status: "Planned",
+    status: "Next Commercial Milestone",
     title: "Pilot Deployment",
-    copy: "A pilot remains forward-looking and dependent on site, engineering, environmental, financing and partner approvals.",
+    copy: "Pilot deployment is the next commercial milestone, subject to site, engineering, environmental, financing and partner approvals.",
   },
   {
     phase: "04",
     label: "Future Gate",
-    status: "Not Yet Established",
+    status: "Commercialization Pathway",
     title: "Commercialization",
-    copy: "Commercial scale, manufacturing configuration and deployment timing require an approved roadmap and supporting evidence.",
+    copy: "Commercial scale, manufacturing configuration and deployment timing will be defined through an approved roadmap and supporting evidence.",
   },
 ];
 

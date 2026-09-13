@@ -24,19 +24,14 @@ test.describe('Humpback Hydro Site Verification', () => {
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
     expect(overflow).toBe(false);
 
-    // Some navigation structure (like footer or header links)
     await expect(page.locator('a[href="/technology"]').first()).toBeVisible();
-
-    if (errors.length > 0) {
-      console.log('Homepage Desktop Errors:', errors);
-    }
-    // Only fail if there are non-404 errors (or we can see what the 404s are).
-    expect(errors.filter(e => !e.includes('404'))).toEqual([]);
+    expect(errors.filter(error => !error.includes('404'))).toEqual([]);
   });
 
-  test('V4 Digital Twin', async ({ page }) => {
+  test('V4 Digital Twin and SVG flow vectors', async ({ page }) => {
     await page.goto('/');
 
+    const twin = page.locator('[data-v4-twin]');
     const autoCycle = page.getByRole('button', { name: 'Auto Cycle' });
     const lowerGen = page.getByRole('button', { name: 'Lower Generation' });
     const charging = page.getByRole('button', { name: 'Charging' });
@@ -46,14 +41,36 @@ test.describe('Humpback Hydro Site Verification', () => {
 
     await expect(autoCycle).toBeVisible();
     await expect(lowerGen).toBeVisible();
+    await expect(page.locator('.premium-twin-flow-vectors')).toHaveAttribute('viewBox', '0 0 1600 900');
+    await expect(page.locator('[data-flow-vector-route]')).toHaveCount(5);
 
-    // The canvas width attribute is only set via JS after React hydration (in useEffect)
     const canvas = page.locator('.premium-twin-stage canvas');
     await expect(canvas).toHaveAttribute('width', /^\d+$/);
 
-    await lowerGen.click();
-    await expect(lowerGen).toHaveAttribute('aria-pressed', 'true');
+    const activate = async (
+      button: ReturnType<typeof page.getByRole>,
+      operation: 'lower' | 'charge' | 'upper',
+      expectedColor: string,
+    ) => {
+      await button.click();
+      await expect(button).toHaveAttribute('aria-pressed', 'true');
+      await expect(twin).toHaveAttribute('data-active-operation', operation);
+      const groups = page.locator(`.premium-twin-flow-group.is-${operation}`);
+      await expect(groups.first()).toHaveCSS('color', expectedColor);
+      await expect.poll(async () => groups.first().evaluate(element => Number(getComputedStyle(element).opacity))).toBeGreaterThan(0.2);
+      const transforms = await groups.locator('[data-vector-arrow]').evaluateAll(elements => elements.map(element => element.getAttribute('transform')));
+      expect(transforms.length).toBeGreaterThan(0);
+      expect(transforms.every(Boolean)).toBe(true);
+    };
+
+    await activate(lowerGen, 'lower', 'rgb(72, 185, 255)');
     await expect(page.getByText('LOWER GENERATION', { exact: true }).first()).toBeVisible();
+    await activate(charging, 'charge', 'rgb(80, 227, 138)');
+    await activate(upperGen, 'upper', 'rgb(183, 140, 255)');
+
+    await cycleSummary.click();
+    await expect(cycleSummary).toHaveAttribute('aria-pressed', 'true');
+    await expect(twin).not.toHaveAttribute('data-active-operation', /.+/);
 
     await expect(pausePlay).toHaveText('Pause');
     await pausePlay.click();
@@ -79,7 +96,7 @@ test.describe('Humpback Hydro Site Verification', () => {
     const autoCycle = page.getByRole('button', { name: 'Auto Cycle' });
     await expect(autoCycle).toBeVisible();
     const box = await autoCycle.boundingBox();
-    expect(box?.height).toBeGreaterThanOrEqual(24);
+    expect(box?.height).toBeGreaterThanOrEqual(44);
   });
 
   test('Company', async ({ page }) => {
@@ -87,18 +104,44 @@ test.describe('Humpback Hydro Site Verification', () => {
     await page.goto('/company');
 
     await expect(page.locator('#leadership')).toBeVisible();
-
     await expect(page.locator('img[src*="humpback-team-vancouver.jpeg"]')).toBeVisible();
 
     const gustavoImg = page.locator('img[src*="gustavo-varela-latouche.jpg"]');
     await gustavoImg.scrollIntoViewIfNeeded();
     await expect(gustavoImg).toBeVisible();
-
     await expect(page.locator('img[src*="chris-calvin.jpg"]')).toBeVisible();
 
     const bryan = page.getByText('Bryan Green').first();
     await bryan.scrollIntoViewIfNeeded();
     await expect(bryan).toBeVisible();
+
+    await expect(page.getByRole('heading', { name: 'Bryce Huston', level: 2 })).toBeVisible();
+    await expect(page.getByText('Information Security • AI Systems • Digital Infrastructure')).toBeVisible();
+    await expect(page.getByText('FOUNDER & SYSTEMS ARCHITECT')).toBeVisible();
+    await expect(page.getByText('Huston Solutions', { exact: true }).last()).toBeVisible();
+
+    const assertBryanNameTreatment = async () => {
+      const metrics = await page.locator('.leadership-name-inline').evaluateAll(elements => elements.map(element => {
+        const suffix = element.querySelector<HTMLElement>('.leadership-name-suffix');
+        const parent = element.closest<HTMLElement>('h2, h3');
+        if (!suffix || !parent) return null;
+        const primarySize = Number.parseFloat(getComputedStyle(element).fontSize);
+        const suffixSize = Number.parseFloat(getComputedStyle(suffix).fontSize);
+        const rect = element.getBoundingClientRect();
+        const parentRect = parent.getBoundingClientRect();
+        return {
+          ratio: suffixSize / primarySize,
+          oneLine: rect.height <= primarySize * 1.25,
+          withinViewport: rect.left >= 0 && rect.right <= window.innerWidth,
+          withinHeading: rect.right <= parentRect.right + 1,
+        };
+      }));
+      expect(metrics.length).toBe(2);
+      expect(metrics.every(metric => metric && metric.ratio >= 0.48 && metric.ratio <= 0.55)).toBe(true);
+      expect(metrics.every(metric => metric?.oneLine && metric.withinViewport && metric.withinHeading)).toBe(true);
+    };
+
+    await assertBryanNameTreatment();
 
     const mark = page.getByText('Mark Legacy').first();
     await mark.scrollIntoViewIfNeeded();
@@ -107,11 +150,15 @@ test.describe('Humpback Hydro Site Verification', () => {
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
     expect(overflow).toBe(false);
 
-    // Test images load
     const brokenImages = await page.evaluate(() => {
       return Array.from(document.querySelectorAll('img')).filter(img => img.naturalWidth === 0).length;
     });
     expect(brokenImages).toBe(0);
+
+    await page.setViewportSize({ width: 390, height: 844 });
+    await expect(page.locator('#leadership')).toBeVisible();
+    await assertBryanNameTreatment();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth)).toBe(false);
   });
 
   test('Roadmap / Technology', async ({ page }) => {
@@ -139,7 +186,7 @@ test.describe('Humpback Hydro Site Verification', () => {
 
     await page.goto('/impact');
 
-    await expect(page.getByText('Net Positive Marine Infrastructure')).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Net Positive Marine Infrastructure', exact: true })).toBeVisible();
     await expect(page.getByText('Established Design Mechanisms')).toBeVisible();
     await expect(page.getByText('Research Hypotheses')).toBeVisible();
 
@@ -150,7 +197,6 @@ test.describe('Humpback Hydro Site Verification', () => {
       return Array.from(document.querySelectorAll('img')).filter(img => img.naturalWidth === 0).length;
     });
     expect(brokenImages).toBe(0);
-
     expect(errors).toEqual([]);
   });
 
@@ -159,6 +205,15 @@ test.describe('Humpback Hydro Site Verification', () => {
     await page.goto('/');
 
     await expect(page.locator('.premium-digital-twin')).toBeVisible();
+    const lowerGen = page.getByRole('button', { name: 'Lower Generation' });
+    await lowerGen.click();
+
+    const arrows = page.locator('.premium-twin-flow-group.is-lower [data-vector-arrow]');
+    await expect(arrows.first()).toHaveAttribute('transform', /translate/);
+    const before = await arrows.evaluateAll(elements => elements.map(element => element.getAttribute('transform')));
+    await page.waitForTimeout(150);
+    const after = await arrows.evaluateAll(elements => elements.map(element => element.getAttribute('transform')));
+    expect(after).toEqual(before);
 
     const pausePlay = page.locator('.pause-control');
     await expect(pausePlay).toBeVisible();

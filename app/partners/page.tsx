@@ -18,10 +18,10 @@ const pathways = [
 export default function PartnersPage() {
   return (
     <main>
-      <RouteHero index="07" eyebrow="Partnerships" title="Choose Your Role in What Comes Next." copy="Humpback Hydro welcomes qualified organizations with the capital, sites, engineering resources or institutional capability required to advance toward pilot deployment." image="/island-energy-water.webp" nextHref="#pathways" nextLabel="Select a Partnership Pathway" />
+      <RouteHero index="07" eyebrow="Partnerships" title="Choose Your Role in What Comes Next." copy="Humpback Hydro is engaging strategic partners for validation and pilot deployment across capital, sites, engineering resources and institutional capability." image="/island-energy-water.webp" nextHref="#pathways" nextLabel="Select a Partnership Pathway" />
       <section className="partner-pathways section-shell" id="pathways">
         <div className="chapter-label"><span>01</span>PARTNERSHIP PATHWAYS</div>
-        <div className="section-intro split" data-reveal><div><p className="eyebrow dark"><span />The Next Operating Chapter</p><h2>A Different Conversation for Every Partner.</h2></div><p>Select the pathway that best matches your organization. Each action opens a direct, pre-addressed conversation with the Humpback Hydro team.</p></div>
+        <div className="section-intro split" data-reveal><div><p className="eyebrow dark"><span />The Next Operating Chapter</p><h2>Match the Mandate to the Right Pathway.</h2></div><p>Select the pathway that best matches your organization. Each action opens a direct, pre-addressed conversation with the Humpback Hydro team.</p></div>
         <div className="pathway-list">
           {pathways.map((pathway) => (
             <article key={pathway.id} id={pathway.id} data-reveal>

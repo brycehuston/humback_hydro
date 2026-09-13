@@ -1,5 +1,15 @@
 export const DIGITAL_TWIN_CYCLE_SECONDS = 29;
 
+export const DIGITAL_TWIN_BASE_PLATE = Object.freeze({
+  width: 1600,
+  height: 900,
+  structureTopY: 105,
+  structureBaseY: 881,
+  ambientWaterlineY: 493,
+  externalPipeAngleDegrees: 0,
+  embedmentDepthFeet: Object.freeze([30, 50] as const),
+});
+
 export type DigitalTwinOperation = "lower" | "charge" | "upper";
 
 export type DigitalTwinScene =
@@ -36,6 +46,18 @@ export function clamp(value: number, minimum = 0, maximum = 1) {
 export function smoothstep(value: number) {
   const bounded = clamp(value);
   return bounded * bounded * (3 - 2 * bounded);
+}
+
+export function flagBreezeActivityAt(seconds: number) {
+  const time =
+    ((seconds % DIGITAL_TWIN_CYCLE_SECONDS) + DIGITAL_TWIN_CYCLE_SECONDS) %
+    DIGITAL_TWIN_CYCLE_SECONDS;
+  const pulse = (start: number, end: number) => {
+    if (time < start || time > end) return 0;
+    return Math.sin(((time - start) / (end - start)) * Math.PI);
+  };
+
+  return Math.max(pulse(0, 2.4), pulse(24.5, DIGITAL_TWIN_CYCLE_SECONDS));
 }
 
 function operationScene(

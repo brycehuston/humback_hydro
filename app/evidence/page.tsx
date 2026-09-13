@@ -12,12 +12,12 @@ export const metadata: Metadata = {
 export default function EvidencePage() {
   return (
     <main>
-      <RouteHero index="05" eyebrow="Engineering Foundation" title="Evidence Before Scale." copy="The public record, modeled study results and the limitations that still apply before operating or commercial claims can be made." image="/turbine-macro.webp" nextHref="#vault" nextLabel="Open the Evidence Vault" />
+      <RouteHero index="05" eyebrow="Engineering Foundation" title="Evidence Before Scale." copy="A structured view of the public record, modeled study results and the validation pathway supporting engineering and commercial advancement." image="/turbine-macro.webp" nextHref="#vault" nextLabel="Open the Evidence Vault" />
       <section className="evidence-vault section-shell" id="vault">
         <div className="chapter-label"><span>01</span>CLAIMS REGISTER</div>
         <div className="section-intro split" data-reveal>
-          <div><p className="eyebrow dark"><span />Institutional Diligence</p><h2>What Is Known. What Still Needs Proof.</h2></div>
-          <p>Every material claim is presented according to its current evidence status. Modeled results are not represented as measured output, an operating facility or independent engineering validation.</p>
+          <div><p className="eyebrow dark"><span />Institutional Diligence</p><h2>The Record Today. The Validation Path Ahead.</h2></div>
+          <p>Every material claim is tied to its current evidence status. Modeled results are informing the engineering validation program and remain distinct from measured operating output or completed independent validation.</p>
         </div>
 
         <div className="vault-list">
@@ -75,7 +75,7 @@ export default function EvidencePage() {
           <div data-reveal>
             <p className="eyebrow dark"><span />What Comes Next</p>
             <h2 className="text-[clamp(3rem,5vw,5.8rem)] font-medium leading-[0.94] tracking-[-0.06em] text-[#061c28]">
-              A Roadmap for Assurance, Not a Claim of Compliance.
+              A Roadmap Toward Independent Assurance.
             </h2>
             <p className="mt-7 text-base leading-8 text-[#607780]">
               Applicable standards, regulatory requirements and design criteria must be determined by qualified engineers, authorities and system operators for each jurisdiction and site.
@@ -96,7 +96,7 @@ export default function EvidencePage() {
           </div>
         </div>
         <p className="mt-10 border-l-2 border-[#168da8] pl-5 text-sm leading-7 text-[#607780]" data-reveal>
-          No standards roadmap is represented as approved. No ISO, IEC, IEEE, NERC or other certification or compliance status is claimed by this section.
+          This section presents an assurance pathway; it does not represent an approved standards roadmap or claim ISO, IEC, IEEE, NERC or other certification or compliance status.
         </p>
       </section>
 
@@ -105,7 +105,7 @@ export default function EvidencePage() {
           <div className="chapter-label light"><span>04</span>PUBLICATION STANDARD</div>
           <div className="claim-policy-grid">
             <article data-reveal><span>01</span><h3>Verified and Publishable</h3><p>Claims supported by an authoritative public record or approved primary document.</p></article>
-            <article data-reveal><span>02</span><h3>Provisional</h3><p>Qualified modeled results and company information that still require confirmation or independent review.</p></article>
+            <article data-reveal><span>02</span><h3>Provisional</h3><p>Modeled results and company information presented with the confirmation or independent-review steps that apply.</p></article>
             <article data-reveal><span>03</span><h3>Internal Only</h3><p>Unapproved performance, prototype, financial and commercial-readiness claims remain off the public site.</p></article>
           </div>
           <a className="button outline-light" href="mailto:info@humpbackenergy.com?subject=Humpback%20Hydro%20Technical%20Information">Request Technical Information <Arrow /></a>

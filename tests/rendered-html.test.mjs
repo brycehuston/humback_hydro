@@ -7,8 +7,10 @@ import {
   normalizeOperatingHorizon,
 } from "../app/economics-model.ts";
 import {
+  DIGITAL_TWIN_BASE_PLATE,
   DIGITAL_TWIN_CYCLE_SECONDS,
   digitalTwinSceneAt,
+  flagBreezeActivityAt,
   manualDigitalTwinScene,
   reservoirLevelsAt,
 } from "../app/digital-twin.ts";
@@ -143,16 +145,16 @@ test("publishes qualified impact and company positioning", async () => {
   const combined = `${impact.html}\n${company.html}`;
 
   assert.match(combined, /No operating Humpback installation has demonstrated/i);
-  assert.match(combined, /Near-Zero Operation Is an Objective, Not a Lifecycle Claim/i);
+  assert.match(combined, /Near-Zero Operation Is the Design Objective/i);
   assert.match(combined, /opportunities and adverse effects must be evaluated together/i);
-  assert.match(combined, /Alignment Is Not the Same as Measured Impact/i);
+  assert.match(combined, /Use the SDGs as a Planning and Measurement Framework/i);
   assert.match(combined, /Net Positive Marine Infrastructure/i);
-  assert.match(combined, /future design and measurement objective, not a demonstrated outcome/i);
+  assert.match(combined, /future design and measurement objective/i);
   assert.match(combined, /Established Design Mechanisms/i);
   assert.match(combined, /Research Hypotheses/i);
   assert.match(combined, /Advancing Toward Independent Engineering Validation and Pilot Deployment/i);
   assert.match(combined, /Engineering Infrastructure[\s\S]*That Powers Humanity/i);
-  assert.match(combined, /Leadership titles, roles and career summaries are company supplied/i);
+  assert.match(combined, /Published leadership profiles use company-supplied titles, roles and career summaries/i);
   assert.doesNotMatch(combined, /U\.S\. patent holder/i);
   assert.doesNotMatch(combined, /★|☆/);
 });
@@ -186,8 +188,14 @@ test("renders the approved local team portraits including Bryan Green", async ()
     /Portrait of Chris Calvin/,
     /Portrait of Gustavo Varela Latouche/,
     /Portrait of Col\. Bryan Green \(Ret\.\)/,
-    /Chief Information Security Officer, Humpback Hydro/,
-    /Information security, systems architecture, platform resilience and digital infrastructure\./,
+    /CHIEF INFORMATION SECURITY OFFICER/,
+    /Founder • Huston Solutions/,
+    /SECURITY &amp; DIGITAL INFRASTRUCTURE/,
+    /Information Security • AI Systems • Digital Infrastructure/,
+    /FOUNDER &amp; SYSTEMS ARCHITECT/,
+    /Bryce Huston is Chief Information Security Officer at Humpback Hydro and founder of Huston Solutions/,
+    /A hands-on systems architect and technical operator, Bryce builds production platforms/,
+    /architect the system, control the risk and build the infrastructure required to scale/,
     /\/company\/humpback-team-vancouver\.jpeg/,
     /PROJECT PHOTOGRAPH/,
     /U\.S\. Army Corps of Engineers retired colonel and former commander and military laboratory director/i,
@@ -195,6 +203,18 @@ test("renders the approved local team portraits including Bryan Green", async ()
   ]) {
     assert.match(html, required);
   }
+
+  const companySource = await readFile(
+    new URL("../app/company/page.tsx", import.meta.url),
+    "utf8",
+  );
+  const styles = await readFile(
+    new URL("../app/globals.css", import.meta.url),
+    "utf8",
+  );
+  assert.match(companySource, /Col\. Bryan Green\{" "\}[\s\S]*leadership-name-suffix[\s\S]*\(Ret\.\)/);
+  assert.match(styles, /\.leadership-name-inline\s*\{[^}]*white-space:\s*nowrap/s);
+  assert.match(styles, /\.leadership-name-suffix\s*\{[^}]*font-size:\s*\.52em/s);
 
   assert.doesNotMatch(html, /\/(?:mark-legacy|bryan-green)\.webp/);
 });
@@ -249,6 +269,66 @@ test("uses the authoritative 29-second V4 timing and level progression", () => {
   assert.deepEqual(reservoirLevelsAt(24.5), { upper: 0.18, lower: 0.85 });
 });
 
+test("pins the corrected base geometry and state-mapped SVG vectors", async () => {
+  assert.deepEqual(
+    {
+      width: DIGITAL_TWIN_BASE_PLATE.width,
+      height: DIGITAL_TWIN_BASE_PLATE.height,
+      waterline: DIGITAL_TWIN_BASE_PLATE.ambientWaterlineY,
+      midpoint:
+        (DIGITAL_TWIN_BASE_PLATE.structureTopY +
+          DIGITAL_TWIN_BASE_PLATE.structureBaseY) /
+        2,
+      pipeAngle: DIGITAL_TWIN_BASE_PLATE.externalPipeAngleDegrees,
+      embedment: DIGITAL_TWIN_BASE_PLATE.embedmentDepthFeet,
+    },
+    {
+      width: 1600,
+      height: 900,
+      waterline: 493,
+      midpoint: 493,
+      pipeAngle: 0,
+      embedment: [30, 50],
+    },
+  );
+
+  const component = await readFile(
+    new URL("../app/components/PremiumDigitalTwin.tsx", import.meta.url),
+    "utf8",
+  );
+  const styles = await readFile(
+    new URL("../app/globals.css", import.meta.url),
+    "utf8",
+  );
+
+  assert.match(component, /premium-twin-flow-vectors/);
+  assert.match(component, /data-flow-vector-route/);
+  assert.match(component, /is-\$\{route\.operation\}/);
+  assert.match(component, /M 0 704 H 584 V 770 C 584 804 610 820 646 820 H 790/);
+  assert.match(component, /M 800 800 V 188/);
+  assert.match(component, /M 650 184 V 320 C 650 386 616 430 584 438 V 487 H 0/);
+  assert.match(component, /humpback-digital-twin-v4-geometry\.jpg/);
+  assert.doesNotMatch(component, /function drawFlow/);
+  assert.match(component, /function drawMarineLife/);
+  assert.match(component, /function drawFish/);
+  assert.match(component, /function drawSeal/);
+  assert.match(component, /if \(reducedMotion\) return;/);
+  assert.match(styles, /\.premium-twin-flow-group\.is-lower\s*\{\s*color:\s*#48b9ff/);
+  assert.match(styles, /\.premium-twin-flow-group\.is-charge\s*\{\s*color:\s*#50e38a/);
+  assert.match(styles, /\.premium-twin-flow-group\.is-upper\s*\{\s*color:\s*#b78cff/);
+  assert.match(styles, /\.premium-twin-card\.step-1\s*\{\s*left:\s*2\.2%;\s*top:\s*18%;\s*\}/);
+  assert.match(styles, /\.premium-twin-card\.step-2\s*\{\s*left:\s*2\.2%;\s*top:\s*55%;\s*\}/);
+  assert.match(styles, /\.premium-twin-card\.step-3\s*\{\s*right:\s*2\.2%;\s*top:\s*52%;\s*\}/);
+  assert.match(styles, /\.premium-twin-card\.step-4\s*\{\s*right:\s*2\.2%;\s*top:\s*18%;\s*\}/);
+  assert.match(styles, /\.premium-twin-controls\s*\{[^}]*grid-template-columns:\s*repeat\(6,minmax\(0,1fr\)\)/s);
+
+  assert.equal(flagBreezeActivityAt(0), 0);
+  assert.ok(flagBreezeActivityAt(1.2) > 0.99);
+  assert.equal(flagBreezeActivityAt(8), 0);
+  assert.ok(flagBreezeActivityAt(26.75) > 0.99);
+  assert.equal(flagBreezeActivityAt(29), 0);
+});
+
 test("removes standalone seeking language and external V4 payloads", async () => {
   const worker = await loadWorker();
   const rendered = [];
@@ -266,7 +346,26 @@ test("removes standalone seeking language and external V4 payloads", async () =>
   ).join("\n");
   const v4Output = `${combined}\n${premiumSource}`;
 
-  assert.match(premiumSource, /\/digital-twin\/humpback-digital-twin-v4-premium\.jpg/);
+  assert.match(premiumSource, /\/digital-twin\/humpback-digital-twin-v4-geometry\.jpg/);
+  for (const required of [
+    /Evidence You Can Examine/i,
+    /advancing through independent engineering validation/i,
+    /Pilot deployment is the next commercial milestone/i,
+    /engaging strategic partners for validation and pilot deployment/i,
+    /Modeled results are informing the engineering validation program/i,
+  ]) {
+    assert.match(combined, required);
+  }
+  for (const prohibited of [
+    /Not yet independently validated/i,
+    /No pilot has been completed/i,
+    /Results are modeled, not measured/i,
+    /Seeking capital and partners/i,
+    /\bEarly-stage\b/i,
+    /\bExperimental\b/i,
+  ]) {
+    assert.doesNotMatch(combined, prohibited);
+  }
   assert.doesNotMatch(combined, /\bseeking\b|\bsought\b/i);
   assert.doesNotMatch(v4Output, /humpback-digital-twin-base-v3-sunny/i);
   assert.doesNotMatch(v4Output, /<iframe|srcdoc|data:image\/jpeg;base64/i);

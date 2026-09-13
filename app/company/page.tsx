@@ -17,6 +17,20 @@ const publishedLeadership = leadership.filter(
 );
 
 const bryanGreen = leadership.find((member) => member.name.includes("Bryan Green"));
+const bryceHuston = leadership.find((member) => member.name === "Bryce Huston");
+
+function LeadershipName({ name }: { name: string }) {
+  if (name === "Col. Bryan Green (Ret.)") {
+    return (
+      <span className="leadership-name-inline">
+        Col. Bryan Green{" "}
+        <span className="leadership-name-suffix">(Ret.)</span>
+      </span>
+    );
+  }
+
+  return name;
+}
 
 function initials(name: string) {
   return name
@@ -82,7 +96,7 @@ export default function CompanyPage() {
           </div>
 
           <p className="mb-10 max-w-3xl border-l-2 border-[#59acc2] pl-5 text-sm leading-7 text-[#8ca7af]" data-reveal>
-            Leadership titles, roles and career summaries are company supplied and remain subject to source confirmation unless linked to a verified public record. Production renders published profiles only.
+            Published leadership profiles use company-supplied titles, roles and career summaries. Verified public records are linked where available, and publication remains governed by the project&apos;s evidence controls.
           </p>
 
           <div className="leadership-list">
@@ -108,7 +122,9 @@ export default function CompanyPage() {
                 </div>
                 <div>
                   <small className="uppercase tracking-wider">{member.role}</small>
-                  <h3 className="tracking-widest">{member.name}</h3>
+                  <h3 className={member.name.includes("Bryan Green") ? "is-bryan" : "tracking-widest"}>
+                    <LeadershipName name={member.name} />
+                  </h3>
                   <p>{member.focus}</p>
                 </div>
               </article>
@@ -119,10 +135,29 @@ export default function CompanyPage() {
             <section className="bryan-profile" aria-labelledby="bryan-green-profile" data-reveal>
               <div>
                 <small>Operations &amp; Infrastructure Profile</small>
-                <h2 id="bryan-green-profile">Col. Bryan Green (Ret.)</h2>
+                <h2 className="is-bryan" id="bryan-green-profile">
+                  <LeadershipName name="Col. Bryan Green (Ret.)" />
+                </h2>
               </div>
-              <div>
+              <div className="leadership-biography">
                 {bryanGreen.biography.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
+              </div>
+            </section>
+          ) : null}
+
+          {bryceHuston?.biography ? (
+            <section className="bryan-profile bryce-profile" aria-labelledby="bryce-huston-profile" data-reveal>
+              <div>
+                <small>{bryceHuston.profileLabel}</small>
+                <h2 id="bryce-huston-profile">{bryceHuston.name}</h2>
+                <p className="leadership-specialty">{bryceHuston.specialty}</p>
+                <dl className="leadership-credential">
+                  <dt>{bryceHuston.credentialLabel}</dt>
+                  <dd>{bryceHuston.credentialValue}</dd>
+                </dl>
+              </div>
+              <div className="leadership-biography">
+                {bryceHuston.biography.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
               </div>
             </section>
           ) : null}
@@ -144,10 +179,10 @@ export default function CompanyPage() {
             <h2>From Engineered Material to Operating Asset.</h2>
           </div>
           <p>
-            Company-supplied materials identify specialist capability spanning
-            construction, advanced materials and electrical engineering. Names,
-            roles, organizations and public-use approval remain subject to
-            confirmation.
+            The company&apos;s delivery network brings together specialist capability
+            spanning construction, advanced materials and electrical engineering.
+            Public descriptions remain company supplied and follow the project&apos;s
+            source-confirmation controls.
           </p>
         </div>
         <div className="network-list">

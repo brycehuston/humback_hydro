@@ -2,7 +2,9 @@
 
 import { useEffect, useRef, useState } from "react";
 import {
+  DIGITAL_TWIN_BASE_PLATE,
   digitalTwinSceneAt,
+  flagBreezeActivityAt,
   manualDigitalTwinScene,
   manualReservoirLevels,
   reservoirLevelsAt,
@@ -15,14 +17,11 @@ import type {
 
 type TwinAction = "auto" | DigitalTwinOperation | "summary";
 type Point = readonly [number, number];
-type PathMetrics = {
-  segments: Array<{
-    a: [number, number];
-    b: [number, number];
-    length: number;
-    start: number;
-  }>;
-  total: number;
+
+type FlowVectorRoute = {
+  operation: DigitalTwinOperation;
+  d: string;
+  className: string;
 };
 
 type ControlApi = {
@@ -104,6 +103,78 @@ const actions: ReadonlyArray<{ action: TwinAction; label: string }> = [
   { action: "summary", label: "Cycle Summary" },
 ];
 
+const flowVectorRoutes: readonly FlowVectorRoute[] = [
+  {
+    operation: "lower",
+    className: "lower-left",
+    d: "M 0 704 H 584 V 770 C 584 804 610 820 646 820 H 790",
+  },
+  {
+    operation: "lower",
+    className: "lower-right",
+    d: "M 1600 704 H 1016 V 770 C 1016 804 990 820 954 820 H 810",
+  },
+  {
+    operation: "charge",
+    className: "charge-center",
+    d: "M 800 800 V 188",
+  },
+  {
+    operation: "upper",
+    className: "upper-left",
+    d: "M 650 184 V 320 C 650 386 616 430 584 438 V 487 H 0",
+  },
+  {
+    operation: "upper",
+    className: "upper-right",
+    d: "M 950 184 V 320 C 950 386 984 430 1016 438 V 487 H 1600",
+  },
+] as const;
+
+const marineFish = [
+  { side: "left", period: 18.5, offset: 0.08, depth: 0.64, scale: 0.78 },
+  { side: "left", period: 25.4, offset: 0.57, depth: 0.73, scale: 0.58 },
+  { side: "right", period: 21.7, offset: 0.31, depth: 0.66, scale: 0.72 },
+  { side: "right", period: 28.3, offset: 0.82, depth: 0.76, scale: 0.54 },
+] as const;
+
+function FlowVectorLayer() {
+  return (
+    <svg
+      className="premium-twin-flow-vectors"
+      viewBox="0 0 1600 900"
+      preserveAspectRatio="none"
+      aria-hidden="true"
+      focusable="false"
+    >
+      <defs>
+        <filter id="premium-flow-glow" x="-40%" y="-40%" width="180%" height="180%">
+          <feGaussianBlur stdDeviation="4" result="blur" />
+          <feMerge>
+            <feMergeNode in="blur" />
+            <feMergeNode in="SourceGraphic" />
+          </feMerge>
+        </filter>
+      </defs>
+      {flowVectorRoutes.map((route) => (
+        <g
+          className={`premium-twin-flow-group is-${route.operation} ${route.className}`}
+          data-flow-vector-route
+          data-operation={route.operation}
+          key={route.className}
+        >
+          <path className="premium-twin-flow-track" data-flow-path d={route.d} />
+          {Array.from({ length: route.operation === "charge" ? 6 : 5 }, (_, index) => (
+            <g className="premium-twin-vector-arrow" data-vector-arrow key={index}>
+              <path d="M -17 -10 L 0 0 L -17 10" />
+            </g>
+          ))}
+        </g>
+      ))}
+    </svg>
+  );
+}
+
 function isOperation(value: string): value is DigitalTwinOperation {
   return value === "lower" || value === "charge" || value === "upper";
 }
@@ -126,11 +197,11 @@ export default function PremiumDigitalTwin() {
     const context = canvasElement.getContext("2d");
     if (!context) return;
 
+    const rootElement = root;
     const ctx = context;
     const canvas = canvasElement;
     const image = new Image();
     const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const routeMetrics = new Map<readonly Point[], PathMetrics>();
     const machinery = {
       lower: 0,
       charge: 0,
@@ -139,19 +210,20 @@ export default function PremiumDigitalTwin() {
       chargeAngle: 0,
       upperAngle: 0,
     };
-    const routes: Record<DigitalTwinOperation, readonly (readonly Point[])[]> = {
-      lower: [
-        [[0.01, 0.83], [0.22, 0.83], [0.35, 0.76], [0.39, 0.86], [0.5, 0.86], [0.5, 0.78]],
-        [[0.99, 0.83], [0.78, 0.83], [0.65, 0.76], [0.61, 0.86], [0.5, 0.86], [0.5, 0.78]],
-      ],
-      charge: [
-        [[0.5, 0.8], [0.5, 0.7], [0.5, 0.59], [0.5, 0.44], [0.5, 0.31], [0.5, 0.2]],
-      ],
-      upper: [
-        [[0.43, 0.2], [0.4, 0.34], [0.36, 0.48], [0.23, 0.52], [0.01, 0.52]],
-        [[0.57, 0.2], [0.6, 0.34], [0.64, 0.48], [0.77, 0.52], [0.99, 0.52]],
-      ],
-    };
+    const vectorRoutes = Array.from(
+      root.querySelectorAll<SVGGElement>("[data-flow-vector-route]"),
+    ).flatMap((group) => {
+      const path = group.querySelector<SVGPathElement>("[data-flow-path]");
+      const operation = group.dataset.operation;
+      if (!path || !operation || !isOperation(operation)) return [];
+      return [{
+        group,
+        path,
+        operation,
+        length: path.getTotalLength(),
+        arrows: Array.from(group.querySelectorAll<SVGGElement>("[data-vector-arrow]")),
+      }];
+    });
 
     let forcedPhase: Exclude<TwinAction, "auto"> | null = null;
     let manuallyPaused = false;
@@ -175,104 +247,37 @@ export default function PremiumDigitalTwin() {
       if (canvas.width !== width || canvas.height !== height) {
         canvas.width = width;
         canvas.height = height;
-        routeMetrics.clear();
       }
     }
 
-    function linePath(
-      points: readonly Point[],
-      width: number,
-      color: string,
-      glow = 0,
-    ) {
-      const canvasWidth = canvas.width;
-      const canvasHeight = canvas.height;
-      ctx.save();
-      ctx.beginPath();
-      points.forEach(([x, y], index) => {
-        if (index) ctx.lineTo(x * canvasWidth, y * canvasHeight);
-        else ctx.moveTo(x * canvasWidth, y * canvasHeight);
-      });
-      ctx.lineCap = "round";
-      ctx.lineJoin = "round";
-      ctx.lineWidth = (width * canvasWidth) / 1600;
-      ctx.strokeStyle = color;
-      ctx.shadowColor = color;
-      ctx.shadowBlur = (glow * canvasWidth) / 1600;
-      ctx.stroke();
-      ctx.restore();
-    }
+    function updateFlowVectors(scene: DigitalTwinScene, seconds: number) {
+      const activeOperation = isOperation(scene.phase) ? scene.phase : null;
+      if (activeOperation) rootElement.dataset.activeOperation = activeOperation;
+      else delete rootElement.dataset.activeOperation;
+      const renderedWidth = canvas.getBoundingClientRect().width;
+      const arrowScale = renderedWidth < 480 ? 2.4 : renderedWidth < 760 ? 1.55 : 1;
 
-    function pathMetrics(points: readonly Point[]) {
-      const cached = routeMetrics.get(points);
-      if (cached) return cached;
-      const segments: PathMetrics["segments"] = [];
-      let total = 0;
-      for (let index = 1; index < points.length; index += 1) {
-        const previous = points[index - 1];
-        const current = points[index];
-        const a: [number, number] = [
-          previous[0] * canvas.width,
-          previous[1] * canvas.height,
-        ];
-        const b: [number, number] = [
-          current[0] * canvas.width,
-          current[1] * canvas.height,
-        ];
-        const length = Math.hypot(b[0] - a[0], b[1] - a[1]);
-        segments.push({ a, b, length, start: total });
-        total += length;
-      }
-      const metrics = { segments, total };
-      routeMetrics.set(points, metrics);
-      return metrics;
-    }
-
-    function pointOn(points: readonly Point[], fraction: number) {
-      const metrics = pathMetrics(points);
-      const distance = (((fraction % 1) + 1) % 1) * metrics.total;
-      const segment =
-        metrics.segments.find(
-          (candidate) => distance <= candidate.start + candidate.length,
-        ) ?? metrics.segments[metrics.segments.length - 1];
-      const progress = (distance - segment.start) / segment.length;
-      return [
-        segment.a[0] + (segment.b[0] - segment.a[0]) * progress,
-        segment.a[1] + (segment.b[1] - segment.a[1]) * progress,
-      ] as const;
-    }
-
-    function drawFlow(
-      points: readonly Point[],
-      seconds: number,
-      strength: number,
-      direction = 1,
-    ) {
-      const accent = "#68f5e1";
-      linePath(points, 10, `rgba(34,225,210,${0.085 * strength})`, 18);
-      linePath(points, 2, `rgba(104,245,225,${0.44 * strength})`, 8);
-      const count = Math.round(9 + 6 * strength);
-      for (let index = 0; index < count; index += 1) {
-        const fraction =
-          index * 0.61803398875 + direction * seconds * 0.078;
-        const [x, y] = pointOn(points, fraction);
-        const pulse = 0.62 + 0.38 * Math.sin(index * 2.17 + seconds * 2.1);
-        ctx.save();
-        ctx.fillStyle = accent;
-        ctx.globalAlpha = strength * (0.3 + 0.42 * pulse);
-        ctx.shadowColor = accent;
-        ctx.shadowBlur = (10 * canvas.width) / 1600;
-        ctx.beginPath();
-        ctx.arc(
-          x,
-          y,
-          ((1.8 + 1.25 * pulse) * canvas.width) / 1600,
-          0,
-          Math.PI * 2,
+      vectorRoutes.forEach(({ group, path, operation, length, arrows }) => {
+        const strength = machinery[operation];
+        group.style.setProperty(
+          "--flow-opacity",
+          strength > 0.015 ? String(0.18 + strength * 0.82) : "0",
         );
-        ctx.fill();
-        ctx.restore();
-      }
+        const speed = operation === "charge" ? 0.12 : 0.092;
+        arrows.forEach((arrow, index) => {
+          const fraction = reducedMotion
+            ? (index + 0.5) / arrows.length
+            : (seconds * speed + index / arrows.length) % 1;
+          const distance = fraction * length;
+          const point = path.getPointAtLength(distance);
+          const nextPoint = path.getPointAtLength(Math.min(length, distance + 2));
+          const angle = Math.atan2(nextPoint.y - point.y, nextPoint.x - point.x) * 180 / Math.PI;
+          arrow.setAttribute(
+            "transform",
+            `translate(${point.x.toFixed(2)} ${point.y.toFixed(2)}) rotate(${angle.toFixed(2)}) scale(${arrowScale})`,
+          );
+        });
+      });
     }
 
     function drawRotor(
@@ -439,8 +444,8 @@ export default function PremiumDigitalTwin() {
       ctx.lineTo(0.605 * canvas.width, levels.upper * canvas.height);
       ctx.stroke();
       ctx.beginPath();
-      ctx.moveTo(0.34 * canvas.width, levels.lower * canvas.height);
-      ctx.lineTo(0.66 * canvas.width, levels.lower * canvas.height);
+      ctx.moveTo(0.405 * canvas.width, levels.lower * canvas.height);
+      ctx.lineTo(0.595 * canvas.width, levels.lower * canvas.height);
       ctx.stroke();
       ctx.restore();
       textLabel(
@@ -452,7 +457,7 @@ export default function PremiumDigitalTwin() {
       );
       textLabel(
         "LOWER LEVEL",
-        0.665,
+        0.605,
         levels.lower + 0.004,
         10,
         "rgba(205,240,239,.8)",
@@ -471,15 +476,18 @@ export default function PremiumDigitalTwin() {
 
     function drawOceanSurface(seconds: number) {
       if (reducedMotion) return;
+      const waterline =
+        DIGITAL_TWIN_BASE_PLATE.ambientWaterlineY /
+        DIGITAL_TWIN_BASE_PLATE.height;
       const regions: readonly (readonly Point[])[] = [
-        [[0, 0.335], [0.354, 0.335], [0.329, 0.407], [0, 0.407]],
-        [[0.646, 0.335], [1, 0.335], [1, 0.407], [0.671, 0.407]],
+        [[0, waterline - 0.018], [0.31, waterline - 0.018], [0.29, waterline + 0.052], [0, waterline + 0.052]],
+        [[0.69, waterline - 0.018], [1, waterline - 0.018], [1, waterline + 0.052], [0.71, waterline + 0.052]],
       ];
       regions.forEach((region) => {
         ctx.save();
         clipPolygon(region);
         for (let band = 0; band < 5; band += 1) {
-          const yStart = (0.344 + band * 0.0125) * canvas.height;
+          const yStart = (waterline - 0.009 + band * 0.0125) * canvas.height;
           const phase = seconds * (0.22 + band * 0.037) + band * 1.87;
           ctx.beginPath();
           for (let step = 0; step <= 36; step += 1) {
@@ -492,15 +500,15 @@ export default function PremiumDigitalTwin() {
             if (step) ctx.lineTo(x, y);
             else ctx.moveTo(x, y);
           }
-          ctx.strokeStyle = `rgba(226,255,252,${0.02 + band * 0.006})`;
+          ctx.strokeStyle = `rgba(226,255,252,${0.026 + band * 0.007})`;
           ctx.lineWidth = ((1 + band * 0.12) * canvas.width) / 1600;
           ctx.stroke();
         }
         const sheen = ctx.createLinearGradient(
           0,
-          0.34 * canvas.height,
+          (waterline - 0.014) * canvas.height,
           0,
-          0.41 * canvas.height,
+          (waterline + 0.056) * canvas.height,
         );
         sheen.addColorStop(0, "rgba(194,255,250,.018)");
         sheen.addColorStop(
@@ -509,19 +517,129 @@ export default function PremiumDigitalTwin() {
         );
         sheen.addColorStop(1, "rgba(120,228,230,0)");
         ctx.fillStyle = sheen;
-        ctx.fillRect(0, 0.335 * canvas.height, canvas.width, 0.075 * canvas.height);
+        ctx.fillRect(
+          0,
+          (waterline - 0.018) * canvas.height,
+          canvas.width,
+          0.075 * canvas.height,
+        );
         ctx.restore();
       });
     }
 
+    function drawFish(
+      x: number,
+      y: number,
+      scale: number,
+      direction: 1 | -1,
+      alpha: number,
+    ) {
+      const unit = (canvas.width / 1600) * scale;
+      ctx.save();
+      ctx.translate(x * canvas.width, y * canvas.height);
+      ctx.scale(direction * unit, unit);
+      ctx.fillStyle = `rgba(126,180,188,${alpha})`;
+      ctx.beginPath();
+      ctx.ellipse(0, 0, 14, 5.2, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.beginPath();
+      ctx.moveTo(-12, 0);
+      ctx.lineTo(-22, -7);
+      ctx.lineTo(-21, 7);
+      ctx.closePath();
+      ctx.fill();
+      ctx.fillStyle = `rgba(224,246,242,${alpha * 0.72})`;
+      ctx.beginPath();
+      ctx.arc(8, -1, 1.2, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    }
+
+    function drawSeal(
+      x: number,
+      y: number,
+      scale: number,
+      direction: 1 | -1,
+      alpha: number,
+    ) {
+      const unit = (canvas.width / 1600) * scale;
+      ctx.save();
+      ctx.translate(x * canvas.width, y * canvas.height);
+      ctx.rotate(Math.sin(x * 19 + y * 11) * 0.035);
+      ctx.scale(direction * unit, unit);
+      ctx.fillStyle = `rgba(50,91,103,${alpha})`;
+      ctx.beginPath();
+      ctx.ellipse(0, 0, 30, 8.5, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.beginPath();
+      ctx.arc(27, -2, 7, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.beginPath();
+      ctx.moveTo(-24, 2);
+      ctx.lineTo(-39, -6);
+      ctx.lineTo(-34, 7);
+      ctx.closePath();
+      ctx.fill();
+      ctx.beginPath();
+      ctx.moveTo(1, 5);
+      ctx.lineTo(12, 14);
+      ctx.lineTo(-6, 8);
+      ctx.closePath();
+      ctx.fill();
+      ctx.restore();
+    }
+
+    function drawMarineLife(seconds: number) {
+      if (reducedMotion) return;
+
+      marineFish.forEach((fish, index) => {
+        const progress = (seconds / fish.period + fish.offset) % 1;
+        const fromLeft = fish.side === "left";
+        const x = fromLeft
+          ? -0.035 + progress * 0.34
+          : 1.035 - progress * 0.34;
+        const y =
+          fish.depth +
+          Math.sin(progress * Math.PI * 2 + index * 1.73) * 0.012;
+        const edgeFade = Math.sin(progress * Math.PI);
+        drawFish(
+          x,
+          y,
+          fish.scale,
+          fromLeft ? 1 : -1,
+          (0.08 + 0.08 * edgeFade) * edgeFade,
+        );
+      });
+
+      const encounter = seconds % 47;
+      if (encounter >= 7 && encounter <= 18) {
+        const progress = (encounter - 7) / 11;
+        const alternateSide = Math.floor(seconds / 47) % 2 === 1;
+        const x = alternateSide
+          ? 1.05 - progress * 0.34
+          : -0.05 + progress * 0.34;
+        const y = 0.59 + Math.sin(progress * Math.PI * 1.35) * 0.018;
+        drawSeal(
+          x,
+          y,
+          0.82,
+          alternateSide ? -1 : 1,
+          0.13 * Math.sin(progress * Math.PI),
+        );
+      }
+    }
+
     function drawFlagBreeze(seconds: number) {
       if (reducedMotion) return;
+      const breeze = flagBreezeActivityAt(seconds);
+      if (breeze <= 0.001) return;
       const poleX = 0.501 * canvas.width;
       const top = 0.036 * canvas.height;
       const flagWidth = 0.066 * canvas.width;
       const flagHeight = 0.075 * canvas.height;
       const primary =
-        Math.sin(seconds * 0.43) + 0.36 * Math.sin(seconds * 0.79 + 0.9);
+        breeze *
+        (Math.sin(seconds * 3.2) + 0.36 * Math.sin(seconds * 5.1 + 0.9));
       ctx.save();
       ctx.beginPath();
       ctx.moveTo(poleX, top);
@@ -538,13 +656,13 @@ export default function PremiumDigitalTwin() {
       ctx.clip();
       for (let fold = 0; fold < 3; fold += 1) {
         const travel =
-          (seconds * (0.018 + fold * 0.002) + fold * 0.31) % 1;
+          (seconds * (0.11 + fold * 0.014) + fold * 0.31) % 1;
         const x = poleX + (0.18 + travel * 0.82) * flagWidth;
         const width = (0.09 + fold * 0.015) * flagWidth;
         const shade = ctx.createLinearGradient(x - width, 0, x + width, 0);
         shade.addColorStop(0, "rgba(255,255,255,0)");
-        shade.addColorStop(0.42, "rgba(255,255,255,.045)");
-        shade.addColorStop(0.58, "rgba(0,22,42,.040)");
+        shade.addColorStop(0.42, `rgba(255,255,255,${0.052 * breeze})`);
+        shade.addColorStop(0.58, `rgba(0,22,42,${0.046 * breeze})`);
         shade.addColorStop(1, "rgba(255,255,255,0)");
         ctx.fillStyle = shade;
         ctx.fillRect(
@@ -713,7 +831,13 @@ export default function PremiumDigitalTwin() {
       }
 
       smallTag("ELEVATED UPPER STORAGE", 0.61, 0.145, "right");
-      smallTag("AMBIENT OCEAN / LAKE", 0.115, 0.375, "right");
+      smallTag(
+        "AMBIENT OCEAN / LAKE",
+        0.115,
+        DIGITAL_TWIN_BASE_PLATE.ambientWaterlineY /
+          DIGITAL_TWIN_BASE_PLATE.height,
+        "right",
+      );
       smallTag("INTERNAL LOWER STORAGE", 0.665, 0.79, "right");
 
       const timelineY = 0.975;
@@ -776,7 +900,9 @@ export default function PremiumDigitalTwin() {
       const motionTime = reducedMotion ? 0 : elapsed;
       const levels = forcedPhase
         ? manualReservoirLevels(forcedPhase)
-        : reservoirLevelsAt(elapsed);
+        : reducedMotion
+          ? manualReservoirLevels("summary")
+          : reservoirLevelsAt(elapsed);
       updateMachinery(scene, delta);
 
       const width = canvas.width;
@@ -794,6 +920,7 @@ export default function PremiumDigitalTwin() {
         drawHeight,
       );
       drawOceanSurface(motionTime);
+      drawMarineLife(motionTime);
       drawFlagBreeze(motionTime);
 
       const vignette = ctx.createRadialGradient(
@@ -811,48 +938,22 @@ export default function PremiumDigitalTwin() {
       ctx.fillStyle = "rgba(1,19,26,.08)";
       ctx.fillRect(0, 0, width, height);
 
-      const routeStrength = {
-        lower: machinery.lower,
-        charge: machinery.charge,
-        upper: machinery.upper,
-      };
-      (Object.entries(routes) as Array<
-        [DigitalTwinOperation, readonly (readonly Point[])[]]
-      >).forEach(([key, paths]) => {
-        paths.forEach((points) => {
-          const strength = routeStrength[key];
-          linePath(
-            points,
-            1.1,
-            strength > 0.02
-              ? `rgba(90,240,226,${0.12 + 0.28 * strength})`
-              : "rgba(112,176,177,.13)",
-            strength > 0.02 ? 5 + 5 * strength : 0,
-          );
-        });
-      });
-      (["lower", "charge", "upper"] as const).forEach((key) => {
-        if (routeStrength[key] > 0.025) {
-          routes[key].forEach((points, index) =>
-            drawFlow(points, motionTime + index * 0.17, routeStrength[key]),
-          );
-        }
-      });
+      updateFlowVectors(scene, motionTime);
 
-      drawRotor(0.355, 0.48, 0.022, machinery.upperAngle, machinery.upper);
-      drawRotor(0.645, 0.48, 0.022, -machinery.upperAngle, machinery.upper);
-      drawRotor(0.355, 0.76, 0.022, machinery.lowerAngle, machinery.lower);
-      drawRotor(0.645, 0.76, 0.022, -machinery.lowerAngle, machinery.lower);
+      drawRotor(0.365, 0.487, 0.022, machinery.upperAngle, machinery.upper);
+      drawRotor(0.635, 0.487, 0.022, -machinery.upperAngle, machinery.upper);
+      drawRotor(0.365, 0.782, 0.022, machinery.lowerAngle, machinery.lower);
+      drawRotor(0.635, 0.782, 0.022, -machinery.lowerAngle, machinery.lower);
       drawRotor(0.5, 0.59, 0.022, machinery.chargeAngle, machinery.charge, 5);
       drawLevels(levels, scene.activity);
 
       if (!reducedMotion && scene.activity > 0.08 && isOperation(scene.phase)) {
         const activeAnchor =
           scene.phase === "lower"
-            ? [0.355, 0.76]
+            ? [0.365, 0.782]
             : scene.phase === "charge"
               ? [0.5, 0.59]
-              : [0.645, 0.48];
+              : [0.635, 0.487];
         ctx.save();
         ctx.globalAlpha = 0.22 * scene.activity;
         ctx.strokeStyle = "rgba(104,245,225,.62)";
@@ -949,7 +1050,7 @@ export default function PremiumDigitalTwin() {
     motionQuery.addEventListener("change", handleMotionChange);
 
     image.onload = () => scheduleFrame();
-    image.src = "/digital-twin/humpback-digital-twin-v4-premium.jpg";
+    image.src = "/digital-twin/humpback-digital-twin-v4-geometry.jpg";
     if (image.complete) scheduleFrame();
 
     return () => {
@@ -987,6 +1088,7 @@ export default function PremiumDigitalTwin() {
           ref={canvasRef}
           aria-label="Animated Humpback Hydro digital twin showing lower generation, charging, and upper generation in sequence"
         />
+        <FlowVectorLayer />
         <section
           className="premium-twin-education"
           aria-label="How the operating cycle works"
