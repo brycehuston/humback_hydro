@@ -165,8 +165,14 @@ test.describe('Humpback Hydro Site Verification', () => {
       expect(await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth)).toBe(false);
       const credit = page.locator('.footer-legal > span').last();
       await expect(credit).toHaveText('HUMPBACK HYDRO © 2026 | SITE BY HUSTON SOLUTION INC.');
-      await expect(page.locator('.footer-legal a, .footer-legal [tabindex], .footer-legal [role="link"]')).toHaveCount(0);
-      await expect(page.locator('a[href*="brycehuston.com/solutions"]')).toHaveCount(0);
+      const creditLink = credit.getByRole('link', { name: 'HUSTON SOLUTION INC.', exact: true });
+      await expect(creditLink).toHaveAttribute('href', 'https://www.brycehuston.com/solutions');
+      await expect(creditLink).toHaveAttribute('target', '_blank');
+      await expect(page.getByRole('link', { name: 'Current Website', exact: true })).toHaveCount(0);
+      await creditLink.focus();
+      await page.keyboard.press('Shift+Tab');
+      await page.keyboard.press('Tab');
+      await expect(creditLink).toBeFocused();
       for (const [name, locator] of [
         ['leadership', page.locator('.leadership-list')],
         ['bryce-profile', page.locator('.bryce-profile')],

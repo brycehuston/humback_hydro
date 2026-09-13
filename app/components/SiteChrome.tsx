@@ -191,12 +191,12 @@ export default function SiteChrome({ children }: { children: React.ReactNode }) 
         <div className="footer-grid">
           <div><small>EXPLORE</small>{navItems.map((item) => <Link key={item.href} href={item.href}>{item.label}</Link>)}</div>
           <div><small>PARTNER</small><Link href="/partners#pilot">Pilot Opportunity</Link><Link href="/partners#pilot">Evaluate a Site</Link><Link href="/partners#investment">Investment</Link></div>
-          <div><small>CONNECT</small><a href="https://www.linkedin.com/company/humpback-hydro/" target="_blank" rel="noreferrer">LinkedIn</a><a href="https://www.humpbackenergy.com/" target="_blank" rel="noreferrer">Current Website</a><span>Vancouver, Canada</span></div>
+          <div><small>CONNECT</small><a href="https://www.linkedin.com/company/humpback-hydro/" target="_blank" rel="noreferrer">LinkedIn</a><span>Vancouver, Canada</span></div>
         </div>
         <div className="footer-legal">
           <span>Private Design Concept</span>
           <span>Concept Imagery Does Not Depict Completed Projects</span>
-          <span className="text-balance">HUMPBACK HYDRO © 2026 | SITE BY HUSTON SOLUTION INC.</span>
+          <span className="text-balance">HUMPBACK HYDRO © 2026 | SITE BY <a href="https://www.brycehuston.com/solutions" target="_blank" rel="noreferrer">HUSTON SOLUTION INC.</a></span>
         </div>
       </footer>
     </>

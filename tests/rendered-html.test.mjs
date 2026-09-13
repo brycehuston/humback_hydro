@@ -372,12 +372,12 @@ test("removes standalone seeking language and external V4 payloads", async () =>
   assert.doesNotMatch(v4Output, /floating-ui|lucide(?:\.min)?\.js|unpkg\.com|cdn\.jsdelivr\.net/i);
 });
 
-test("renders the exact plain-text footer credit on every public route", async () => {
+test("renders the linked company credit without the obsolete website link on every public route", async () => {
   const worker = await loadWorker();
   for (const route of publicRoutes) {
     const { html } = await fetchRoute(worker, route);
-    assert.match(html, /<span class="text-balance">HUMPBACK HYDRO © 2026 \| SITE BY HUSTON SOLUTION INC\.<\/span>/, route);
-    assert.doesNotMatch(html, /Huston Solutions|brycehuston\.com\/solutions/i, route);
+    assert.match(html, /<span class="text-balance">HUMPBACK HYDRO © 2026 \| SITE BY <a href="https:\/\/www\.brycehuston\.com\/solutions" target="_blank" rel="noreferrer">HUSTON SOLUTION INC\.<\/a><\/span>/, route);
+    assert.doesNotMatch(html, /Huston Solutions|Current Website/i, route);
   }
 });
 
