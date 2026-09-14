@@ -6,6 +6,14 @@ import { ieeeCitation, studyEvidence } from "../opsh-data";
 
 export const metadata = pageMetadata("/evidence", "Engineering Foundation", "Review Humpback Hydro's public patent record, IEEE publication and qualified university proof-of-concept study results.");
 
+const evidenceHierarchy = [
+  ["01", "Public Patent Record", "An attributable legal record confirming the published patent document and its stated scope."],
+  ["02", "Peer-Reviewed Publication", "Research accepted into a peer-reviewed publication record; distinct from validation of an operating facility."],
+  ["03", "University Engineering Study", "Academic calculations or design work published with its configuration, assumptions and limitations."],
+  ["04", "Company Record in Verification", "Company-supplied information progressing through primary-source confirmation before unqualified publication."],
+  ["05", "Independent Third-Party Qualification", "Reserved for completed external review or testing with a defined scope, methodology, limitations and attributable report."],
+] as const;
+
 export default function EvidencePage() {
   return (
     <main>
@@ -22,8 +30,17 @@ export default function EvidencePage() {
             <article key={item.index} data-reveal>
               <span>{item.index}</span>
               <div><small>{item.category}</small><h3>{item.title}</h3><p>{item.description}</p></div>
-              <div className={`claim-status ${item.status.toLowerCase().includes("pending") ? "pending" : "verified"}`}><i />{item.status}</div>
-              {item.href ? <a href={item.href} target="_blank" rel="noreferrer" aria-label={`Open ${item.title}`}><Arrow /></a> : item.status === "Static Summaries Published" ? <a href="#technical-study-record" aria-label="Read the university study summaries"><Arrow /></a> : <span className="locked">SOURCE PENDING</span>}
+              <div className={`claim-status ${item.statusTone}`}><i />{item.status}</div>
+              {item.href ? (
+                <a
+                  aria-label={item.action}
+                  href={item.href}
+                  rel={item.external ? "noreferrer" : undefined}
+                  target={item.external ? "_blank" : undefined}
+                >
+                  <Arrow />
+                </a>
+              ) : <span className="locked">{item.action}</span>}
             </article>
           ))}
         </div>
@@ -99,11 +116,15 @@ export default function EvidencePage() {
 
       <section className="claim-policy">
         <div className="section-shell">
-          <div className="chapter-label light"><span>04</span>PUBLICATION STANDARD</div>
+          <div className="chapter-label light"><span>04</span>EVIDENCE HIERARCHY</div>
           <div className="claim-policy-grid">
-            <article data-reveal><span>01</span><h3>Verified and Publishable</h3><p>Claims supported by an authoritative public record or approved primary document.</p></article>
-            <article data-reveal><span>02</span><h3>Provisional</h3><p>Modeled results and company information presented with the confirmation or independent-review steps that apply.</p></article>
-            <article data-reveal><span>03</span><h3>Internal Only</h3><p>Unapproved performance, prototype, financial and commercial-readiness claims remain off the public site.</p></article>
+            {evidenceHierarchy.map(([index, title, copy]) => (
+              <article data-reveal key={index}>
+                <span>{index}</span>
+                <h3>{title}</h3>
+                <p>{copy}</p>
+              </article>
+            ))}
           </div>
           <a className="button outline-light" href="mailto:info@humpbackenergy.com?subject=Humpback%20Hydro%20Technical%20Information">Request Technical Information <Arrow /></a>
         </div>

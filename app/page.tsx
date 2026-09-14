@@ -1,6 +1,7 @@
 import ApplicationSelector from "./components/ApplicationSelector";
 import { pageMetadata } from "./page-metadata";
 import { Arrow } from "./components/Icons";
+import HomepageEconomics from "./components/HomepageEconomics";
 import PremiumDigitalTwin from "./components/PremiumDigitalTwin";
 import {
   engineeringPillars,
@@ -30,7 +31,7 @@ export default function Home() {
           </p>
           <div className="hero-actions">
             <a className="button primary" href="#platform">See the Operating Cycle <Arrow direction="down" /></a>
-            <a className="button secondary" href="/partners">Discuss a Pilot</a>
+            <a className="button secondary" data-open-homepage-calculator href="#economics">Open Calculator <Arrow direction="down" /></a>
           </div>
         </div>
 
@@ -94,8 +95,10 @@ export default function Home() {
         </div>
       </section>
 
+      <HomepageEconomics />
+
       <section className="applications-section section-shell">
-        <div className="chapter-label"><span>03</span>THE MARKETS</div>
+        <div className="chapter-label"><span>04</span>THE MARKETS</div>
         <div className="section-intro split" data-reveal>
           <div><p className="eyebrow dark"><span />Infrastructure Applications</p><h2>One Platform. Multiple Critical Systems.</h2></div>
           <p>Begin with the power bottleneck facing AI infrastructure. Expand through utilities, industry, island systems and water resilience.</p>
@@ -105,7 +108,7 @@ export default function Home() {
 
       <section className="evidence-preview">
         <div className="section-shell">
-          <div className="chapter-label light"><span>04</span>THE FOUNDATION</div>
+          <div className="chapter-label light"><span>05</span>THE FOUNDATION</div>
           <div className="evidence-lead" data-reveal>
             <p className="eyebrow"><span />Institutional Evidence</p>
             <h2>Evidence You Can Examine.<br />Open the Record.</h2>
@@ -115,7 +118,7 @@ export default function Home() {
           <div className="evidence-ledger">
             {evidence.map((item) => {
               const content = <><span>{item.index}</span><small>{item.category}</small><h3>{item.title}</h3><p>{item.status}</p><Arrow /></>;
-              return item.href ? <a key={item.index} href={item.href} target="_blank" rel="noreferrer" data-reveal>{content}</a> : <div key={item.index} data-reveal>{content}</div>;
+              return item.href ? <a key={item.index} href={item.href} target={item.external ? "_blank" : undefined} rel={item.external ? "noreferrer" : undefined} data-reveal>{content}</a> : <div key={item.index} data-reveal>{content}</div>;
             })}
           </div>
           <a className="button outline-light" href="/evidence">Review the Evidence <Arrow /></a>
@@ -123,7 +126,7 @@ export default function Home() {
       </section>
 
       <section className="roadmap-section section-shell">
-        <div className="chapter-label"><span>05</span>THE PATHWAY</div>
+        <div className="chapter-label"><span>06</span>THE PATHWAY</div>
         <div className="section-intro split" data-reveal>
           <div><p className="eyebrow dark"><span />Evidence-Controlled Development</p><h2>Engineering &amp; Operational Roadmap</h2></div>
           <p>Humpback Hydro is advancing from its documented patent, publication and study foundation toward independent engineering validation and pilot deployment. An approved roadmap and supporting technical basis will define commercial scale, manufacturing configuration and timing.</p>
@@ -140,7 +143,7 @@ export default function Home() {
 
       <section className="standards-section">
         <div className="section-shell">
-          <div className="chapter-label light"><span>06</span>INSTITUTIONAL READINESS</div>
+          <div className="chapter-label light"><span>07</span>INSTITUTIONAL READINESS</div>
           <div className="section-intro split inverse" data-reveal>
             <div><p className="eyebrow"><span />Proposed Framework</p><h2>Standards Roadmap</h2></div>
             <div>

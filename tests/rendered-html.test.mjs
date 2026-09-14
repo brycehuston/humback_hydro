@@ -40,7 +40,7 @@ const presetExpectations = [
     debtService: 2_365_200,
     deductions: 4_241_592,
     retained: 5_219_208,
-    postDebt: 7_584_408,
+    preDebt: 7_584_408,
     co2: 27_594,
   },
   {
@@ -53,7 +53,7 @@ const presetExpectations = [
     debtService: 23_652_000,
     deductions: 42_415_920,
     retained: 52_192_080,
-    postDebt: 75_844_080,
+    preDebt: 75_844_080,
     co2: 275_940,
   },
   {
@@ -66,7 +66,7 @@ const presetExpectations = [
     debtService: 118_260_000,
     deductions: 212_079_600,
     retained: 260_960_400,
-    postDebt: 379_220_400,
+    preDebt: 379_220_400,
     co2: 1_379_700,
   },
   {
@@ -79,7 +79,7 @@ const presetExpectations = [
     debtService: 236_520_000,
     deductions: 424_159_200,
     retained: 521_920_800,
-    postDebt: 758_440_800,
+    preDebt: 758_440_800,
     co2: 2_759_400,
   },
 ];
@@ -137,7 +137,10 @@ test("publishes qualified evidence and the complete IEEE reference", async () =>
   assert.match(combined, /two-stage static structure designed for 10\.6 MW and continuous operation as needed/);
   assert.match(combined, /not measured output from an operating facility/i);
   assert.match(combined, /Concept Model — Not to Scale/);
-  assert.match(combined, /Source Confirmation Pending/i);
+  assert.match(combined, /Company Record in Verification/i);
+  assert.match(combined, /Peer-Reviewed Publication/i);
+  assert.match(combined, /University Engineering Study/i);
+  assert.match(combined, /Independent Third-Party Qualification/i);
   assert.match(combined, /Public record for U\.S\. Patent No\. 8,823,195 B2/i);
 });
 
@@ -192,11 +195,11 @@ test("renders the approved local team portraits including Bryan Green", async ()
     /Portrait of Gustavo Varela Latouche/,
     /Portrait of Col\. Bryan Green \(Ret\.\)/,
     /CHIEF INFORMATION SECURITY OFFICER/,
-    /Founder • HUSTON SOLUTION Inc\./,
+    /Founder • HUSTON SOLUTION INC\./,
     /SECURITY &amp; DIGITAL INFRASTRUCTURE/,
     /Information Security • AI Systems • Digital Infrastructure/,
     /FOUNDER &amp; SYSTEMS ARCHITECT/,
-    /Bryce Huston is Chief Information Security Officer at Humpback Hydro and founder of HUSTON SOLUTION Inc\./,
+    /Bryce Huston is Chief Information Security Officer at Humpback Hydro and founder of HUSTON SOLUTION INC\./,
     /A hands-on systems architect and technical operator, Bryce builds production platforms/,
     /architect the system, control the risk and build the infrastructure required to scale/,
     /\/company\/humpback-team-vancouver\.webp/,
@@ -216,7 +219,7 @@ test("renders the approved local team portraits including Bryan Green", async ()
     "utf8",
   );
   assert.match(companySource, /Col\. Bryan Green\{" "\}[\s\S]*leadership-name-suffix[\s\S]*\(Ret\.\)/);
-  assert.match(styles, /\.leadership-name-inline\s*\{[^}]*flex-wrap:\s*wrap/s);
+  assert.match(styles, /\.leadership-name-inline\s*\{[^}]*flex-wrap:\s*nowrap/s);
   assert.match(styles, /\.leadership-name-suffix\s*\{[^}]*font-size:\s*\.52em/s);
 
   assert.doesNotMatch(html, /src="\/(?:mark-legacy|bryan-green)\.webp/);
@@ -379,7 +382,7 @@ test("renders the linked company credit without the obsolete website link on eve
   const worker = await loadWorker();
   for (const route of publicRoutes) {
     const { html } = await fetchRoute(worker, route);
-    assert.match(html, /<span class="text-balance">© 2026 HUMPBACK HYDRO \| SITE BY <a class="huston-shimmer" href="https:\/\/www\.brycehuston\.com\/solutions" target="_blank" rel="noreferrer">HUSTON SOLUTION Inc\.<\/a><\/span>/, route);
+    assert.match(html, /<span class="text-balance">HUMPBACK HYDRO © 2026 \| SITE BY <a class="huston-shimmer" href="https:\/\/www\.brycehuston\.com\/solutions" target="_blank" rel="noreferrer">HUSTON SOLUTION INC\.<\/a><\/span>/, route);
     assert.doesNotMatch(html, /Huston Solutions|Current Website/i, route);
   }
 });
@@ -401,7 +404,7 @@ test("calculates project-scale economics for every public preset", () => {
     const result = calculateProjectScenario(expected.capacity, 1);
 
     assert.equal(result.installedCapacityMw, expected.capacity);
-    assert.equal(result.annualModeledEnergyThroughputMwh, expected.throughput);
+    assert.equal(result.modeledAnnualGenerationMwh, expected.throughput);
     assert.equal(result.illustrativeCapitalRequirement, expected.capital);
     assert.equal(result.grossElectricityRevenue, expected.gross);
     assert.equal(result.royaltyDeduction, expected.royalty);
@@ -411,11 +414,11 @@ test("calculates project-scale economics for every public preset", () => {
     );
     assert.equal(result.debtServiceDeduction, expected.debtService);
     assert.equal(result.totalDeductions, expected.deductions);
-    assert.equal(result.annualRetainedCashFlow, expected.retained);
+    assert.equal(result.annualPostDebtRetainedCashFlow, expected.retained);
     assert.ok(
       Math.abs(result.simplePaybackYears - 9.57999757817661) < 1e-12,
     );
-    assert.equal(result.postDebtRetainedCashFlow, expected.postDebt);
+    assert.equal(result.preDebtRetainedCashFlow, expected.preDebt);
     assert.equal(result.annualCo2DisplacementTons, expected.co2);
     assert.equal(result.cumulativeRetainedCashFlow, expected.retained);
     assert.equal(result.cumulativeEnergyThroughputMwh, expected.throughput);
@@ -429,11 +432,11 @@ test("uses a simple non-compounding operating horizon and clamps controls", () =
   assert.equal(result.cumulativeRetainedCashFlow, 1_043_841_600);
   assert.equal(
     result.cumulativeRetainedCashFlow,
-    result.annualRetainedCashFlow * 20,
+    result.annualPostDebtRetainedCashFlow * 20,
   );
   assert.equal(
     result.cumulativeEnergyThroughputMwh,
-    result.annualModeledEnergyThroughputMwh * 20,
+    result.modeledAnnualGenerationMwh * 20,
   );
   assert.equal(
     result.cumulativeCo2DisplacementTons,
@@ -453,19 +456,22 @@ test("publishes an infrastructure model without retail-return framing", async ()
   const assetNames = await readdir(
     new URL("../dist/client/assets/", import.meta.url),
   );
-  const calculatorAssets = assetNames.filter((asset) =>
-    /^OpshCalculator-.+\.js$/.test(asset),
+  const economicsInteractiveAssets = assetNames.filter((asset) =>
+    /^(OpshCalculator|EconomicsScenarioSelector)-.+\.js$/.test(asset),
   );
-  assert.ok(calculatorAssets.length > 0, "calculator must remain lazy loaded");
+  assert.ok(
+    economicsInteractiveAssets.some((asset) => /^OpshCalculator-.+\.js$/.test(asset)),
+    "calculator client asset must be present",
+  );
 
-  const calculatorSource = (
+  const economicsInteractiveSource = (
     await Promise.all(
-      calculatorAssets.map((asset) =>
+      economicsInteractiveAssets.map((asset) =>
         readFile(new URL(`../dist/client/assets/${asset}`, import.meta.url), "utf8"),
       ),
     )
   ).join("\n");
-  const publicOutput = `${economics.html}\n${calculatorSource}`;
+  const publicOutput = `${economics.html}\n${economicsInteractiveSource}`;
 
   for (const prohibited of [
     /\$10K/,
@@ -486,18 +492,47 @@ test("publishes an infrastructure model without retail-return framing", async ()
     /Operating Horizon/i,
     /10 MW/i,
     /MODEL DETAILS & ASSUMPTIONS/i,
-    /Illustrative Capital Requirement/i,
-    /Annual Modeled Energy Throughput/i,
-    /Annual Retained Cash Flow/i,
-    /Cumulative Retained Cash Flow/i,
-    /Simple Payback/i,
-    /Post-Debt Retained Cash Flow/i,
-    /Approximate CO₂ Displacement/i,
-    /desalination and industrial co-location value is excluded/i,
+    /Illustrative Capital-Cost Assumption/i,
+    /Modeled Annual Generation/i,
+    /Annual Post-Debt Retained Cash Flow/i,
+    /Cumulative Post-Debt Retained Cash Flow/i,
+    /Illustrative Simple Payback/i,
+    /Pre-Debt Retained Cash Flow/i,
+    /Illustrative Avoided-Emissions Potential/i,
+    /Storage Duration/i,
+    /Project-Specific; not applied/i,
+    /desalination and industrial co-location value is evaluated separately/i,
     /not offered commercial terms or verified forecasts/i,
   ]) {
     assert.match(publicOutput, required);
   }
+
+  for (const required of [
+    /Energy In → Store → Generate → Dispatch/i,
+    /One Modular Infrastructure Platform\. Multiple Grid Functions\./i,
+    /Storage &amp; Arbitrage/i,
+    /Renewable Integration/i,
+    /No storage or arbitrage revenue is monetized/i,
+  ]) {
+    assert.match(publicOutput, required);
+  }
+
+  assert.doesNotMatch(publicOutput, /85\s*[–-]\s*93%/i);
+});
+
+test("places a collapsed economics teaser directly after the homepage operating model", async () => {
+  const worker = await loadWorker();
+  const homepage = await fetchRoute(worker, "/");
+  const economics = await fetchRoute(worker, "/economics");
+
+  assert.match(homepage.html, /id="platform"[\s\S]*?<\/section>[\s\S]*?<section[^>]*class="home-economics-section"[^>]*id="economics"/i);
+  assert.match(homepage.html, /aria-controls="homepage-economics-calculator" aria-expanded="false"[^>]*>Open Calculator/i);
+  assert.match(homepage.html, /class="home-economics-calculator" hidden="" id="homepage-economics-calculator"/i);
+  assert.match(homepage.html, /href="\/economics">Explore Full Economics/i);
+  assert.match(homepage.html, /<a[^>]*href="\/#economics"[^>]*>Calculator<\/a>/i);
+  assert.match(homepage.html, /Concept Imagery Does Not Depict Completed Projects · Vancouver, Canada/i);
+  assert.doesNotMatch(homepage.html, /<div><small>CONNECT<\/small>[\s\S]*?<span>Vancouver, Canada<\/span>/i);
+  assert.match(economics.html, /data-economics-calculator="true"[\s\S]*?data-opsh-calculator="embedded"/i);
 });
 
 test("excludes simulated telemetry, unsupported validation and prohibited system copy", async () => {

@@ -13,15 +13,15 @@ export interface ProjectScenarioResult {
   installedCapacityMw: number;
   operatingHorizonYears: number;
   illustrativeCapitalRequirement: number;
-  annualModeledEnergyThroughputMwh: number;
+  modeledAnnualGenerationMwh: number;
   grossElectricityRevenue: number;
   royaltyDeduction: number;
   operationsAndMaintenanceDeduction: number;
   debtServiceDeduction: number;
   totalDeductions: number;
-  annualRetainedCashFlow: number;
+  annualPostDebtRetainedCashFlow: number;
   simplePaybackYears: number;
-  postDebtRetainedCashFlow: number;
+  preDebtRetainedCashFlow: number;
   annualCo2DisplacementTons: number;
   cumulativeRetainedCashFlow: number;
   cumulativeEnergyThroughputMwh: number;
@@ -77,63 +77,63 @@ export function calculateProjectScenario(
 ): ProjectScenarioResult {
   const installedCapacityMw = normalizeCapacityMw(capacityMw);
   const horizon = normalizeOperatingHorizon(operatingHorizonYears);
-  const annualModeledEnergyThroughputMwh =
+  const modeledAnnualGenerationMwh =
     installedCapacityMw * assumptions.annualHours * assumptions.capacityFactor;
   const illustrativeCapitalRequirement = roundCurrency(
     installedCapacityMw * assumptions.capitalCostPerMw,
   );
   const grossElectricityRevenue = roundCurrency(
-    annualModeledEnergyThroughputMwh * assumptions.electricityPricePerMwh,
+    modeledAnnualGenerationMwh * assumptions.electricityPricePerMwh,
   );
   const royaltyDeduction = roundCurrency(
-    annualModeledEnergyThroughputMwh * assumptions.royaltyPerMwh,
+    modeledAnnualGenerationMwh * assumptions.royaltyPerMwh,
   );
   const operationsAndMaintenanceDeduction = roundCurrency(
-    annualModeledEnergyThroughputMwh *
+    modeledAnnualGenerationMwh *
       assumptions.operationsAndMaintenancePerMwh,
   );
   const debtServiceDeduction = roundCurrency(
-    annualModeledEnergyThroughputMwh * assumptions.debtServicePerMwh,
+    modeledAnnualGenerationMwh * assumptions.debtServicePerMwh,
   );
   const totalDeductions = roundCurrency(
     royaltyDeduction +
       operationsAndMaintenanceDeduction +
       debtServiceDeduction,
   );
-  const annualRetainedCashFlow = roundCurrency(
+  const annualPostDebtRetainedCashFlow = roundCurrency(
     grossElectricityRevenue - totalDeductions,
   );
   const simplePaybackYears =
-    annualRetainedCashFlow > 0
-      ? illustrativeCapitalRequirement / annualRetainedCashFlow
+    annualPostDebtRetainedCashFlow > 0
+      ? illustrativeCapitalRequirement / annualPostDebtRetainedCashFlow
       : Number.POSITIVE_INFINITY;
-  const postDebtRetainedCashFlow = roundCurrency(
+  const preDebtRetainedCashFlow = roundCurrency(
     grossElectricityRevenue -
       royaltyDeduction -
       operationsAndMaintenanceDeduction,
   );
   const annualCo2DisplacementTons =
-    annualModeledEnergyThroughputMwh * assumptions.co2TonsPerMwh;
+    modeledAnnualGenerationMwh * assumptions.co2TonsPerMwh;
 
   return {
     installedCapacityMw,
     operatingHorizonYears: horizon,
     illustrativeCapitalRequirement,
-    annualModeledEnergyThroughputMwh,
+    modeledAnnualGenerationMwh,
     grossElectricityRevenue,
     royaltyDeduction,
     operationsAndMaintenanceDeduction,
     debtServiceDeduction,
     totalDeductions,
-    annualRetainedCashFlow,
+    annualPostDebtRetainedCashFlow,
     simplePaybackYears,
-    postDebtRetainedCashFlow,
+    preDebtRetainedCashFlow,
     annualCo2DisplacementTons,
     cumulativeRetainedCashFlow: roundCurrency(
-      annualRetainedCashFlow * horizon,
+      annualPostDebtRetainedCashFlow * horizon,
     ),
     cumulativeEnergyThroughputMwh:
-      annualModeledEnergyThroughputMwh * horizon,
+      modeledAnnualGenerationMwh * horizon,
     cumulativeCo2DisplacementTons: annualCo2DisplacementTons * horizon,
   };
 }

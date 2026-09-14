@@ -22,7 +22,7 @@ export default function MarkLegacyBio() {
 
           <div className="mt-8 border border-[#59acc2]/25 bg-[#082f40]/45 p-5">
             <small className="font-mono text-[0.64rem] font-semibold tracking-[0.14em] text-[#78969e] uppercase">
-              Verified Public Record
+              Public Patent Record
             </small>
             <a
               className="mt-2 block text-base font-semibold text-white underline decoration-[#59acc2]/50 underline-offset-4"

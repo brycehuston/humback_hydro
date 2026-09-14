@@ -157,7 +157,7 @@ export default function CompanyPage() {
           ) : null}
 
           {bryceHuston?.biography ? (
-            <section className="mt-16 border-t border-white/15 pt-12 md:mt-24 md:pt-16" aria-labelledby="bryce-huston-profile" data-reveal>
+            <section className="bryce-profile mt-16 border-t border-white/15 pt-12 md:mt-24 md:pt-16" aria-labelledby="bryce-huston-profile" data-reveal>
               <div className="grid gap-10 lg:grid-cols-[minmax(240px,0.38fr)_minmax(0,0.62fr)] lg:gap-20">
                 <div className="self-start lg:sticky lg:top-28">
                   <small className="font-mono text-[0.68rem] font-semibold tracking-[0.16em] text-[#83c4d2] uppercase">{bryceHuston.profileLabel}</small>
@@ -173,14 +173,14 @@ export default function CompanyPage() {
                       target="_blank"
                       rel="noreferrer"
                     >
-                      HUSTON SOLUTION Inc.
+                      HUSTON SOLUTION INC.
                     </a>
                     <span className="mt-1 block text-sm text-[#83c4d2]">
                       Technology and Security Partner
                     </span>
                   </div>
                 </div>
-                <div className="grid gap-6 text-[0.95rem] leading-8 text-[#a9bbc1]">
+                <div className="leadership-biography grid gap-6 text-[0.95rem] leading-8 text-[#a9bbc1]">
                   {bryceHuston.biography.map((paragraph) => <p className="m-0" key={paragraph}>{paragraph}</p>)}
                 </div>
               </div>

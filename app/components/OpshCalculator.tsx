@@ -1,6 +1,6 @@
 "use client";
 
-import { memo, useId, useMemo, useState } from "react";
+import { memo, useId, useMemo, useState, type ReactNode } from "react";
 import {
   CAPACITY_PRESETS_MW,
   CAPACITY_STEP_MW,
@@ -19,6 +19,8 @@ export type OpshCalculatorAssumptions = ProjectEconomicsAssumptions;
 export interface OpshCalculatorProps {
   className?: string;
   assumptions?: Partial<ProjectEconomicsAssumptions>;
+  displayMode?: "dialog" | "embedded";
+  headerActions?: ReactNode;
 }
 
 export const DEFAULT_OPSH_CALCULATOR_ASSUMPTIONS =
@@ -91,6 +93,8 @@ function OutputMetric({
 function OpshCalculator({
   className = "",
   assumptions,
+  displayMode = "dialog",
+  headerActions,
 }: OpshCalculatorProps) {
   const capacityInputId = useId();
   const horizonInputId = useId();
@@ -141,10 +145,11 @@ function OpshCalculator({
   return (
     <section
       aria-labelledby="opsh-calculator-title"
-      className={`pointer-events-auto isolate w-full h-full flex flex-col overflow-hidden rounded-[1.75rem] border border-[#1d2833] bg-[#020b10] text-white shadow-[0_32px_100px_rgba(0,8,18,0.65)] [contain:layout_style_paint] ${className}`}
+      className={`pointer-events-auto isolate flex w-full flex-col rounded-[1.75rem] border border-[#1d2833] bg-[#020b10] text-white shadow-[0_32px_100px_rgba(0,8,18,0.65)] ${displayMode === "embedded" ? "h-auto overflow-visible" : "h-full overflow-hidden [contain:layout_style_paint]"} ${className}`}
+      data-opsh-calculator={displayMode}
     >
-      <div className="relative flex flex-col flex-1 min-h-0 h-full">
-        <header className="relative flex shrink-0 flex-col justify-between border-b border-[#1d2833] bg-[#031016] p-[clamp(1rem,2vh,1.5rem)] px-[clamp(1.25rem,2vw,1.75rem)] sm:flex-row sm:items-start">
+      <div className={`relative flex flex-col ${displayMode === "embedded" ? "h-auto" : "h-full min-h-0 flex-1"}`}>
+        <header className="relative flex shrink-0 flex-col justify-between gap-5 border-b border-[#1d2833] bg-[#031016] p-[clamp(1rem,2vh,1.5rem)] px-[clamp(1.25rem,2vw,1.75rem)] sm:flex-row sm:items-start">
           <div>
             <div className="mb-2 flex items-center gap-2">
               <span className="relative flex size-2.5">
@@ -161,11 +166,12 @@ function OpshCalculator({
             >
               Project Economics &amp; Impact Model
             </h2>
-            <p className="mt-1 max-w-xl text-xs text-slate-400">Model results update based on your scenario inputs. Charging electricity and pumping losses are excluded; outputs are not net storage returns.</p>
+            <p className="mt-1 max-w-xl text-xs text-slate-400">A generation-output scenario with explicit provisional inputs. Storage economics are evaluated separately using project-specific charging and efficiency assumptions.</p>
           </div>
+          {headerActions ? <div className="calculator-header-actions">{headerActions}</div> : null}
         </header>
 
-        <div className="relative flex flex-1 flex-col overflow-y-auto overscroll-contain p-[clamp(1rem,2.5vh,1.75rem)]">
+        <div className={`relative flex flex-1 flex-col p-[clamp(1rem,2.5vh,1.75rem)] ${displayMode === "embedded" ? "overflow-visible" : "overflow-y-auto overscroll-contain"}`}>
 
           {/* Top Control Panel */}
           <div className="mb-[clamp(0.75rem,2vh,1.5rem)] shrink-0 rounded-2xl border border-[#1d2833] bg-[#06141c] p-[clamp(1rem,2vh,1.5rem)]">
@@ -275,7 +281,7 @@ function OpshCalculator({
 
           {/* Main Primary Metric Area */}
           <div className="mb-[clamp(0.75rem,2vh,1.5rem)] grid min-h-0 shrink-0 gap-[clamp(0.75rem,2vh,1rem)] lg:grid-cols-12">
-            {/* Annual Retained Cash Flow */}
+            {/* Annual Post-Debt Retained Cash Flow */}
             <div className="relative flex flex-col justify-between overflow-hidden rounded-2xl border border-[#1d2833] bg-[#06141c] p-[clamp(1rem,2vh,1.5rem)] lg:col-span-5">
               <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-cyan-900/20 to-transparent" />
               <div>
@@ -283,11 +289,11 @@ function OpshCalculator({
                   <div className="flex size-8 items-center justify-center rounded-full border border-cyan-400/30 bg-cyan-400/10 text-cyan-400">
                     <svg className="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" /></svg>
                   </div>
-                  <h3 className="text-[0.65rem] font-bold uppercase tracking-[0.18em] text-slate-400">Annual Retained Cash Flow</h3>
+                  <h3 className="text-[0.65rem] font-bold uppercase tracking-[0.18em] text-slate-400">Annual Post-Debt Retained Cash Flow</h3>
                 </div>
                 <div className="mt-6">
                   <strong key={highlightCap} className="block text-[clamp(2rem,5vh,3rem)] font-semibold tracking-[-0.03em] text-white animate-flash rounded-sm">
-                    {formatCurrency(projection.annualRetainedCashFlow)}
+                    {formatCurrency(projection.annualPostDebtRetainedCashFlow)}
                   </strong>
                   <span className="mt-2 block text-sm text-slate-400">Per Year</span>
                 </div>
@@ -295,8 +301,8 @@ function OpshCalculator({
               <div className="relative z-10 mt-12 flex items-center gap-3 rounded-lg border border-[#1d2833] bg-black/30 p-3">
                  <svg className="size-5 text-cyan-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>
                  <div>
-                   <span className="block text-xs font-medium text-slate-200">Strong annual cash generation</span>
-                   <span className="block text-[0.65rem] text-slate-500">Drives long-term project value</span>
+                   <span className="block text-xs font-medium text-slate-200">Calculated after listed deductions</span>
+                   <span className="block text-[0.65rem] text-slate-500">Illustrative generation scenario only</span>
                  </div>
               </div>
             </div>
@@ -309,13 +315,13 @@ function OpshCalculator({
                   <div className="flex size-7 items-center justify-center rounded-md border border-emerald-400/30 bg-emerald-400/10 text-emerald-400">
                     <span className="text-xs font-bold">$</span>
                   </div>
-                  <h3 className="text-[0.65rem] font-bold uppercase tracking-[0.18em] text-slate-400">Illustrative Capital Requirement</h3>
+                  <h3 className="text-[0.65rem] font-bold uppercase tracking-[0.18em] text-slate-400">Illustrative Capital-Cost Assumption</h3>
                 </div>
                 <div className="mt-4">
                   <strong key={highlightCap} className="block text-[clamp(1.5rem,3.5vh,1.875rem)] font-semibold tracking-[-0.02em] text-white animate-flash rounded-sm">
                     {formatCurrency(projection.illustrativeCapitalRequirement)}
                   </strong>
-                  <span className="mt-1 block text-[0.7rem] text-slate-400">Total Estimated</span>
+                  <span className="mt-1 block text-[0.7rem] text-slate-400">US$5M/MW × selected capacity; not an EPC estimate</span>
                 </div>
               </div>
 
@@ -325,29 +331,29 @@ function OpshCalculator({
                   <div className="flex size-7 items-center justify-center rounded-md border border-violet-400/30 bg-violet-400/10 text-violet-400">
                     <span className="text-xs font-bold">C</span>
                   </div>
-                  <h3 className="text-[0.65rem] font-bold uppercase tracking-[0.18em] text-slate-400">Simple Payback</h3>
+                  <h3 className="text-[0.65rem] font-bold uppercase tracking-[0.18em] text-slate-400">Illustrative Simple Payback</h3>
                 </div>
                 <div className="mt-4">
                   <strong key={highlightCap} className="block text-[clamp(1.5rem,3.5vh,1.875rem)] font-semibold tracking-[-0.02em] text-white animate-flash rounded-sm">
                     {projection.simplePaybackYears.toFixed(1)} <span className="text-xl font-medium text-slate-400">Years</span>
                   </strong>
-                  <span className="mt-1 block text-[0.7rem] text-slate-400">Estimated Payback Period</span>
+                  <span className="mt-1 block text-[0.7rem] text-slate-400">Capital assumption ÷ modeled post-debt cash flow; not IRR or NPV</span>
                 </div>
               </div>
             </div>
 
-            {/* Annual Energy Throughput */}
+            {/* Modeled Annual Generation */}
             <div className="relative flex flex-col overflow-hidden rounded-2xl border border-[#1d2833] bg-[#06141c] p-[clamp(1rem,2vh,1.5rem)] lg:col-span-4">
               <div className="absolute bottom-0 right-0 h-40 w-40 rounded-tl-full bg-cyan-900/10 blur-2xl" />
               <div className="flex items-center gap-3">
                   <div className="flex size-8 items-center justify-center rounded-full border border-blue-400/30 bg-blue-400/10 text-blue-400">
                     <svg className="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
                   </div>
-                  <h3 className="text-[0.65rem] font-bold uppercase tracking-[0.18em] text-slate-400">Annual Modeled Energy Throughput</h3>
+                  <h3 className="text-[0.65rem] font-bold uppercase tracking-[0.18em] text-slate-400">Modeled Annual Generation</h3>
               </div>
               <div className="mt-6">
                   <strong key={highlightCap} className="block text-[clamp(2rem,5vh,2.5rem)] font-semibold tracking-[-0.03em] text-white animate-flash rounded-sm">
-                    {formatNumber(projection.annualModeledEnergyThroughputMwh)} <span className="text-2xl font-medium text-slate-400">MWh</span>
+                    {formatNumber(projection.modeledAnnualGenerationMwh)} <span className="text-2xl font-medium text-slate-400">MWh</span>
                   </strong>
                   <span className="mt-2 block text-sm text-slate-400">Per Year</span>
               </div>
@@ -362,7 +368,7 @@ function OpshCalculator({
                     <span className="font-bold">$</span>
                   </div>
                   <div>
-                    <h4 className="text-[0.6rem] font-bold uppercase tracking-[0.18em] text-slate-400">Cumulative Retained Cash Flow</h4>
+                    <h4 className="text-[0.6rem] font-bold uppercase tracking-[0.18em] text-slate-400">Cumulative Post-Debt Retained Cash Flow</h4>
                     <strong key={highlightCap + highlightHor} className="mt-1 block text-lg font-semibold text-white animate-flash rounded-sm">{formatCompactCurrency(projection.cumulativeRetainedCashFlow)}</strong>
                     <span className="block text-[0.65rem] text-slate-500">{operatingHorizon}-Year Outlook</span>
                   </div>
@@ -376,7 +382,7 @@ function OpshCalculator({
                     <svg className="size-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
                   </div>
                   <div>
-                    <h4 className="text-[0.6rem] font-bold uppercase tracking-[0.18em] text-slate-400">Cumulative Energy Throughput</h4>
+                    <h4 className="text-[0.6rem] font-bold uppercase tracking-[0.18em] text-slate-400">Cumulative Modeled Generation</h4>
                     <strong key={highlightCap + highlightHor} className="mt-1 block text-lg font-semibold text-white animate-flash rounded-sm">{formatNumber(projection.cumulativeEnergyThroughputMwh)} <span className="text-xs font-normal text-slate-400">MWh</span></strong>
                     <span className="block text-[0.65rem] text-slate-500">{operatingHorizon}-Year Outlook</span>
                   </div>
@@ -390,7 +396,7 @@ function OpshCalculator({
                     <span className="text-xs font-bold tracking-tighter">CO₂</span>
                   </div>
                   <div>
-                    <h4 className="text-[0.6rem] font-bold uppercase tracking-[0.18em] text-slate-400">Approximate CO₂ Displacement</h4>
+                    <h4 className="text-[0.6rem] font-bold uppercase tracking-[0.18em] text-slate-400">Illustrative Avoided-Emissions Potential</h4>
                     <strong key={highlightCap + highlightHor} className="mt-1 block text-lg font-semibold text-white animate-flash rounded-sm">{formatNumber(projection.cumulativeCo2DisplacementTons)} <span className="text-xs font-normal text-slate-400">tCO₂</span></strong>
                     <span className="block text-[0.65rem] text-slate-500">Cumulative ({operatingHorizon} Years)</span>
                   </div>
@@ -425,7 +431,7 @@ function OpshCalculator({
                   <div className="grid gap-4 sm:grid-cols-3">
                     <OutputMetric label="Gross Electricity Revenue" value={formatCurrency(projection.grossElectricityRevenue)} animationKey={highlightCap} />
                     <OutputMetric label="Total Deductions" value={`(${formatCurrency(projection.totalDeductions)})`} animationKey={highlightCap} />
-                    <OutputMetric label="Post-Debt Retained Cash Flow" value={formatCurrency(projection.postDebtRetainedCashFlow)} accent="cyan" detail="Removes only the modeled debt-service deduction." animationKey={highlightCap} />
+                    <OutputMetric label="Pre-Debt Retained Cash Flow" value={formatCurrency(projection.preDebtRetainedCashFlow)} accent="cyan" detail="Gross electricity revenue less modeled royalty and O&M; debt service is shown separately." animationKey={highlightCap} />
                   </div>
                   <div className="mt-4 grid gap-4 rounded-xl border border-white/5 bg-slate-900/30 p-4 sm:grid-cols-3">
                     <div>
@@ -446,7 +452,7 @@ function OpshCalculator({
                 <section>
                   <h4 className="mb-4 border-b border-white/5 pb-2 text-[0.62rem] font-bold uppercase tracking-[0.15em] text-slate-400">Environmental Method</h4>
                   <div className="grid gap-4 sm:grid-cols-3">
-                    <OutputMetric accent="emerald" label="Annual Approximate CO₂ Displacement" value={`${formatNumber(projection.annualCo2DisplacementTons)} tCO₂`} animationKey={highlightCap} />
+                    <OutputMetric accent="emerald" label="Annual Illustrative Avoided-Emissions Potential" value={`${formatNumber(projection.annualCo2DisplacementTons)} tCO₂`} animationKey={highlightCap} />
                     <OutputMetric label="Carbon Factor" value="0.35 tCO₂/MWh" />
                   </div>
                 </section>
@@ -461,25 +467,27 @@ function OpshCalculator({
                     <div><dt className="text-slate-500">O&amp;M Input</dt><dd className="mt-1 font-semibold text-slate-200">US$15/MWh</dd></div>
                     <div><dt className="text-slate-500">Debt-Service Input</dt><dd className="mt-1 font-semibold text-slate-200">US$30/MWh</dd></div>
                     <div><dt className="text-slate-500">Capital-Cost Input</dt><dd className="mt-1 font-semibold text-slate-200">US$5M/MW</dd></div>
+                    <div><dt className="text-slate-500">Storage Duration</dt><dd className="mt-1 font-semibold text-slate-200">Project-Specific</dd></div>
+                    <div><dt className="text-slate-500">Conversion Efficiency</dt><dd className="mt-1 font-semibold text-slate-200">Project-Specific; not applied</dd></div>
                   </dl>
                 </section>
 
                 <section>
                   <h4 className="mb-4 border-b border-white/5 pb-2 text-[0.62rem] font-bold uppercase tracking-[0.15em] text-slate-400">Exclusions &amp; Limitations</h4>
                   <div className="space-y-4">
-                    <p className="rounded-lg border border-amber-500/20 bg-amber-500/[0.05] p-4 text-[0.7rem] leading-5 text-amber-100/70">
-                      <strong className="mb-1 block text-amber-200">Co-Location Exclusion:</strong> Potential water, desalination and industrial co-location value is
-                      excluded from this model. Any such value requires separate technical,
-                      environmental and commercial validation using project-specific inputs.
+                    <p className="rounded-lg border border-cyan-400/20 bg-cyan-400/[0.05] p-4 text-[0.7rem] leading-5 text-cyan-100/70">
+                      <strong className="mb-1 block text-cyan-200">Additional Value Scope:</strong> Water, desalination and industrial co-location value is evaluated separately using project-specific technical, environmental and commercial inputs.
                     </p>
                     <p className="text-[0.7rem] leading-5 text-slate-400">
                       These values are visible, replaceable scenario inputs—not offered
                       commercial terms or verified forecasts. Calculations are simplified,
                       pre-tax and exclude project-specific financing, construction,
-                      interconnection, insurance and site costs. Charging electricity,
-                      pumping losses and round-trip efficiency are not represented;
-                      outputs do not establish net storage margin or project returns.
-                      The emissions calculation excludes charging electricity and lifecycle impacts.
+                      interconnection, insurance and site costs. Storage economics—including
+                      charging-energy price, usable storage capacity, project-specific round-trip
+                      efficiency and market spread—are evaluated during feasibility and detailed
+                      engineering and are excluded from this generation-output scenario.
+                      Avoided-emissions results also depend on charging source, displaced generation,
+                      operating profile and lifecycle impacts.
                     </p>
                     <p className="text-[0.7rem] leading-5 text-slate-500">
                       Illustrative scenario model only. Outputs are not measured operating

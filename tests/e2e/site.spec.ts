@@ -50,6 +50,8 @@ test.describe('Humpback Hydro Site Verification', () => {
     const page = await context.newPage();
     await page.goto('/');
     await expect(page.getByRole('heading', { level: 1 })).toHaveText('Hydropower. Reimagined.');
+    await expect(page.getByRole('button', { name: 'Open Calculator' })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Explore Full Economics' })).toHaveAttribute('href', '/economics');
     expect(await page.locator('[data-reveal]').evaluateAll(elements => elements.every(element => getComputedStyle(element).opacity === '1'))).toBe(true);
     await context.close();
   });
@@ -72,6 +74,39 @@ test.describe('Humpback Hydro Site Verification', () => {
     expect((await sitemap.text()).match(/<loc>/g)).toHaveLength(8);
   });
 
+  test('Economics scenario views and calculator preserve the model boundary', async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto('/economics', { waitUntil: 'networkidle' });
+
+    const scenarioTabs = page.locator('[data-economics-scenario-selector]').getByRole('tab');
+    await expect(scenarioTabs).toHaveCount(3);
+    await scenarioTabs.first().focus();
+    await page.keyboard.press('ArrowRight');
+    await expect(scenarioTabs.nth(1)).toBeFocused();
+    await expect(scenarioTabs.nth(1)).toHaveAttribute('aria-selected', 'true');
+    await expect(page.getByRole('tabpanel')).toContainText('No storage or arbitrage revenue is monetized');
+    await page.keyboard.press('End');
+    await expect(scenarioTabs.last()).toHaveAttribute('aria-selected', 'true');
+    await expect(page.getByRole('tabpanel')).toContainText('Generation, Storage & Dispatch');
+
+    const calculator = page.locator('[data-economics-calculator] [data-opsh-calculator="embedded"]');
+    await expect(calculator).toBeVisible();
+    await expect(page.locator('[data-opsh-calculator-trigger]')).toHaveCount(0);
+    await expect(calculator.getByText('Annual Post-Debt Retained Cash Flow', { exact: true })).toBeVisible();
+    await expect(calculator.getByText('Illustrative Capital-Cost Assumption', { exact: true })).toBeVisible();
+    await expect(calculator.getByText('Illustrative Simple Payback', { exact: true })).toBeVisible();
+    await expect(calculator.getByText('Modeled Annual Generation', { exact: true })).toBeVisible();
+    await calculator.getByText('MODEL DETAILS & ASSUMPTIONS', { exact: true }).click();
+    await expect(calculator.getByText('Pre-Debt Retained Cash Flow', { exact: true })).toBeVisible();
+    await expect(calculator.getByText('Project-Specific; not applied', { exact: true })).toBeVisible();
+
+    for (const width of [1440, 390]) {
+      await page.setViewportSize({ width, height: 844 });
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+      expect(await calculator.evaluate((element) => element.scrollWidth <= element.clientWidth)).toBe(true);
+    }
+  });
+
   test('Homepage Desktop', async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
     const errors: string[] = [];
@@ -90,6 +125,12 @@ test.describe('Humpback Hydro Site Verification', () => {
     await expect(page.getByRole('heading', { name: 'Hydropower. Reimagined.', level: 1 })).toBeVisible();
     await expect(page.getByText('Generation • Storage • Automated Dispatch')).toBeVisible();
     await expect(page.locator('.premium-digital-twin')).toBeVisible();
+    await expect(page.locator('#platform + #economics')).toBeVisible();
+    await expect(page.locator('#economics [data-opsh-calculator="embedded"]')).toBeHidden();
+    await expect(page.getByRole('button', { name: 'Open Calculator' })).toHaveAttribute('aria-expanded', 'false');
+    await expect(page.locator('.home-economics-teaser')).toContainText('Generation · Storage · Integrated');
+    await expect(page.locator('#economics').getByRole('link', { name: 'Explore Full Economics' })).toHaveAttribute('href', '/economics');
+    await expect(page.locator('.site-footer').getByRole('link', { name: 'Calculator', exact: true })).toHaveAttribute('href', '/#economics');
 
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
     expect(overflow).toBe(false);
@@ -167,6 +208,73 @@ test.describe('Humpback Hydro Site Verification', () => {
     await expect(autoCycle).toBeVisible();
     const box = await autoCycle.boundingBox();
     expect(box?.height).toBeGreaterThanOrEqual(44);
+
+    await expect(page.locator('#economics [data-opsh-calculator="embedded"]')).toBeHidden();
+  });
+
+  test('Homepage calculator progressively discloses and explains the shared model accessibly', async ({ page }) => {
+    await page.goto('/', { waitUntil: 'networkidle' });
+    const toggle = page.locator('.home-calculator-toggle');
+    await expect(toggle).toHaveAccessibleName('Open Calculator');
+    const calculator = page.locator('#homepage-economics-calculator');
+    await expect(calculator).toBeHidden();
+    await toggle.focus();
+    await page.keyboard.press('Enter');
+    await expect(toggle).toHaveAttribute('aria-expanded', 'true');
+    await expect(calculator).toBeVisible();
+
+    const explainerTrigger = page.getByRole('button', { name: 'How This Model Works' });
+    await explainerTrigger.click();
+    const explainer = page.getByRole('dialog', { name: 'How This Model Works' });
+    await expect(explainer).toBeVisible();
+    await expect(explainer.getByText('Energy In', { exact: true })).toBeVisible();
+    await expect(explainer.getByText('Store', { exact: true })).toBeVisible();
+    await expect(explainer.getByText('Generate', { exact: true })).toBeVisible();
+    await expect(explainer.getByText('Dispatch', { exact: true })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Close how this model works' })).toBeFocused();
+    await page.keyboard.press('Escape');
+    await expect(explainer).toHaveCount(0);
+    await expect(explainerTrigger).toBeFocused();
+
+    await page.getByRole('button', { name: 'Collapse', exact: true }).click();
+    await expect(calculator).toBeHidden();
+    await expect(toggle).toHaveAttribute('aria-expanded', 'false');
+    await expect(toggle).toBeFocused();
+  });
+
+  test('Hero, footer and direct URL open the same homepage calculator', async ({ page }) => {
+    for (const width of [1440, 768, 390, 320]) {
+      await page.setViewportSize({ width, height: 844 });
+      await page.goto('/');
+      const heroLink = page.locator('.home-hero').getByRole('link', { name: 'Open Calculator' });
+      await heroLink.click();
+      await expect(page).toHaveURL(/\/#economics$/);
+      await expect(page.locator('#homepage-economics-calculator')).toBeVisible();
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+
+      await page.getByRole('button', { name: 'Collapse', exact: true }).click();
+      const footerLink = page.locator('.site-footer').getByRole('link', { name: 'Calculator', exact: true });
+      await footerLink.scrollIntoViewIfNeeded();
+      await footerLink.click();
+      await expect(page).toHaveURL(/\/#economics$/);
+      await expect(page.locator('#homepage-economics-calculator')).toBeVisible();
+      const section = page.locator('#economics');
+      await expect(section).toBeVisible();
+      await expect.poll(async () => section.evaluate(element => element.getBoundingClientRect().top)).toBeGreaterThanOrEqual(69);
+      await expect.poll(async () => section.evaluate(element => element.getBoundingClientRect().top)).toBeLessThanOrEqual(90);
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+
+      await page.goto('/#economics');
+      await expect(page.locator('#homepage-economics-calculator')).toBeVisible();
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+    }
+
+    await page.goto('/partners');
+    await page.locator('.site-footer').getByRole('link', { name: 'Calculator', exact: true }).click();
+    await expect(page).toHaveURL(/\/#economics$/);
+    await expect(page.locator('#homepage-economics-calculator')).toBeVisible();
+    await expect(page.locator('.footer-grid')).not.toContainText('Vancouver, Canada');
+    await expect(page.locator('.footer-legal')).toContainText('Vancouver, Canada');
   });
 
   test('Company', async ({ page }) => {
@@ -188,7 +296,7 @@ test.describe('Humpback Hydro Site Verification', () => {
     await expect(page.getByRole('heading', { name: 'Bryce Huston', level: 2 })).toBeVisible();
     await expect(page.getByText('Information Security • AI Systems • Digital Infrastructure')).toBeVisible();
     await expect(page.getByText('FOUNDER & SYSTEMS ARCHITECT')).toBeVisible();
-    await expect(page.locator('.leadership-credential dd')).toHaveText('HUSTON SOLUTION INC.');
+    await expect(page.locator('#bryce-huston-profile').locator('..').getByRole('link', { name: 'HUSTON SOLUTION INC.', exact: true })).toBeVisible();
     await expect(page.getByText('Founder • HUSTON SOLUTION INC.', { exact: true })).toBeVisible();
     await expect(page.locator('.bryce-profile .leadership-biography p')).toHaveText([
       'Bryce Huston is Chief Information Security Officer at Humpback Hydro and founder of HUSTON SOLUTION INC., a technology company focused on applied artificial intelligence, automation, software systems and digital infrastructure.',

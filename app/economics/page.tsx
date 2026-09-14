@@ -1,9 +1,10 @@
 import { pageMetadata } from "../page-metadata";
-import OpshCalculatorLauncher from "../components/OpshCalculatorLauncher";
+import EconomicsScenarioSelector from "../components/EconomicsScenarioSelector";
+import OpshCalculator from "../components/OpshCalculator";
 import RouteHero from "../components/RouteHero";
 import { ILLUSTRATIVE_PROJECT_ASSUMPTIONS } from "../economics-model";
 
-export const metadata = pageMetadata("/economics", "Economics", "Review a provisional illustrative economics scenario for 100 MW and 1,000 MW Humpback Hydro facilities.");
+export const metadata = pageMetadata("/economics", "Economics", "Explore how Humpback Hydro's generation, storage and dispatch functions are evaluated through transparent illustrative scenarios.");
 
 const model = ILLUSTRATIVE_PROJECT_ASSUMPTIONS;
 
@@ -13,39 +14,46 @@ const assumptions = [
   ["O&M Scenario Input", `US$${model.operationsAndMaintenancePerMwh.toFixed(2)}/MWh`],
   ["Debt-Service Scenario Input", `US$${model.debtServicePerMwh.toFixed(2)}/MWh`],
   ["Total Deductions", `US$${(model.royaltyPerMwh + model.operationsAndMaintenancePerMwh + model.debtServicePerMwh).toFixed(2)}/MWh`],
-  ["Modeled Retained Value", `US$${(model.electricityPricePerMwh - model.royaltyPerMwh - model.operationsAndMaintenancePerMwh - model.debtServicePerMwh).toFixed(2)}/MWh`],
+  ["Modeled Post-Debt Retained Value", `US$${(model.electricityPricePerMwh - model.royaltyPerMwh - model.operationsAndMaintenancePerMwh - model.debtServicePerMwh).toFixed(2)}/MWh`],
   ["Capacity Factor", `${(model.capacityFactor * 100).toFixed(0)}%`],
   ["Annual Hours", model.annualHours.toLocaleString("en-US")],
-  ["Annual Throughput", `${(model.annualHours * model.capacityFactor).toLocaleString("en-US")} MWh/MW`],
-  ["Capital-Cost Scenario Input", `US$${(model.capitalCostPerMw / 1_000_000).toFixed(1)}M/MW`],
+  ["Modeled Annual Generation", `${(model.annualHours * model.capacityFactor).toLocaleString("en-US")} MWh/MW`],
+  ["Storage Duration", "Project-Specific"],
+  ["Conversion Efficiency", "Project-Specific; not applied"],
+  ["Illustrative Capital-Cost Assumption", `US$${(model.capitalCostPerMw / 1_000_000).toFixed(1)}M/MW`],
   ["Carbon-Displacement Factor", `${model.co2TonsPerMwh.toFixed(2)} tCO₂/MWh`],
 ] as const;
 
 const revenueStreams = [
   {
     index: "01",
-    title: "Energy Sales and Time-Shifting",
-    copy: "Potential project-owner value from electricity delivery and energy time-shifting depends on the applicable market, dispatch profile and offtake structure.",
+    title: "Energy",
+    copy: "Potential value from electricity generation and delivery depends on the applicable market, dispatch profile and offtake structure.",
   },
   {
     index: "02",
-    title: "Capacity and Grid Services",
-    copy: "Potential capacity, balancing or grid-support value requires equipment qualification, interconnection approval and market-specific eligibility.",
+    title: "Storage & Arbitrage",
+    copy: "Energy shifting and arbitrage depend on charging cost, market spread, usable storage capacity, operating strategy and project-specific efficiency.",
   },
   {
     index: "03",
-    title: "Technology Licensing and Royalties",
-    copy: "The intended Humpback commercial model may include licensing and output-linked royalties. Final terms remain project-specific and unapproved.",
+    title: "Capacity",
+    copy: "Potential capacity and resource-adequacy value depends on demonstrated availability, duration, market rules and contracted obligations.",
   },
   {
     index: "04",
-    title: "Lifecycle Operations and Maintenance",
-    copy: "Long-term operating support, monitoring and maintenance may create recurring service value once scope, responsibilities and pricing are validated.",
+    title: "Grid Services",
+    copy: "Potential balancing, frequency and ancillary-service value depends on equipment capability, interconnection approval and market eligibility.",
   },
   {
     index: "05",
-    title: "Water and Industrial Integration",
-    copy: "Potential co-location with water or industrial infrastructure remains outside the primary model pending separate technical and commercial validation.",
+    title: "Renewable Integration",
+    copy: "Potential value may arise from absorbing compatible surplus or curtailed electricity and firming variable renewable generation.",
+  },
+  {
+    index: "06",
+    title: "Resilience",
+    copy: "Energy security and system-flexibility value must be defined against the site, operating configuration and resilience requirements.",
   },
 ] as const;
 
@@ -55,7 +63,7 @@ const perMwEconomics = [
   ["Less O&M", "(US$118,260)"],
   ["Less Debt Service", "(US$236,520)"],
   ["Total Deductions", "(US$424,159)"],
-  ["Net Cash Retained by Client", "US$521,921"],
+  ["Post-Debt Cash Retained by Client", "US$521,921"],
 ] as const;
 
 const facilityComparison = [
@@ -84,7 +92,7 @@ const facilityComparison = [
     emphasis: false,
   },
   {
-    label: "Net Retained",
+    label: "Post-Debt Retained",
     hundredMw: "US$52.19M/year",
     thousandMw: "US$521.92M/year",
     emphasis: true,
@@ -96,7 +104,7 @@ const twentyYearEconomics = [
   ["Royalty", "(US$1.39B)"],
   ["O&M", "(US$2.37B)"],
   ["Debt Service", "(US$4.73B)"],
-  ["Net Retained by Client", "US$10.44B"],
+  ["Post-Debt Retained by Client", "US$10.44B"],
 ] as const;
 
 function MetricList({
@@ -149,8 +157,8 @@ export default function EconomicsPage() {
       <RouteHero
         index="04"
         eyebrow="Economics"
-        title="The Economics of Scale."
-        copy="A provisional illustrative scenario showing how calculated annual project value changes across 100 MW and 1,000 MW facilities."
+        title="Generation. Storage. Dispatch."
+        copy="One modular infrastructure platform with multiple grid functions—presented through transparent illustrative scenarios and project-specific engineering boundaries."
         image="/grid-data-center-night.webp"
         nextHref="#economics-model"
         nextLabel="Review the Scenario"
@@ -161,7 +169,33 @@ export default function EconomicsPage() {
         className="section-shell bg-[var(--ice)]"
       >
         <div className="chapter-label">
-          <span>01</span>90% SCENARIO
+          <span>01</span>PLATFORM AND MODEL BOUNDARY
+        </div>
+
+        <div className="grid gap-10 border-b border-[#061c28]/15 pb-16 lg:grid-cols-[minmax(0,0.78fr)_minmax(0,1.22fr)] lg:gap-20" data-reveal>
+          <div>
+            <p className="eyebrow dark"><span />Integrated Energy Management</p>
+            <h2 className="mt-7 max-w-3xl text-[clamp(3rem,6vw,6.5rem)] font-medium leading-[0.92] tracking-[-0.065em] text-[#061c28]">
+              Energy In → Store → Generate → Dispatch
+            </h2>
+            <p className="mt-7 text-xl font-medium text-[#0a6178]">
+              One Modular Infrastructure Platform. Multiple Grid Functions.
+            </p>
+          </div>
+          <div className="self-end">
+            <p className="max-w-2xl text-base leading-8 text-[#607780]">
+              Humpback is designed to accept compatible electrical input, store energy as gravitational potential energy, generate electricity through hydroelectric conversion and dispatch power according to system demand and operating requirements.
+            </p>
+            <p className="mt-5 max-w-2xl text-sm leading-7 text-[#607780]">
+              Pumping energy may be supplied by available grid electricity, renewable generation or other compatible sources, including otherwise curtailed or surplus energy. Internal energy recovery may reduce external requirements in some configurations, while system losses require make-up energy defined through project-specific engineering.
+            </p>
+          </div>
+        </div>
+
+        <EconomicsScenarioSelector />
+
+        <div className="chapter-label mt-20">
+          <span>02</span>ILLUSTRATIVE GENERATION SCENARIO
         </div>
 
         <div
@@ -171,16 +205,16 @@ export default function EconomicsPage() {
           <div>
             <p className="eyebrow dark">
               <span />
-              Illustrative Financial Model
+              Transparent Scenario Model
             </p>
             <h2 className="mt-7 max-w-3xl text-[clamp(3rem,6vw,6.5rem)] font-medium leading-[0.92] tracking-[-0.065em] text-[#061c28]">
-              One Operating Case. Two Facility Scales.
+              One Generation Case. Two Facility Scales.
             </h2>
           </div>
 
           <div className="self-end">
             <p className="max-w-2xl text-base leading-8 text-[#607780]">
-              The scenario applies the same company-supplied electricity price,
+              The generation-output scenario applies the same company-supplied electricity price,
               royalty, O&M, debt-service and capacity-factor inputs at both
               scales. All figures are stated in U.S. dollars.
             </p>
@@ -191,10 +225,11 @@ export default function EconomicsPage() {
                 arithmetic consequences of those inputs, not measured operating
                 performance, an approved forecast, financial advice, an
                 investment offering or a guarantee of future results.
-                {" "}Charging electricity, pumping losses and round-trip efficiency
-                are not represented. These outputs do not establish net storage
-                margin or project returns; the emissions calculation excludes
-                charging electricity and lifecycle impacts.
+                {" "}Storage economics—including charging-energy price, usable
+                storage capacity, storage duration, project-specific round-trip
+                efficiency and market spread—are evaluated during feasibility and
+                detailed engineering and are excluded from this headline model.
+                The emissions calculation excludes charging electricity and lifecycle impacts.
               </p>
             </div>
           </div>
@@ -230,7 +265,7 @@ export default function EconomicsPage() {
                   Calculated Annual Outputs
               </small>
               <h3 className="mt-3 text-3xl font-medium tracking-[-0.04em] text-[#061c28]">
-                Revenue per Installed MW
+                Generation Economics per Installed MW
               </h3>
               <p className="mt-4 text-sm leading-6 text-[#607780]">
                 7,884 MWh × US$120/MWh produces US$946,080 in annual gross
@@ -245,7 +280,7 @@ export default function EconomicsPage() {
       <section className="bg-[#020d14] text-white">
         <div className="section-shell">
           <div className="chapter-label light">
-            <span>02</span>INTERACTIVE PROJECT MODEL
+            <span>03</span>INTERACTIVE PROJECT MODEL
           </div>
           <div className="grid gap-10 lg:grid-cols-[minmax(0,0.72fr)_minmax(0,1.28fr)] lg:items-end lg:gap-20" data-reveal>
             <div>
@@ -256,10 +291,12 @@ export default function EconomicsPage() {
             </div>
             <div>
               <p className="mb-7 max-w-2xl text-base leading-8 text-[#a9bbc1]">
-                Explore installed capacity from 10 MW to 1,000 MW using the same provisional operating case documented on this page. The model calculates project-level arithmetic, not securities ownership or direct investor returns.
+                Explore installed capacity from 10 MW to 1,000 MW using the same provisional generation-output case documented on this page. The model calculates project-level arithmetic, not storage margin, securities ownership or direct investor returns.
               </p>
-              <OpshCalculatorLauncher />
             </div>
+          </div>
+          <div className="mt-14" data-economics-calculator>
+            <OpshCalculator displayMode="embedded" />
           </div>
         </div>
       </section>
@@ -267,7 +304,7 @@ export default function EconomicsPage() {
       <section className="bg-[#031721] text-white">
         <div className="section-shell">
           <div className="chapter-label light">
-            <span>03</span>FACILITY COMPARISON
+            <span>04</span>FACILITY COMPARISON
           </div>
 
           <div className="mb-12 max-w-4xl" data-reveal>
@@ -360,16 +397,16 @@ export default function EconomicsPage() {
 
       <section className="section-shell bg-[var(--ice)]">
         <div className="chapter-label">
-          <span>04</span>COMMERCIAL MODEL
+          <span>05</span>POTENTIAL PROJECT VALUE STREAMS
         </div>
         <div className="grid gap-12 lg:grid-cols-[minmax(0,0.72fr)_minmax(0,1.28fr)] lg:gap-24">
           <div data-reveal>
-            <p className="eyebrow dark"><span />Potential Revenue Categories</p>
+            <p className="eyebrow dark"><span />Multiple Grid Functions</p>
             <h2 className="mt-7 text-[clamp(3rem,5vw,5.8rem)] font-medium leading-[0.94] tracking-[-0.06em] text-[#061c28]">
-              Value Must Be Proven Project by Project.
+              Value Is Quantified Function by Function.
             </h2>
             <p className="mt-8 max-w-xl text-base leading-8 text-[#607780]">
-              These categories describe potential commercial pathways rather than contracted revenue, verified eligibility or offered pricing.
+              Potential value streams are shown for context and are not included in the financial results above unless specifically identified. Availability and compensation vary by market, jurisdiction, project configuration and operating capability.
             </p>
           </div>
           <div className="border-t border-[#061c28]/15" data-reveal>
@@ -398,7 +435,7 @@ export default function EconomicsPage() {
 
       <section className="section-shell bg-[var(--ice)]">
         <div className="chapter-label">
-          <span>05</span>LONG-TERM VALUE
+          <span>06</span>LONG-TERM VALUE
         </div>
 
         <div className="grid gap-12 lg:grid-cols-[minmax(0,0.72fr)_minmax(0,1.28fr)] lg:gap-24">
@@ -438,7 +475,7 @@ export default function EconomicsPage() {
 
         <div className="section-shell relative">
           <div className="chapter-label light">
-            <span>06</span>ILLUSTRATIVE PAYBACK
+          <span>07</span>ILLUSTRATIVE PAYBACK
           </div>
 
           <div className="grid gap-6 lg:grid-cols-2">
@@ -458,9 +495,9 @@ export default function EconomicsPage() {
                 </p>
               </div>
               <p className="mt-10 max-w-xl text-sm leading-7 text-[#a9bbc1]">
-                Based on an estimated US$5.0B capital cost and approximately
+                Based on a US$5.0B illustrative capital-cost assumption and approximately
                 US$521.92M in annual client-retained cash after royalty, O&M and
-                debt servicing.
+                debt servicing. This ratio is not an IRR, NPV or project-finance return.
               </p>
             </article>
 
@@ -470,7 +507,7 @@ export default function EconomicsPage() {
             >
               <div>
                 <small className="font-mono text-[0.68rem] font-semibold tracking-[0.16em] text-[#83c4d2] uppercase">
-                  Illustrative Annual Cash Flow After Debt
+                  Illustrative Pre-Debt Retained Cash Flow
                 </small>
                 <p className="mt-6 font-mono text-[clamp(3.8rem,8vw,7.5rem)] font-semibold leading-none tracking-[-0.08em] text-white tabular-nums">
                   $758.4M
