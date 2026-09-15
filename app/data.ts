@@ -26,6 +26,19 @@ export interface DeliveryCapability {
   scope: string;
 }
 
+export interface DeliveryPartnerProfile {
+  name: string;
+  discipline: string;
+  relationship: string;
+  role: string;
+  location: string;
+  organization: string;
+  image: string;
+  imageAlt: string;
+  imagePosition: string;
+  initials?: string;
+}
+
 export const navItems = [
   { label: "Technology", href: "/technology" },
   { label: "Applications", href: "/applications" },
@@ -76,6 +89,42 @@ export const leadership: readonly LeadershipProfile[] = [
       "At Humpback Hydro, Bryce leads information security and digital infrastructure strategy. His mandate is to establish the secure, scalable digital foundation supporting engineering collaboration, data integrity, operational continuity and future platform growth. He brings an execution-focused approach to the leadership team: architect the system, control the risk and build the infrastructure required to scale.",
     ],
     publicationStatus: "published-qualified",
+  },
+];
+
+export const deliveryPartners: readonly DeliveryPartnerProfile[] = [
+  {
+    name: "Rich Burgess",
+    discipline: "Construction & Advanced Materials",
+    relationship: "Technical Partner / Contractor",
+    role: "President, Cor-Tuf UHPC",
+    location: "Virginia, USA",
+    organization: "President, Cor-Tuf UHPC | Virginia, USA",
+    image: "/team/rich-burgess.webp",
+    imageAlt: "Portrait of Rich Burgess",
+    imagePosition: "50% 28%",
+  },
+  {
+    name: "Chris Calvin",
+    discipline: "Advanced Materials",
+    relationship: "Technical Partner",
+    role: "President, Lightweight Concrete Solutions",
+    location: "Ontario, Canada",
+    organization: "President, Lightweight Concrete Solutions | Ontario, Canada",
+    image: "/team/chris-calvin.webp",
+    imageAlt: "Portrait of Chris Calvin",
+    imagePosition: "50% 30%",
+  },
+  {
+    name: "Gustavo Varela Latouche",
+    discipline: "Electrical Engineering",
+    relationship: "Electrical Engineering Partner",
+    role: "Director General, COMTEL Ingeniería",
+    location: "Costa Rica",
+    organization: "Director General, COMTEL Ingeniería | Costa Rica",
+    image: "/team/gustavo-varela-latouche.webp",
+    imageAlt: "Portrait of Gustavo Varela Latouche",
+    imagePosition: "50% 32%",
   },
 ];
 

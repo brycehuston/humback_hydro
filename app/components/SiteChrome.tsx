@@ -13,6 +13,7 @@ export default function SiteChrome({ children }: { children: React.ReactNode }) 
   const menuTrigger = useRef<HTMLButtonElement>(null);
   const menuPanel = useRef<HTMLDivElement>(null);
   const signatureRef = useRef<HTMLAnchorElement>(null);
+  const footerMarkRef = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
     if (!menuOpen) return;
@@ -144,6 +145,7 @@ export default function SiteChrome({ children }: { children: React.ReactNode }) 
     function onFocus() { play(); }
 
     wrap.addEventListener("animationend", onAnimationEnd);
+
     // Attach interaction listeners to the parent brand link
     const brand = wrap.closest(".brand");
     brand?.addEventListener("pointerenter", onPointerEnter);
@@ -158,6 +160,38 @@ export default function SiteChrome({ children }: { children: React.ReactNode }) 
       wrap.removeEventListener("animationend", onAnimationEnd);
       brand?.removeEventListener("pointerenter", onPointerEnter);
       brand?.removeEventListener("focus", onFocus, true);
+    };
+  }, []);
+
+  // Footer logo activation animation
+  useEffect(() => {
+    const footerWrap = footerMarkRef.current;
+    if (!footerWrap) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    let timer: ReturnType<typeof setTimeout>;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          timer = setTimeout(() => {
+            footerWrap.classList.add("logo-energise-reverse");
+          }, 800);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.1 }
+    );
+    observer.observe(footerWrap);
+
+    function onAnimationEnd() {
+      footerWrap.classList.remove("logo-energise-reverse");
+    }
+    footerWrap.addEventListener("animationend", onAnimationEnd);
+
+    return () => {
+      clearTimeout(timer);
+      observer.disconnect();
+      footerWrap.removeEventListener("animationend", onAnimationEnd);
     };
   }, []);
 
@@ -253,12 +287,20 @@ export default function SiteChrome({ children }: { children: React.ReactNode }) 
       <footer className="site-footer">
         <div className="footer-primary">
           <Link className="brand footer-brand" href="/">
-            <span className="brandmark-wrap" aria-hidden="true">
+            <span className="brandmark-wrap footer-brandmark" ref={footerMarkRef} aria-hidden="true">
               <img src={brandmark} alt="" />
+              <svg className="logo-energy-svg" viewBox="0 0 48 42" aria-hidden="true">
+                <circle className="energy-charge charge-l" cx="22.5" cy="40" r="1.5" />
+                <circle className="energy-charge charge-r" cx="25.5" cy="40" r="1.5" />
+                <path className="energy-path stem-l" d="M 22.5,40 C 22.5,28 18,22 8,16" pathLength="100" />
+                <path className="energy-path stem-r" d="M 25.5,40 C 25.5,28 30,22 40,16" pathLength="100" />
+                <path className="energy-path curve-l" d="M 8,16 C 4,12 4,6 10,5 C 16,4 20,9 24,14" pathLength="100" />
+                <path className="energy-path curve-r" d="M 40,16 C 44,12 44,6 38,5 C 32,4 28,9 24,14" pathLength="100" />
+              </svg>
             </span>
             <span><strong>HUMPBACK HYDRO</strong><small>Energy. Water. Humanity.</small></span>
           </Link>
-          <p>Developing modular hydroelectric generation and energy-storage infrastructure for the AI era.</p>
+          <p className="footer-statement">MODULAR HYDRO POWER & STORAGE FOR THE AI ERA.</p>
           <a className="footer-email" href="mailto:info@humpbackenergy.com">info@humpbackenergy.com</a>
         </div>
         <div className="footer-grid">

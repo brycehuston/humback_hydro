@@ -1,7 +1,7 @@
 import { pageMetadata } from "../page-metadata";
 import MarkLegacyBio from "../components/MarkLegacyBio";
 import RouteHero from "../components/RouteHero";
-import { deliveryCapabilities, leadership } from "../data";
+import { deliveryCapabilities, deliveryPartners, leadership } from "../data";
 
 export const metadata = pageMetadata("/company", "Company", "Meet the Humpback Hydro leadership and the capability pathway supporting marine energy-infrastructure development.");
 
@@ -186,13 +186,14 @@ export default function CompanyPage() {
             </section>
           ) : null}
 
+
           <MarkLegacyBio />
         </div>
       </section>
 
       <section className="delivery-network section-shell">
         <div className="chapter-label">
-          <span>03</span>DELIVERY CAPABILITIES
+          <span>03</span>PROJECT DELIVERY NETWORK
         </div>
         <div className="section-intro split" data-reveal>
           <div>
@@ -200,23 +201,75 @@ export default function CompanyPage() {
               <span />
               Specialist Capability
             </p>
-            <h2>Capabilities Required From Engineering to Delivery.</h2>
+            <h2>From Engineered Material to Operating Asset.</h2>
           </div>
           <p>
-            These categories describe the specialist capabilities Humpback expects
-            to engage through its partner pathway. They do not represent named firms,
-            current agreements or completed delivery appointments.
+            The company&apos;s delivery network brings together specialist capability
+            spanning construction, advanced materials and electrical engineering.
+            Public descriptions remain company supplied and follow the project&apos;s
+            source-confirmation controls.
           </p>
         </div>
         <div className="network-list">
-          {deliveryCapabilities.map((capability, index) => (
-            <article key={capability.discipline} data-reveal>
+          {deliveryPartners.map((partner, index) => (
+            <article key={partner.name} data-reveal>
               <span>0{index + 1}</span>
-              <small>Capability Category</small>
-              <h3>{capability.discipline}</h3>
-              <p>{capability.scope}</p>
+              <div>
+                <small>{partner.discipline}</small>
+                <span className="network-relationship">{partner.relationship}</span>
+              </div>
+              <div className="network-portrait">
+                {partner.image ? (
+                  <img
+                    src={partner.image}
+                    loading="eager"
+                    decoding="async"
+                    alt={partner.imageAlt}
+                    style={{ objectPosition: partner.imagePosition }}
+                  />
+                ) : (
+                  <span
+                    className="leader-monogram"
+                    role="img"
+                    aria-label={`Portrait placeholder for ${partner.name}`}
+                  >
+                    {partner.initials ?? initials(partner.name)}
+                  </span>
+                )}
+              </div>
+              <h3>{partner.name}</h3>
+              <p>{partner.organization}</p>
             </article>
           ))}
+        </div>
+
+        <div className="delivery-capabilities-block mt-20 pt-16 border-t border-[#061c28]/15" data-reveal>
+          <div className="section-intro split">
+            <div>
+              <p className="eyebrow dark">
+                <span />
+                Delivery Capabilities
+              </p>
+              <h3 className="text-2xl md:text-3xl font-medium tracking-tight text-[#061c28]">
+                Capabilities Required From Engineering to Delivery.
+              </h3>
+            </div>
+            <p>
+              These categories describe the specialist capabilities Humpback expects
+              to engage through its partner pathway. They do not represent named firms,
+              current agreements or completed delivery appointments.
+            </p>
+          </div>
+          <div className="network-capabilities-list">
+            {deliveryCapabilities.map((capability, index) => (
+              <article key={capability.discipline} className="capability-row">
+                <span>0{index + 1}</span>
+                <small>Capability Category</small>
+                <h4>{capability.discipline}</h4>
+                <p>{capability.scope}</p>
+              </article>
+            ))}
+          </div>
         </div>
       </section>
     </main>

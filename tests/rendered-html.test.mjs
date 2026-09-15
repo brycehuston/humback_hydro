@@ -163,7 +163,23 @@ test("renders leadership portraits and generic delivery capabilities", async () 
   assert.match(styles, /\.leadership-name-suffix\s*\{[^}]*font-size:\s*\.52em/s);
 
   assert.doesNotMatch(html, /src="\/(?:mark-legacy|bryan-green)\.webp/);
-  assert.doesNotMatch(html, /Rich Burgess|Chris Calvin|Gustavo Varela Latouche/);
+  for (const partner of [
+    /\/team\/rich-burgess\.webp/,
+    /\/team\/chris-calvin\.webp/,
+    /\/team\/gustavo-varela-latouche\.webp/,
+    /Rich Burgess/,
+    /Chris Calvin/,
+    /Gustavo Varela Latouche/,
+    /Technical Partner \/ Contractor/,
+    /Technical Partner/,
+    /Electrical Engineering Partner/,
+    /President, Cor-Tuf UHPC/,
+    /President, Lightweight Concrete Solutions/,
+    /Director General, COMTEL Ingeniería/,
+    /03<\/span>PROJECT DELIVERY NETWORK/,
+  ]) {
+    assert.match(html, partner);
+  }
 });
 
 test("publishes the approved homepage hierarchy and native V4 controls", async () => {
