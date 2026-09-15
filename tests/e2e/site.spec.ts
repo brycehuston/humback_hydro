@@ -84,7 +84,7 @@ test.describe('Humpback Hydro Site Verification', () => {
     await page.keyboard.press('ArrowRight');
     await expect(scenarioTabs.nth(1)).toBeFocused();
     await expect(scenarioTabs.nth(1)).toHaveAttribute('aria-selected', 'true');
-    await expect(page.getByRole('tabpanel')).toContainText('No storage or arbitrage revenue is monetized');
+    await expect(page.getByRole('tabpanel')).toContainText('No numeric storage or arbitrage output is published');
     await page.keyboard.press('End');
     await expect(scenarioTabs.last()).toHaveAttribute('aria-selected', 'true');
     await expect(page.getByRole('tabpanel')).toContainText('Generation, Storage & Dispatch');
@@ -92,13 +92,20 @@ test.describe('Humpback Hydro Site Verification', () => {
     const calculator = page.locator('[data-economics-calculator] [data-opsh-calculator="embedded"]');
     await expect(calculator).toBeVisible();
     await expect(page.locator('[data-opsh-calculator-trigger]')).toHaveCount(0);
-    await expect(calculator.getByText('Annual Post-Debt Retained Cash Flow', { exact: true })).toBeVisible();
-    await expect(calculator.getByText('Illustrative Capital-Cost Assumption', { exact: true })).toBeVisible();
-    await expect(calculator.getByText('Illustrative Simple Payback', { exact: true })).toBeVisible();
-    await expect(calculator.getByText('Modeled Annual Generation', { exact: true })).toBeVisible();
-    await calculator.getByText('MODEL DETAILS & ASSUMPTIONS', { exact: true }).click();
-    await expect(calculator.getByText('Pre-Debt Retained Cash Flow', { exact: true })).toBeVisible();
-    await expect(calculator.getByText('Project-Specific; not applied', { exact: true })).toBeVisible();
+    await expect(calculator.getByText('Annual Post-Debt Retained Cash Flow')).toHaveCount(0);
+    await expect(calculator.getByText('Illustrative Simple Payback')).toHaveCount(0);
+    await expect(calculator.getByText('Modeled Annual Generation')).toHaveCount(0);
+    await expect(calculator.getByText('Pre-Debt Retained Cash Flow')).toHaveCount(0);
+    await expect(page.getByText('9.6 Years')).toHaveCount(0);
+    await expect(page.getByText('retained by client')).toHaveCount(0);
+    await expect(page.getByText('tCO₂')).toHaveCount(0);
+
+    await expect(calculator.getByText('Annual Energy Sensitivity', { exact: true })).toBeVisible();
+    await expect(calculator.getByText('Gross Electricity-Sale Sensitivity', { exact: true })).toBeVisible();
+    await expect(calculator.getByText('Before Charging Energy and All Project Costs', { exact: true })).toBeVisible();
+    await calculator.getByText('Model Details & Assumptions', { exact: true }).click();
+    await expect(calculator.getByText('Annual Energy Formula', { exact: true })).toBeVisible();
+    await expect(calculator.getByText('No Return or Carbon Result', { exact: true })).toBeVisible();
 
     for (const width of [1440, 390]) {
       await page.setViewportSize({ width, height: 844 });
@@ -123,7 +130,7 @@ test.describe('Humpback Hydro Site Verification', () => {
     await page.goto('/');
 
     await expect(page.getByRole('heading', { name: 'Hydropower. Reimagined.', level: 1 })).toBeVisible();
-    await expect(page.getByText('Generation • Storage • Automated Dispatch')).toBeVisible();
+    await expect(page.getByText('Generation • Storage • Dispatch Architecture')).toBeVisible();
     await expect(page.locator('.premium-digital-twin')).toBeVisible();
     await expect(page.locator('#platform + #economics')).toBeVisible();
     await expect(page.locator('#economics [data-opsh-calculator="embedded"]')).toBeHidden();
@@ -147,7 +154,7 @@ test.describe('Humpback Hydro Site Verification', () => {
     const lowerGen = page.getByRole('button', { name: 'Lower Generation' });
     const charging = page.getByRole('button', { name: 'Charging' });
     const upperGen = page.getByRole('button', { name: 'Upper Generation' });
-    const cycleSummary = page.getByRole('button', { name: 'Cycle Summary' });
+    const cycleSummary = page.getByRole('button', { name: 'Sequence Summary' });
     const pausePlay = page.locator('.pause-control');
 
     await expect(autoCycle).toBeVisible();
@@ -284,10 +291,10 @@ test.describe('Humpback Hydro Site Verification', () => {
     await expect(page.locator('#leadership')).toBeVisible();
     await expect(page.locator('img[src*="humpback-team-vancouver.webp"]')).toBeVisible();
 
-    const gustavoImg = page.locator('img[src*="gustavo-varela-latouche.webp"]');
-    await gustavoImg.scrollIntoViewIfNeeded();
-    await expect(gustavoImg).toBeVisible();
-    await expect(page.locator('img[src*="chris-calvin.webp"]')).toBeVisible();
+    const bryceImg = page.locator('img[src*="bryce-huston.webp"]');
+    await bryceImg.scrollIntoViewIfNeeded();
+    await expect(bryceImg).toBeVisible();
+    await expect(page.locator('img[src*="mark-legacy.webp"]')).toBeVisible();
 
     const bryan = page.getByText('Bryan Green').first();
     await bryan.scrollIntoViewIfNeeded();

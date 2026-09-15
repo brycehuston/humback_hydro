@@ -9,7 +9,7 @@ This register controls factual publication status. A working link proves only th
 | U.S. Patent `8823195 B2` has a reachable public record | Google Patents link returned HTTP 200 on 2026-07-25 | Publish the patent number and link only. Legal status, ownership, scope, and commercial rights require separate review. |
 | Website imagery is conceptual | Images are labeled “Concept Visualization”; footer states imagery does not depict completed projects | Keep these disclosures visible. |
 | Current launch routes and public assets exist | Repository build and live-site verification recorded in `PROJECT_STATUS.md` | Operational fact only; not evidence of technical or commercial performance. |
-| 2024 IEEE EESAT paper and DOI | Official IEEE record and supplied paper: DOI `10.1109/EESAT59125.2024.10471215` | Publish the complete citation and describe the 10 MW / 24-hour configuration as analyzed, not measured or operating. |
+| 2024 peer-reviewed IEEE EESAT conference paper and DOI | Official IEEE record and supplied paper: DOI `10.1109/EESAT59125.2024.10471215`. IEEE conference peer-review policy and conference-quality guidance accessed 2026-09-14: https://conferences.ieeeauthorcenter.ieee.org/understand-peer-review/ and https://events.ieee.org/planning-basics/technical-program-development-quality/peer-review-tools/ | Scope is publication-process evidence only: IEEE requires conference papers to undergo peer review before publication and describes review by independent subject-matter referees. Publish “Peer-Reviewed IEEE Conference Paper” for this paper only. This is not IEEE endorsement, operating validation, measured plant performance or independent engineering qualification. |
 | 2015 UBC capstone proof-of-concept result | Supplied final report calculates a 10 MW configuration, three hours of delivery and maximum cycle efficiency of 70.2% | Publish only as a calculated capstone result, not measured plant performance or independent validation. |
 | 2022 UBC two-stage static design result | Supplied capstone report studies a static structure designed for 10.6 MW and continuous operation as needed | Publish only the static-system summary with its stated design and geotechnical limitations. Do not publish or link the mixed-source document. |
 
@@ -19,7 +19,8 @@ This register controls factual publication status. A working link proves only th
 | --- | --- |
 | “Engineering Validated” | Independent engineering-validation report, scope, author/organization, date, methodology, limitations, and publication approval |
 | “Top 3 GLOBE Emerging Technology” | Primary event/award record, year, exact category/ranking language, and permission to use the recognition |
-| Founder, leadership, and delivery-partner roles | Written confirmation of names, titles, organizations, current roles, and public-use approval |
+| Founder and leadership roles | Written confirmation of names, titles, organizations, current roles, and public-use approval |
+| Named delivery-network roles, organizations and portraits | Written confirmation of current role, Humpback relationship scope, organizational attribution, and public/image-use approval. Until controlled, publish generic capability categories only. |
 | Planned manufacturing/deployment roadmap and MW ranges | Approved roadmap, technical basis, dependencies, stage gates, and clear forward-looking qualification |
 | Prototype, proof-of-concept, pilot, development-stage, and commercial-readiness statements | Approved status definition supported by dated technical and corporate records |
 | Performance, grid-service, long-duration, reliability, water, and desalination potential | Approved engineering basis with conditions, boundaries, and non-misleading qualification |

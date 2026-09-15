@@ -1,10 +1,9 @@
-import type { CSSProperties } from "react";
 import { pageMetadata } from "../page-metadata";
 import MarkLegacyBio from "../components/MarkLegacyBio";
 import RouteHero from "../components/RouteHero";
-import { deliveryPartners, leadership } from "../data";
+import { deliveryCapabilities, leadership } from "../data";
 
-export const metadata = pageMetadata("/company", "Company", "Meet the Humpback Hydro leadership and delivery network advancing marine clean-energy infrastructure.");
+export const metadata = pageMetadata("/company", "Company", "Meet the Humpback Hydro leadership and the capability pathway supporting marine energy-infrastructure development.");
 
 const publishedLeadership = leadership.filter(
   (member) =>
@@ -176,7 +175,7 @@ export default function CompanyPage() {
                       HUSTON SOLUTION INC.
                     </a>
                     <span className="mt-1 block text-sm text-[#83c4d2]">
-                      Technology and Security Partner
+                      Technology • AI • Security
                     </span>
                   </div>
                 </div>
@@ -193,7 +192,7 @@ export default function CompanyPage() {
 
       <section className="delivery-network section-shell">
         <div className="chapter-label">
-          <span>03</span>DELIVERY NETWORK
+          <span>03</span>DELIVERY CAPABILITIES
         </div>
         <div className="section-intro split" data-reveal>
           <div>
@@ -201,43 +200,21 @@ export default function CompanyPage() {
               <span />
               Specialist Capability
             </p>
-            <h2>From Engineered Material to Operating Asset.</h2>
+            <h2>Capabilities Required From Engineering to Delivery.</h2>
           </div>
           <p>
-            The company&apos;s delivery network brings together specialist capability
-            spanning construction, advanced materials and electrical engineering.
-            Public descriptions remain company supplied and follow the project&apos;s
-            source-confirmation controls.
+            These categories describe the specialist capabilities Humpback expects
+            to engage through its partner pathway. They do not represent named firms,
+            current agreements or completed delivery appointments.
           </p>
         </div>
         <div className="network-list">
-          {deliveryPartners.map((partner, index) => (
-            <article key={partner.name} data-reveal>
+          {deliveryCapabilities.map((capability, index) => (
+            <article key={capability.discipline} data-reveal>
               <span>0{index + 1}</span>
-              <small>{partner.discipline}</small>
-              <div className="network-portrait">
-                {partner.image ? (
-                  <img
-                    src={partner.image}
-                    loading="lazy"
-                    decoding="async"
-                    alt={partner.imageAlt}
-                    style={
-                      { objectPosition: partner.imagePosition } as CSSProperties
-                    }
-                  />
-                ) : (
-                  <span
-                    className="leader-monogram"
-                    role="img"
-                    aria-label={`Portrait placeholder for ${partner.name}`}
-                  >
-                    {partner.initials ?? initials(partner.name)}
-                  </span>
-                )}
-              </div>
-              <h3>{partner.name}</h3>
-              <p>{partner.organization}</p>
+              <small>Capability Category</small>
+              <h3>{capability.discipline}</h3>
+              <p>{capability.scope}</p>
             </article>
           ))}
         </div>

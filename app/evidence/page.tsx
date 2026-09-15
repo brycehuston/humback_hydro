@@ -8,7 +8,7 @@ export const metadata = pageMetadata("/evidence", "Engineering Foundation", "Rev
 
 const evidenceHierarchy = [
   ["01", "Public Patent Record", "An attributable legal record confirming the published patent document and its stated scope."],
-  ["02", "Peer-Reviewed Publication", "Research accepted into a peer-reviewed publication record; distinct from validation of an operating facility."],
+  ["02", "Peer-Reviewed IEEE Conference Paper", "The existing IEEE conference paper is peer reviewed; publication remains distinct from validation of an operating facility."],
   ["03", "University Engineering Study", "Academic calculations or design work published with its configuration, assumptions and limitations."],
   ["04", "Company Record in Verification", "Company-supplied information progressing through primary-source confirmation before unqualified publication."],
   ["05", "Independent Third-Party Qualification", "Reserved for completed external review or testing with a defined scope, methodology, limitations and attributable report."],
@@ -22,7 +22,7 @@ export default function EvidencePage() {
         <div className="chapter-label"><span>01</span>CLAIMS REGISTER</div>
         <div className="section-intro split" data-reveal>
           <div><p className="eyebrow dark"><span />Institutional Diligence</p><h2>The Record Today. The Validation Path Ahead.</h2></div>
-          <p>Every material claim is tied to its current evidence status. Modeled results are informing the engineering validation program and remain distinct from measured operating output or completed independent validation.</p>
+          <p>Each item in this register is tied to its current evidence status. Modeled results are informing the engineering validation program and remain distinct from measured operating output or completed independent validation.</p>
         </div>
 
         <div className="vault-list">

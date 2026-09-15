@@ -25,7 +25,7 @@ export default function Home() {
         <div className="hero-copy" data-reveal>
           <p className="eyebrow"><span />Marine Pumped-Hydro Infrastructure</p>
           <h1 className="home-positioning-title"><span>Hydropower.</span>{" "}<span>Reimagined.</span></h1>
-          <p className="hero-platform-line">Generation • Storage • Automated Dispatch</p>
+          <p className="hero-platform-line">Generation • Storage • Dispatch Architecture</p>
           <p className="hero-lede">
             A Canadian energy technology company developing modular hydroelectric generation and long-duration energy storage infrastructure.
           </p>
@@ -37,8 +37,8 @@ export default function Home() {
 
         <div className="hero-command" data-reveal>
           <div className="command-head"><span><i />SYSTEM MODEL</span><small>HH / 01</small></div>
-          <div className="command-cycle" aria-label="Generate, store and dispatch cycle">
-            <span><small>01</small>GENERATE</span><i /><span><small>02</small>STORE</span><i /><span><small>03</small>DISPATCH</span>
+          <div className="command-cycle" aria-label="Energy in, store, generate and dispatch architecture">
+            <span><small>01</small>ENERGY IN</span><i /><span><small>02</small>STORE</span><i /><span><small>03</small>GENERATE</span><i /><span><small>04</small>DISPATCH</span>
           </div>
           <div className="command-proof">
             <div><small>TECHNICAL FOUNDATION</small><strong>IEEE-Published Architecture</strong></div>
@@ -189,7 +189,7 @@ export default function Home() {
           <p className="eyebrow"><span />Designed for Industrialization</p>
           <h2>The Invention Is Only the Beginning.</h2>
           <p>The ambition is a repeatable infrastructure platform supported by engineering, manufacturing and deployment partners.</p>
-          <a className="text-link light" href="/company">Meet the Delivery Network <Arrow /></a>
+          <a className="text-link light" href="/company">Explore Delivery Capabilities <Arrow /></a>
         </div>
         <span className="concept-tag">CONCEPT VISUALIZATION</span>
       </section>
@@ -207,7 +207,7 @@ export default function Home() {
             <img src="/grid-data-center-night.webp" alt="Concept visualization of a coastal data-center power campus" loading="lazy" decoding="async" />
             <div className="cta-visual-shade" />
             <div className="cta-sonar" aria-hidden="true"><i /><i /><i /><span /></div>
-            <div className="cta-visual-status"><small>VALIDATION &amp; PILOT PATHWAY</small><strong>Qualified Partner Engagement</strong></div>
+            <div className="cta-visual-status"><small>VALIDATION &amp; PILOT PATHWAY</small><strong>Partner Engagement Pathway</strong></div>
             <span className="concept-tag">CONCEPT VISUALIZATION</span>
           </div>
         </div>

@@ -258,7 +258,7 @@ export default function SiteChrome({ children }: { children: React.ReactNode }) 
             </span>
             <span><strong>HUMPBACK HYDRO</strong><small>Energy. Water. Humanity.</small></span>
           </Link>
-          <p>Industrialized clean-energy infrastructure for the AI era.</p>
+          <p>Developing modular hydroelectric generation and energy-storage infrastructure for the AI era.</p>
           <a className="footer-email" href="mailto:info@humpbackenergy.com">info@humpbackenergy.com</a>
         </div>
         <div className="footer-grid">

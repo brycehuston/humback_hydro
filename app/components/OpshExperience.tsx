@@ -64,7 +64,7 @@ const SCENE_PROGRESS_STOPS = [0.06, 0.24, 0.42, 0.68] as const;
  * break. The visible labels and copy now follow the correct four-stage
  * mechanical sequence:
  *
- * anatomy  -> Constant Supply
+ * anatomy  -> Below-Surface Intake
  * store    -> Gravitational Flow
  * generate -> Pumping
  * impact   -> Release
@@ -73,11 +73,11 @@ const MECHANICAL_STAGES: readonly OpshStage[] = [
   {
     id: "anatomy",
     number: "01",
-    shortLabel: "Constant Supply",
-    eyebrow: "Below-Waterline Intake",
-    title: "Maintain a Constant Water Supply",
+    shortLabel: "Below-Surface Intake",
+    eyebrow: "Site-Specific Intake Geometry",
+    title: "Illustrate the Below-Surface Intake",
     description:
-      "Seawater enters through submerged intakes positioned below the surrounding waterline, providing a consistent source for the operating cycle.",
+      "Water enters through the illustrated below-surface intake during the lower-generation phase and fills a finite lower reservoir. Intake configuration and water conditions are site-specific.",
     detail:
       "Conceptual flow state: intake paths open while the central pump and upper-release paths remain isolated.",
     camera: {

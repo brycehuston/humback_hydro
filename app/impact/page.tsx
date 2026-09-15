@@ -143,7 +143,7 @@ export default function ImpactPage() {
               The proposed system is designed to generate without on-site fuel combustion. Project-specific lifecycle analysis will quantify construction materials, marine works, maintenance, electricity used for pumping and end-of-life impacts.
             </p>
             <p className="mt-6 border-l-2 border-[#168da8] pl-5 text-sm leading-7 text-[#46636c]">
-              No operating Humpback installation has demonstrated an emissions, biodiversity, oxygenation, water-quality or habitat benefit. Avoided emissions depend on the actual charging mix, displaced generation and operating profile.
+              Net emissions impact depends on actual charging mix, conversion losses, displaced marginal generation, operating profile and lifecycle boundary. No operating Humpback installation has demonstrated a quantified avoided-emissions benefit or a biodiversity, oxygenation, water-quality or habitat benefit.
             </p>
           </div>
         </div>

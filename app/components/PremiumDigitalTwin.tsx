@@ -32,39 +32,39 @@ type ControlApi = {
 const phaseCopy = {
   establish: {
     index: "00",
-    title: "SYSTEM READY",
-    route: "THREE-STAGE STORAGE CYCLE",
-    energy: "ALL ROUTES ISOLATED",
+    title: "SEQUENCE OVERVIEW",
+    route: "ILLUSTRATED ARCHITECTURE",
+    energy: "EXTERNAL INPUT AND OUTPUT SHOWN",
   },
   lower: {
     index: "01",
     title: "LOWER GENERATION",
     route: "AMBIENT TO LOWER STORAGE",
-    energy: "GENERATOR  >  GRID",
+    energy: "ILLUSTRATED OUTPUT  >  GRID / LOAD",
   },
   charge: {
     index: "02",
     title: "CHARGING",
     route: "LOWER TO UPPER STORAGE",
-    energy: "GRID / RENEWABLES  >  PUMP",
+    energy: "EXTERNAL ENERGY IN  >  PUMP",
   },
   upper: {
     index: "03",
     title: "UPPER GENERATION",
     route: "UPPER STORAGE TO AMBIENT",
-    energy: "GENERATOR  >  GRID",
+    energy: "ELECTRICAL OUTPUT  >  GRID / LOAD",
   },
   handoff: {
     index: "··",
-    title: "SETTLING / HANDOFF",
-    route: "FLOW STABILIZING FOR NEXT PROCESS",
-    energy: "MACHINERY COASTING TO IDLE",
+    title: "STATE TRANSITION",
+    route: "BETWEEN ILLUSTRATED STATES",
+    energy: "QUALITATIVE SEQUENCE",
   },
   summary: {
     index: "04",
-    title: "CYCLE COMPLETE",
-    route: "WATER RETURNED TO AMBIENT",
-    energy: "READY FOR NEXT CYCLE",
+    title: "SEQUENCE ILLUSTRATED",
+    route: "EXTERNAL INPUT REQUIRED FOR STORAGE",
+    energy: "LOSSES REQUIRE MAKE-UP ENERGY",
   },
 } as const;
 
@@ -72,8 +72,8 @@ const educationCards = [
   {
     number: "1",
     phase: "lower",
-    title: "Constant Water Supply",
-    copy: "Seawater is drawn in from below the surface of the ocean or a lake through an intake. The below-surface intake provides cooler, cleaner water.",
+    title: "Below-Surface Intake",
+    copy: "Water enters through the illustrated intake during the lower-generation phase and fills a finite lower reservoir. Intake configuration and water conditions are site-specific.",
   },
   {
     number: "2",
@@ -100,8 +100,31 @@ const actions: ReadonlyArray<{ action: TwinAction; label: string }> = [
   { action: "lower", label: "Lower Generation" },
   { action: "charge", label: "Charging" },
   { action: "upper", label: "Upper Generation" },
-  { action: "summary", label: "Cycle Summary" },
+  { action: "summary", label: "Sequence Summary" },
 ];
+
+const signatureSteps = [
+  {
+    label: "Energy In",
+    phase: "charge",
+    copy: "Compatible external electricity enters the pumping path.",
+  },
+  {
+    label: "Store",
+    phase: "charge",
+    copy: "Pumping raises water into the upper reservoir, storing gravitational potential energy.",
+  },
+  {
+    label: "Generate",
+    phase: "upper",
+    copy: "Stored water is released through the upper generation path.",
+  },
+  {
+    label: "Dispatch",
+    phase: "upper",
+    copy: "Electrical output leaves toward the connected grid/load.",
+  },
+] as const;
 
 const flowVectorRoutes: readonly FlowVectorRoute[] = [
   {
@@ -155,7 +178,18 @@ function FlowVectorLayer() {
             <feMergeNode in="SourceGraphic" />
           </feMerge>
         </filter>
+        <marker id="premium-electrical-arrow" markerHeight="8" markerWidth="8" orient="auto" refX="7" refY="4">
+          <path d="M 0 0 L 8 4 L 0 8 Z" />
+        </marker>
       </defs>
+      <g className="premium-twin-electrical-route is-input" data-electrical-route="input">
+        <path d="M 70 610 H 675 C 720 610 745 575 775 545" />
+        <text x="86" y="588">EXTERNAL ENERGY IN</text>
+      </g>
+      <g className="premium-twin-electrical-route is-output" data-electrical-route="output">
+        <path d="M 1030 420 H 1525" />
+        <text x="1230" y="397">ELECTRICAL OUTPUT</text>
+      </g>
       {flowVectorRoutes.map((route) => (
         <g
           className={`premium-twin-flow-group is-${route.operation} ${route.className}`}
@@ -188,7 +222,7 @@ export default function PremiumDigitalTwin() {
   const [visiblePhase, setVisiblePhase] = useState<DigitalTwinOperation | null>(
     null,
   );
-  const [announcedPhase, setAnnouncedPhase] = useState("System Ready");
+  const [announcedPhase, setAnnouncedPhase] = useState("Sequence Overview");
 
   useEffect(() => {
     const root = rootRef.current;
@@ -679,7 +713,7 @@ export default function PremiumDigitalTwin() {
       const phase = phaseCopy[scene.phase];
       panel(0.027, 0.04, 0.205, 0.102);
       textLabel("HUMPBACK HYDRO", 0.045, 0.074, 11, "#68f5e1", "left", true);
-      textLabel("OPERATING MODEL", 0.045, 0.104, 20, "#eefdfc");
+      textLabel("ARCHITECTURE MODEL", 0.045, 0.104, 20, "#eefdfc");
       textLabel(
         "ILLUSTRATIVE DIGITAL TWIN",
         0.045,
@@ -691,23 +725,9 @@ export default function PremiumDigitalTwin() {
       );
 
       panel(0.76, 0.04, 0.213, 0.102);
-      ctx.save();
-      ctx.fillStyle = "#68f5e1";
-      ctx.shadowColor = "#68f5e1";
-      ctx.shadowBlur = (10 * canvas.width) / 1600;
-      ctx.beginPath();
-      ctx.arc(
-        0.782 * canvas.width,
-        0.073 * canvas.height,
-        (4 * canvas.width) / 1600,
-        0,
-        Math.PI * 2,
-      );
-      ctx.fill();
-      ctx.restore();
       textLabel(
-        "SYSTEM STATUS",
-        0.797,
+        "ILLUSTRATED STATE",
+        0.782,
         0.077,
         10,
         "rgba(196,226,225,.72)",
@@ -716,16 +736,16 @@ export default function PremiumDigitalTwin() {
       );
       const systemStatus =
         scene.phase === "establish"
-          ? "READY"
+          ? "SEQUENCE OVERVIEW"
           : scene.phase === "summary"
-            ? "CYCLE COMPLETE"
+            ? "SEQUENCE ILLUSTRATED"
             : scene.phase === "handoff"
-              ? "SETTLING / TRANSFER"
-              : "ACTIVE / NOMINAL";
-      textLabel(systemStatus, 0.797, 0.107, 18, "#eefdfc");
+              ? "STATE TRANSITION"
+              : "PROCESS ILLUSTRATED";
+      textLabel(systemStatus, 0.782, 0.107, 18, "#eefdfc");
       textLabel(
         "QUALITATIVE DISPLAY — NOT TO SCALE",
-        0.797,
+        0.782,
         0.13,
         9,
         "#68f5e1",
@@ -749,7 +769,7 @@ export default function PremiumDigitalTwin() {
       ctx.stroke();
       ctx.restore();
       textLabel(
-        "ACTIVE SEQUENCE",
+        "ILLUSTRATED SEQUENCE",
         0.105,
         0.868,
         10,
@@ -808,12 +828,12 @@ export default function PremiumDigitalTwin() {
         textLabel(machine, box[0] + 0.014, box[1] + 0.029, 9, "#68f5e1", "left", true);
         const machineStatus =
           scene.phase === "handoff"
-            ? "COASTING"
+            ? "TRANSITION SHOWN"
             : scene.progress < 0.16
-              ? "RAMPING"
+              ? "FLOW START SHOWN"
               : scene.progress > 0.82
-                ? "COASTING"
-                : "ONLINE";
+                ? "FLOW END SHOWN"
+                : "FLOW ILLUSTRATED";
         textLabel(machineStatus, box[0] + 0.014, box[1] + 0.06, 16, "#eefdfc");
         textLabel(
           machinePhase === "charge"
@@ -1115,9 +1135,26 @@ export default function PremiumDigitalTwin() {
       </div>
 
       <div className="premium-twin-status">
-        <span>Illustrative Operating Model</span>
+        <span>Illustrated Architecture Sequence</span>
         <strong>{announcedPhase}</strong>
         <small>Concept Model — Not to Scale</small>
+      </div>
+
+      <section className="premium-twin-signature" aria-labelledby="premium-twin-signature-title" data-signature-rail>
+        <h3 className="premium-twin-signature-title" id="premium-twin-signature-title">Energy In → Store → Generate → Dispatch</h3>
+        {signatureSteps.map((step, index) => (
+          <article data-active={visiblePhase === step.phase} key={step.label}>
+            <small>0{index + 1}</small>
+            <h4>{step.label}</h4>
+            <p>{step.copy}</p>
+          </article>
+        ))}
+      </section>
+
+      <div className="premium-twin-boundary">
+        <strong>External Input Required for Storage</strong>
+        <p>External electricity powers pumping. System losses require make-up energy. This qualitative sequence is not a quantitative energy balance; duration, usable storage capacity and efficiency are project-specific.</p>
+        <p>Humpback&apos;s lower-stage ambient-flow generation is a separate architecture path. It is not assumed to power the pump.</p>
       </div>
 
       <div className="premium-twin-controls" aria-label="Digital twin controls">

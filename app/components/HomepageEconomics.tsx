@@ -24,19 +24,19 @@ const FOCUSABLE_SELECTOR = [
 const modelSteps = [
   {
     label: "Energy In",
-    copy: "Available electrical energy can be supplied to the system from compatible sources and configurations.",
+    copy: "Compatible external electricity enters the pumping path.",
   },
   {
     label: "Store",
-    copy: "Energy is converted into stored gravitational potential energy.",
+    copy: "Pumping raises water into the upper reservoir, storing gravitational potential energy.",
   },
   {
     label: "Generate",
-    copy: "Stored hydraulic energy can be converted back into electricity through hydroelectric generation.",
+    copy: "Stored water is released through the upper generation path.",
   },
   {
     label: "Dispatch",
-    copy: "Power can then be dispatched according to system demand and operating configuration.",
+    copy: "Electrical output leaves toward the connected grid/load.",
   },
 ];
 
@@ -204,8 +204,8 @@ export default function HomepageEconomics() {
                 ))}
               </div>
               <div className="model-explainer-boundary">
-                <p>The calculator is an illustrative scenario model intended to demonstrate potential project scale, modeled generation and economics under selected assumptions.</p>
-                <p>Actual project performance, charging requirements, storage duration, usable capacity, efficiency, operating configuration, project costs, revenues and economics remain project-specific and subject to feasibility, engineering and validation.</p>
+                <p>Humpback&apos;s lower-stage ambient-flow generation is a separate architecture path and is not assumed to supply pumping.</p>
+                <p>This sensitivity tool is conditional arithmetic only. Storage duration, usable capacity, efficiency, operating configuration, project costs and revenues remain project-specific.</p>
               </div>
             </div>
           </div>,
@@ -224,8 +224,8 @@ export default function HomepageEconomics() {
         <div className="chapter-label light"><span>03</span>THE ECONOMICS</div>
         <div className="home-economics-teaser">
           <div>
-            <p className="eyebrow"><span />Model the Economics</p>
-            <h2 id="home-economics-title">Explore illustrative generation, storage and project economics.</h2>
+            <p className="eyebrow"><span />Test the Arithmetic</p>
+            <h2 id="home-economics-title">Explore a transparent, user-driven generation sensitivity.</h2>
             <p className="home-economics-modes">Generation · Storage · Integrated</p>
           </div>
           <button

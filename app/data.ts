@@ -21,14 +21,9 @@ export interface LeadershipProfile {
   publicationStatus: LeadershipPublicationStatus;
 }
 
-export interface DeliveryPartnerProfile {
-  name: string;
+export interface DeliveryCapability {
   discipline: string;
-  organization: string;
-  image?: string;
-  imageAlt?: string;
-  imagePosition?: string;
-  initials?: string;
+  scope: string;
 }
 
 export const navItems = [
@@ -84,30 +79,26 @@ export const leadership: readonly LeadershipProfile[] = [
   },
 ];
 
-export const deliveryPartners: readonly DeliveryPartnerProfile[] = [
+export const deliveryCapabilities: readonly DeliveryCapability[] = [
   {
-    name: "Rich Burgess",
-    discipline: "Construction & Advanced Materials",
-    organization: "President, Cor-Tuf UHPC | Virginia, USA",
-    image: "/team/rich-burgess.webp",
-    imageAlt: "Portrait of Rich Burgess",
-    imagePosition: "50% 28%",
+    discipline: "Construction / EPC",
+    scope: "Constructability, civil works, procurement strategy and site delivery.",
   },
   {
-    name: "Chris Calvin",
     discipline: "Advanced Materials",
-    organization: "President, Lightweight Concrete Solutions | Ontario, Canada",
-    image: "/team/chris-calvin.webp",
-    imageAlt: "Portrait of Chris Calvin",
-    imagePosition: "50% 30%",
+    scope: "Material selection, durability, testing and marine-environment qualification.",
   },
   {
-    name: "Gustavo Varela Latouche",
     discipline: "Electrical Engineering",
-    organization: "Director General, COMTEL Ingeniería | Costa Rica",
-    image: "/team/gustavo-varela-latouche.webp",
-    imageAlt: "Portrait of Gustavo Varela Latouche",
-    imagePosition: "50% 32%",
+    scope: "Generation, pumping, protection, interconnection and grid integration.",
+  },
+  {
+    discipline: "Manufacturing",
+    scope: "Repeatable fabrication, quality control, assembly and supply-chain planning.",
+  },
+  {
+    discipline: "Project Delivery",
+    scope: "Site, permitting, commercial, construction and commissioning coordination.",
   },
 ];
 
@@ -126,9 +117,9 @@ export const evidence = [
   {
     index: "02",
     category: "Technical Publication",
-    title: "IEEE EESAT Publication, 2024",
+    title: "IEEE EESAT Conference Paper, 2024",
     description: "Peer-reviewed conference paper describing a multi-reservoir continuous-supply generation and storage system.",
-    status: "Peer-Reviewed Publication",
+    status: "Peer-Reviewed IEEE Conference Paper",
     statusTone: "documented",
     href: "https://ieeexplore.ieee.org/document/10471215",
     external: true,
