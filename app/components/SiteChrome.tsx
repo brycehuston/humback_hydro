@@ -245,8 +245,8 @@ export default function SiteChrome({ children }: { children: React.ReactNode }) 
 
         <nav className="desktop-nav" aria-label="Primary navigation">
           {navItems.map((item) => (
-            <Link key={item.href} href={item.href} aria-current={pathname === item.href ? "page" : undefined}>
-              {item.label}
+            <Link key={item.href} href={item.href} aria-current={pathname === item.href ? "page" : undefined} className="roll-link" aria-label={item.label}>
+              <span className="roll-viewport" aria-hidden="true"><span className="roll-text" data-text={item.label}>{item.label}</span></span>
             </Link>
           ))}
         </nav>

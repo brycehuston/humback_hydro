@@ -477,7 +477,7 @@ test("places a collapsed economics teaser directly after the homepage operating 
   assert.match(homepage.html, /aria-controls="homepage-economics-calculator" aria-expanded="false"[^>]*>Open Calculator/i);
   assert.match(homepage.html, /class="home-economics-calculator" hidden="" id="homepage-economics-calculator"/i);
   assert.match(homepage.html, /href="\/economics">Explore Full Economics/i);
-  assert.match(homepage.html, /<a[^>]*href="\/#economics"[^>]*>Calculator<\/a>/i);
+  assert.match(homepage.html, /<a[^>]*href="\/#economics"[^>]*>(?:<span[^>]*>)?Calculator(?:<\/span>)?<\/a>/i);
   assert.match(homepage.html, /Concept Imagery Does Not Depict Completed Projects · Vancouver, Canada/i);
   assert.doesNotMatch(homepage.html, /<div><small>CONNECT<\/small>[\s\S]*?<span>Vancouver, Canada<\/span>/i);
   assert.match(economics.html, /data-economics-calculator="true"[\s\S]*?data-opsh-calculator="embedded"/i);
