@@ -9,6 +9,7 @@ import {
   DIGITAL_TWIN_BASE_PLATE,
   DIGITAL_TWIN_CYCLE_SECONDS,
   digitalTwinSceneAt,
+  digitalTwinSignatureStageAt,
   flagBreezeActivityAt,
   manualDigitalTwinScene,
   reservoirLevelsAt,
@@ -192,10 +193,11 @@ test("publishes the approved homepage hierarchy and native V4 controls", async (
     /A Canadian energy technology company developing modular hydroelectric generation and long-duration energy storage infrastructure\./,
     /data-v4-twin/,
     /Auto Cycle/,
-    /Lower Generation/,
-    /Charging/,
-    /Upper Generation/,
-    /Sequence Summary/,
+    /Lower-Stage Generation/,
+    /Energy In/,
+    /Store/,
+    /Generate/,
+    /Dispatch/,
     /Energy In → Store → Generate → Dispatch/,
     /External Energy In/i,
     /External electricity powers pumping/i,
@@ -214,26 +216,43 @@ test("publishes the approved homepage hierarchy and native V4 controls", async (
   assert.doesNotMatch(html, /1-10 MW|10-100 MW|Semi-Automated/i);
 });
 
-test("uses the authoritative 29-second V4 timing and level progression", () => {
+test("uses the authoritative 29-second cycle with readable signature-stage pacing", () => {
   assert.equal(DIGITAL_TWIN_CYCLE_SECONDS, 29);
   assert.equal(digitalTwinSceneAt(0).phase, "establish");
-  assert.equal(digitalTwinSceneAt(2).phase, "lower");
+  assert.equal(digitalTwinSceneAt(1).phase, "lower");
   assert.deepEqual(
-    { phase: digitalTwinSceneAt(8).phase, from: digitalTwinSceneAt(8).from, to: digitalTwinSceneAt(8).to },
+    { phase: digitalTwinSceneAt(4).phase, from: digitalTwinSceneAt(4).from, to: digitalTwinSceneAt(4).to },
     { phase: "handoff", from: "lower", to: "charge" },
   );
-  assert.equal(digitalTwinSceneAt(9.5).phase, "charge");
-  assert.equal(digitalTwinSceneAt(15.5).phase, "handoff");
-  assert.equal(digitalTwinSceneAt(17).phase, "upper");
-  assert.equal(digitalTwinSceneAt(23).phase, "handoff");
-  assert.equal(digitalTwinSceneAt(24.5).phase, "summary");
+  assert.equal(digitalTwinSceneAt(5).phase, "charge");
+  assert.equal(digitalTwinSceneAt(15).phase, "handoff");
+  assert.equal(digitalTwinSceneAt(16).phase, "upper");
+  assert.equal(digitalTwinSceneAt(26).phase, "handoff");
+  assert.equal(digitalTwinSceneAt(27).phase, "summary");
   assert.equal(digitalTwinSceneAt(29).phase, "establish");
   assert.equal(manualDigitalTwinScene("lower").activity, 1);
 
+  assert.equal(digitalTwinSignatureStageAt(5), "energy");
+  assert.equal(digitalTwinSignatureStageAt(10), "store");
+  assert.equal(digitalTwinSignatureStageAt(15), null);
+  assert.equal(digitalTwinSignatureStageAt(16), "generate");
+  assert.equal(digitalTwinSignatureStageAt(21), "dispatch");
+  assert.equal(digitalTwinSignatureStageAt(27), null);
+
+  for (const [seconds, stage, operation] of [
+    [5, "energy", "charge"],
+    [10, "store", "charge"],
+    [16, "generate", "upper"],
+    [21, "dispatch", "upper"],
+  ]) {
+    assert.equal(digitalTwinSignatureStageAt(seconds), stage);
+    assert.equal(digitalTwinSceneAt(seconds).phase, operation);
+  }
+
   assert.deepEqual(reservoirLevelsAt(0), { upper: 0.18, lower: 0.85 });
-  assert.deepEqual(reservoirLevelsAt(8), { upper: 0.18, lower: 0.79 });
-  assert.deepEqual(reservoirLevelsAt(17), { upper: 0.125, lower: 0.85 });
-  assert.deepEqual(reservoirLevelsAt(24.5), { upper: 0.18, lower: 0.85 });
+  assert.deepEqual(reservoirLevelsAt(4), { upper: 0.18, lower: 0.79 });
+  assert.deepEqual(reservoirLevelsAt(16), { upper: 0.125, lower: 0.85 });
+  assert.deepEqual(reservoirLevelsAt(27), { upper: 0.18, lower: 0.85 });
 });
 
 test("pins the corrected base geometry and state-mapped SVG vectors", async () => {
@@ -280,14 +299,12 @@ test("pins the corrected base geometry and state-mapped SVG vectors", async () =
   assert.match(component, /function drawFish/);
   assert.match(component, /function drawSeal/);
   assert.match(component, /if \(reducedMotion\) return;/);
-  assert.match(styles, /\.premium-twin-flow-group\.is-lower\s*\{\s*color:\s*#48b9ff/);
-  assert.match(styles, /\.premium-twin-flow-group\.is-charge\s*\{\s*color:\s*#50e38a/);
-  assert.match(styles, /\.premium-twin-flow-group\.is-upper\s*\{\s*color:\s*#b78cff/);
-  assert.match(styles, /\.premium-twin-card\.step-1\s*\{\s*left:\s*2\.2%;\s*top:\s*18%;\s*\}/);
-  assert.match(styles, /\.premium-twin-card\.step-2\s*\{\s*left:\s*2\.2%;\s*top:\s*55%;\s*\}/);
-  assert.match(styles, /\.premium-twin-card\.step-3\s*\{\s*right:\s*2\.2%;\s*top:\s*52%;\s*\}/);
-  assert.match(styles, /\.premium-twin-card\.step-4\s*\{\s*right:\s*2\.2%;\s*top:\s*18%;\s*\}/);
-  assert.match(styles, /\.premium-twin-controls\s*\{[^}]*grid-template-columns:\s*repeat\(6,minmax\(0,1fr\)\)/s);
+  assert.match(styles, /\.premium-twin-flow-group\.is-lower\s*\{\s*color:\s*#82a7b5/);
+  assert.match(styles, /\.premium-twin-flow-group\.is-charge\s*\{\s*color:\s*#79ddd2/);
+  assert.match(styles, /\.premium-twin-flow-group\.is-upper\s*\{\s*color:\s*#9bdde1/);
+  assert.match(styles, /\.premium-twin-sequence\s*\{[^}]*grid-template-columns:\s*repeat\(4,minmax\(0,1fr\)\)/s);
+  assert.match(styles, /data-active-signature-stage="energy"/);
+  assert.match(styles, /data-active-signature-stage="dispatch"/);
 
   assert.equal(flagBreezeActivityAt(0), 0);
   assert.ok(flagBreezeActivityAt(1.2) > 0.99);

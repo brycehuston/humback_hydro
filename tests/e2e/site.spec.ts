@@ -150,15 +150,16 @@ test.describe('Humpback Hydro Site Verification', () => {
     await page.goto('/');
 
     const twin = page.locator('[data-v4-twin]');
-    const autoCycle = page.getByRole('button', { name: 'Auto Cycle' });
-    const lowerGen = page.getByRole('button', { name: 'Lower Generation' });
-    const charging = page.getByRole('button', { name: 'Charging' });
-    const upperGen = page.getByRole('button', { name: 'Upper Generation' });
-    const cycleSummary = page.getByRole('button', { name: 'Sequence Summary' });
+    const autoCycle = page.getByRole('button', { name: 'Auto Cycle', exact: true });
+    const energyIn = page.getByRole('button', { name: 'Energy In', exact: true });
+    const store = page.getByRole('button', { name: 'Store', exact: true });
+    const generate = page.getByRole('button', { name: 'Generate', exact: true });
+    const dispatch = page.getByRole('button', { name: 'Dispatch', exact: true });
+    const lowerGen = page.getByRole('button', { name: 'Lower-Stage Generation', exact: true });
     const pausePlay = page.locator('.pause-control');
 
     await expect(autoCycle).toBeVisible();
-    await expect(lowerGen).toBeVisible();
+    await expect(energyIn).toBeVisible();
     await expect(page.locator('.premium-twin-flow-vectors')).toHaveAttribute('viewBox', '0 0 1600 900');
     await expect(page.locator('[data-flow-vector-route]')).toHaveCount(5);
 
@@ -167,33 +168,67 @@ test.describe('Humpback Hydro Site Verification', () => {
 
     const activate = async (
       button: ReturnType<typeof page.getByRole>,
-      operation: 'lower' | 'charge' | 'upper',
+      stage: 'energy' | 'store' | 'generate' | 'dispatch',
+      operation: 'charge' | 'upper',
       expectedColor: string,
+      explanation: string,
     ) => {
       await button.click();
       await expect(button).toHaveAttribute('aria-pressed', 'true');
+      await expect(button).toHaveAttribute('aria-current', 'step');
+      await expect(twin).toHaveAttribute('data-active-signature-stage', stage);
       await expect(twin).toHaveAttribute('data-active-operation', operation);
       const groups = page.locator(`.premium-twin-flow-group.is-${operation}`);
       await expect(groups.first()).toHaveCSS('color', expectedColor);
       await expect.poll(async () => groups.first().evaluate(element => Number(getComputedStyle(element).opacity))).toBeGreaterThan(0.2);
+      await expect(page.locator('.premium-twin-explanation')).toContainText(explanation);
       const transforms = await groups.locator('[data-vector-arrow]').evaluateAll(elements => elements.map(element => element.getAttribute('transform')));
       expect(transforms.length).toBeGreaterThan(0);
       expect(transforms.every(Boolean)).toBe(true);
     };
 
-    await activate(lowerGen, 'lower', 'rgb(72, 185, 255)');
-    await expect(page.getByText('LOWER GENERATION', { exact: true }).first()).toBeVisible();
-    await activate(charging, 'charge', 'rgb(80, 227, 138)');
-    await activate(upperGen, 'upper', 'rgb(183, 140, 255)');
+    await activate(energyIn, 'energy', 'charge', 'rgb(121, 221, 210)', 'External electricity enters the pumping path.');
+    await expect.poll(async () => page.locator('[data-electrical-route="input"]').evaluate(element => Number(getComputedStyle(element).opacity))).toBeGreaterThan(0.8);
+    await activate(store, 'store', 'charge', 'rgb(121, 221, 210)', 'storing gravitational potential energy');
+    await activate(generate, 'generate', 'upper', 'rgb(155, 221, 225)', 'released through the upper generation path');
+    await activate(dispatch, 'dispatch', 'upper', 'rgb(155, 221, 225)', 'connected grid/load');
+    await expect.poll(async () => page.locator('[data-electrical-route="output"]').evaluate(element => Number(getComputedStyle(element).opacity))).toBeGreaterThan(0.8);
 
-    await cycleSummary.click();
-    await expect(cycleSummary).toHaveAttribute('aria-pressed', 'true');
-    await expect(twin).not.toHaveAttribute('data-active-operation', /.+/);
+    await energyIn.focus();
+    await page.keyboard.press('ArrowRight');
+    await expect(store).toHaveAttribute('aria-pressed', 'true');
+    await expect(twin).toHaveAttribute('data-selected-action', 'store');
+    await page.waitForTimeout(300);
+    await expect(twin).toHaveAttribute('data-active-signature-stage', 'store');
+
+    await lowerGen.click();
+    await expect(lowerGen).toHaveAttribute('aria-pressed', 'true');
+    await expect(twin).toHaveAttribute('data-active-operation', 'lower');
+    await expect(twin).not.toHaveAttribute('data-active-signature-stage', /.+/);
+    await expect(page.locator('.premium-twin-explanation')).toContainText('Separate Architecture Path');
+
+    await autoCycle.click();
+    await expect(autoCycle).toHaveAttribute('aria-pressed', 'true');
+    await expect(twin).toHaveAttribute('data-active-signature-stage', 'energy');
+    await expect(twin).toHaveAttribute('data-active-signature-stage', 'store', { timeout: 6500 });
+    await expect(twin).toHaveAttribute('data-active-operation', 'charge');
+    await expect(twin).toHaveAttribute('data-active-signature-stage', 'generate', { timeout: 7500 });
+    await expect(twin).toHaveAttribute('data-active-operation', 'upper');
+    await expect(twin).toHaveAttribute('data-active-signature-stage', 'dispatch', { timeout: 6500 });
+    await expect(twin).toHaveAttribute('data-active-operation', 'upper');
+    const outputPath = page.locator('[data-electrical-route="output"] path');
+    await expect(outputPath).toHaveCSS('animation-name', 'premium-electrical-flow');
+    await page.evaluate(() => window.scrollTo(0, 0));
+    await expect(twin).toHaveAttribute('data-animation-suspended', 'true');
+    await expect(outputPath).toHaveCSS('animation-name', 'none');
+    await twin.scrollIntoViewIfNeeded();
+    await expect(twin).not.toHaveAttribute('data-animation-suspended', /.+/);
 
     await expect(pausePlay).toHaveText('Pause');
     await pausePlay.click();
     await expect(pausePlay).toHaveText('Play');
     await expect(pausePlay).toHaveAttribute('aria-pressed', 'true');
+    await expect(outputPath).toHaveCSS('animation-name', 'none');
     await pausePlay.click();
     await expect(pausePlay).toHaveText('Pause');
   });
@@ -415,10 +450,10 @@ test.describe('Humpback Hydro Site Verification', () => {
     await page.goto('/');
 
     await expect(page.locator('.premium-digital-twin')).toBeVisible();
-    const lowerGen = page.getByRole('button', { name: 'Lower Generation' });
-    await lowerGen.click();
+    const energyIn = page.getByRole('button', { name: 'Energy In', exact: true });
+    await energyIn.click();
 
-    const arrows = page.locator('.premium-twin-flow-group.is-lower [data-vector-arrow]');
+    const arrows = page.locator('.premium-twin-flow-group.is-charge [data-vector-arrow]');
     await expect(arrows.first()).toHaveAttribute('transform', /translate/);
     const before = await arrows.evaluateAll(elements => elements.map(element => element.getAttribute('transform')));
     await page.waitForTimeout(150);

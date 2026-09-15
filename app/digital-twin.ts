@@ -11,6 +11,11 @@ export const DIGITAL_TWIN_BASE_PLATE = Object.freeze({
 });
 
 export type DigitalTwinOperation = "lower" | "charge" | "upper";
+export type DigitalTwinSignatureStage =
+  | "energy"
+  | "store"
+  | "generate"
+  | "dispatch";
 
 export type DigitalTwinScene =
   | {
@@ -95,27 +100,41 @@ export function digitalTwinSceneAt(seconds: number): DigitalTwinScene {
     ((seconds % DIGITAL_TWIN_CYCLE_SECONDS) + DIGITAL_TWIN_CYCLE_SECONDS) %
     DIGITAL_TWIN_CYCLE_SECONDS;
 
-  if (time < 2) {
+  if (time < 1) {
     return {
       phase: "establish",
-      progress: time / 2,
+      progress: time,
       activity: 0,
       cardsVisible: false,
     };
   }
-  if (time < 8) return operationScene("lower", (time - 2) / 6);
-  if (time < 9.5) return handoffScene("lower", "charge", (time - 8) / 1.5);
-  if (time < 15.5) return operationScene("charge", (time - 9.5) / 6);
-  if (time < 17) return handoffScene("charge", "upper", (time - 15.5) / 1.5);
-  if (time < 23) return operationScene("upper", (time - 17) / 6);
-  if (time < 24.5) return handoffScene("upper", "summary", (time - 23) / 1.5);
+  if (time < 4) return operationScene("lower", (time - 1) / 3);
+  if (time < 5) return handoffScene("lower", "charge", time - 4);
+  if (time < 15) return operationScene("charge", (time - 5) / 10);
+  if (time < 16) return handoffScene("charge", "upper", time - 15);
+  if (time < 26) return operationScene("upper", (time - 16) / 10);
+  if (time < 27) return handoffScene("upper", "summary", time - 26);
 
   return {
     phase: "summary",
-    progress: (time - 24.5) / 4.5,
+    progress: (time - 27) / 2,
     activity: 0,
     cardsVisible: false,
   };
+}
+
+export function digitalTwinSignatureStageAt(
+  seconds: number,
+): DigitalTwinSignatureStage | null {
+  const time =
+    ((seconds % DIGITAL_TWIN_CYCLE_SECONDS) + DIGITAL_TWIN_CYCLE_SECONDS) %
+    DIGITAL_TWIN_CYCLE_SECONDS;
+
+  if (time >= 5 && time < 10) return "energy";
+  if (time >= 10 && time < 15) return "store";
+  if (time >= 16 && time < 21) return "generate";
+  if (time >= 21 && time < 27) return "dispatch";
+  return null;
 }
 
 export function reservoirLevelsAt(seconds: number): ReservoirLevels {
@@ -125,20 +144,20 @@ export function reservoirLevelsAt(seconds: number): ReservoirLevels {
   let upper = 0.18;
   let lower = 0.85;
 
-  if (time >= 2 && time < 8) {
-    lower = 0.85 - 0.06 * smoothstep((time - 2) / 6);
-  } else if (time >= 8 && time < 9.5) {
+  if (time >= 1 && time < 4) {
+    lower = 0.85 - 0.06 * smoothstep((time - 1) / 3);
+  } else if (time >= 4 && time < 5) {
     lower = 0.79;
-  } else if (time >= 9.5 && time < 15.5) {
-    const progress = smoothstep((time - 9.5) / 6);
+  } else if (time >= 5 && time < 15) {
+    const progress = smoothstep((time - 5) / 10);
     lower = 0.79 + 0.06 * progress;
     upper = 0.18 - 0.055 * progress;
-  } else if (time >= 15.5 && time < 17) {
+  } else if (time >= 15 && time < 16) {
     lower = 0.85;
     upper = 0.125;
-  } else if (time >= 17 && time < 23) {
-    upper = 0.125 + 0.055 * smoothstep((time - 17) / 6);
-  } else if (time >= 23 && time < 24.5) {
+  } else if (time >= 16 && time < 26) {
+    upper = 0.125 + 0.055 * smoothstep((time - 16) / 10);
+  } else if (time >= 26 && time < 27) {
     upper = 0.18;
   }
 
