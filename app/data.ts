@@ -1,4 +1,6 @@
-export const brandmark = "/brandmark.webp";
+export const brandmark = "/brandmark.svg";
+export const brandLockupNav = "/brand/humpback-hydro-lockup-nav.png";
+export const brandLockupFull = "/brand/humpback-hydro-lockup-full.png";
 
 export type LeadershipPublicationStatus =
   | "published-qualified"
@@ -78,14 +80,16 @@ export const leadership: readonly LeadershipProfile[] = [
     image: "/team/bryce-huston.webp",
     imageAlt: "Portrait of Bryce Huston",
     imagePosition: "50% 30%",
-    focus: "Founder • HUSTON SOLUTION INC.",
+    focus: "Information Security • AI Systems • Digital Infrastructure",
     profileLabel: "SECURITY & DIGITAL INFRASTRUCTURE",
     specialty: "Information Security • AI Systems • Digital Infrastructure",
     credentialLabel: "FOUNDER & SYSTEMS ARCHITECT",
-    credentialValue: "HUSTON SOLUTION INC.",
+    credentialValue: "HUSTON SOLUTION Iɴᴄ. • FruxLabs • Alpha Alerts",
     biography: [
-      "Bryce Huston is Chief Information Security Officer at Humpback Hydro and founder of HUSTON SOLUTION INC., a technology company focused on applied artificial intelligence, automation, software systems and digital infrastructure.",
-      "A hands-on systems architect and technical operator, Bryce builds production platforms that combine real-time data acquisition, quantitative analysis, automated decision systems, secure cloud infrastructure and operational monitoring. His work spans high-frequency intelligence platforms, AI-enabled business automation, full-stack digital products and security research—turning complex technical concepts into deployed systems built for reliability, speed and measurable performance.",
+      "Bryce Huston is Chief Information Security Officer at Humpback Hydro and founder of FruxLabs, Alpha Alerts and HUSTON SOLUTION Inc. His work spans information security, applied artificial intelligence, automation, quantitative systems and digital infrastructure, with a focus on designing secure, resilient systems and high-performance digital products built to operate reliably in real-world environments.",
+      "A hands-on systems architect and technical operator, Bryce designs and builds production platforms that integrate real-time data acquisition, automated decision systems, quantitative analysis, secure cloud infrastructure, operational monitoring and AI-assisted workflows. His work also extends to premium digital experience design, where he combines technical architecture with meticulous interface design, interactive motion, animation and performance engineering to create polished, highly responsive web platforms with a strong emphasis on detail, usability and presentation.",
+      "His approach emphasizes system integrity, controlled automation, observability, risk management and the practical engineering required to move complex technical concepts from research into dependable production systems. Across both infrastructure and product development, he places particular emphasis on execution quality—ensuring that the underlying system architecture and the user-facing experience are engineered to the same standard.",
+      "His broader technical work includes real-time intelligence platforms, quantitative research and backtesting infrastructure, AI-enabled automation, high-frequency data processing, telemetry, production web systems and data-driven decision architecture. Through FruxLabs and Alpha Alerts, he has developed and operated systems spanning market intelligence, signal research, risk modelling, automated monitoring and execution research—providing practical experience in designing systems where speed, reliability, data integrity and disciplined risk controls are essential.",
       "At Humpback Hydro, Bryce leads information security and digital infrastructure strategy. His mandate is to establish the secure, scalable digital foundation supporting engineering collaboration, data integrity, operational continuity and future platform growth. He brings an execution-focused approach to the leadership team: architect the system, control the risk and build the infrastructure required to scale.",
     ],
     publicationStatus: "published-qualified",
@@ -185,17 +189,6 @@ export const evidence = [
     external: false,
     action: "READ STUDY SUMMARIES",
   },
-  {
-    index: "04",
-    category: "Industry Recognition",
-    title: "GLOBE Emerging-Technology Recognition",
-    description: "Company-supplied recognition details are progressing through primary-source verification for public release.",
-    status: "Company Record in Verification",
-    statusTone: "review",
-    href: null,
-    external: false,
-    action: "VERIFICATION IN PROGRESS",
-  },
 ];
 
 export const roadmap = [
@@ -286,17 +279,6 @@ export const engineeringPillars = [
 
 export const applications = [
   {
-    id: "data-centers",
-    kicker: "Primary Market Entry",
-    label: "Data Centers",
-    title: "Power Where the Grid Cannot Move Fast Enough.",
-    description:
-      "A behind-the-meter or grid-connected pathway designed for compute campuses that value reliability, clean-energy integration and speed-to-power.",
-    points: ["Reliable Power Architecture", "Long-Duration Flexibility", "Phased Modular Delivery"],
-    image: "/grid-data-center-night.webp",
-    cta: "Explore Data-Center Power",
-  },
-  {
     id: "utilities",
     kicker: "Grid Infrastructure",
     label: "Utilities",
@@ -308,26 +290,37 @@ export const applications = [
     cta: "Discuss Utility Integration",
   },
   {
-    id: "islands",
-    kicker: "Energy Sovereignty",
-    label: "Island Systems",
-    title: "Resilient Infrastructure Where Every Resource Matters.",
+    id: "data-centers",
+    kicker: "AI Infrastructure",
+    label: "AI & Data Centers",
+    title: "Power Where the Grid Cannot Move Fast Enough.",
     description:
-      "A marine platform aligned with island and remote regions pursuing energy security, water security and lower fuel dependence.",
-    points: ["Local Energy Resilience", "Renewable Integration", "Water-System Potential"],
-    image: "/island-energy-water.webp",
-    cta: "Evaluate a Regional Opportunity",
+      "For energy-intensive AI infrastructure, Humpback is designed to provide rapid access to stored energy, continuous dispatchable power and greater energy security—helping address the speed-to-power and reliability constraints facing data-center development.",
+    points: ["Rapid Stored-Energy Access", "Continuous Dispatchable Power", "Energy Security"],
+    image: "/grid-data-center-night.webp",
+    cta: "Explore Data-Center Power",
   },
   {
     id: "industry",
     kicker: "Critical Operations",
-    label: "Ports & Industry",
+    label: "Industry",
     title: "Dependable Energy for Operations That Cannot Wait.",
     description:
       "Modular infrastructure designed for ports, industrial zones, and critical or defense facilities evaluating reliable power close to demand.",
     points: ["Critical-Site Planning", "On-Site Reliability", "Scalable Architecture"],
-    image: "/manufacturing-campus.webp",
+    image: "/manufacturing-campus-approved.jpg",
     cta: "Explore Industrial Deployment",
+  },
+  {
+    id: "islands",
+    kicker: "Energy Sovereignty",
+    label: "Islands & Remote Communities",
+    title: "Resilient Infrastructure Where Every Resource Matters.",
+    description:
+      "A marine platform aligned with island and remote regions pursuing energy security, water security and lower fuel dependence.",
+    points: ["Local Energy Resilience", "Renewable Integration", "Water-System Potential"],
+    image: "/island-energy-water-approved.jpg",
+    cta: "Evaluate a Regional Opportunity",
   },
   {
     id: "water",
@@ -337,7 +330,18 @@ export const applications = [
     description:
       "A platform whose broader mission includes water security and potential alignment with desalination infrastructure.",
     points: ["Energy and Water Planning", "Co-Location Potential", "Climate Resilience"],
-    image: "/island-energy-water.webp",
+    image: "/island-energy-water-approved.jpg",
     cta: "Discuss Water Infrastructure",
+  },
+  {
+    id: "food-systems",
+    kicker: "Resource Security",
+    label: "Food Systems",
+    title: "Reliable Energy and Water for Essential Production.",
+    description:
+      "A potential infrastructure pathway for food-production regions evaluating dependable power, water resilience and integrated resource planning.",
+    points: ["Reliable Energy Supply", "Water-System Integration", "Regional Resilience"],
+    image: "/island-energy-water-approved.jpg",
+    cta: "Discuss Food-System Infrastructure",
   },
 ];

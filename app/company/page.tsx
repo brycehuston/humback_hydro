@@ -1,4 +1,5 @@
 import { pageMetadata } from "../page-metadata";
+import CompanyBiography from "../components/CompanyBiography";
 import MarkLegacyBio from "../components/MarkLegacyBio";
 import RouteHero from "../components/RouteHero";
 import { deliveryCapabilities, deliveryPartners, leadership } from "../data";
@@ -44,9 +45,10 @@ export default function CompanyPage() {
       <RouteHero
         index="06"
         eyebrow="Company"
-        title="Built by People Who Move Infrastructure."
-        copy="Founded in Vancouver, British Columbia, Humpback Hydro brings practical construction, engineering, operations and digital-infrastructure experience to a modular hydroelectric generation and energy-storage concept."
-        image="/company/humpback-team-vancouver.webp"
+        title="Built by People Who Build Infrastructure"
+        copy="Founded in Vancouver, British Columbia, Humpback Hydro brings practical construction, engineering, operations and digital-infrastructure experience to a modular hydroelectric generation and energy-storage technology."
+        image="/company/humpback-team-vancouver-approved.jpg"
+        imagePosition="80% center"
         imageAlt="Humpback Hydro team members meeting in Vancouver beside the British Columbia flag"
         mediaLabel="PROJECT PHOTOGRAPH"
         nextHref="#leadership"
@@ -148,9 +150,7 @@ export default function CompanyPage() {
                     </span>
                   </div>
                 </div>
-                <div className="grid gap-6 text-[0.95rem] leading-8 text-[#a9bbc1]">
-                  {bryanGreen.biography.map((paragraph) => <p className="m-0" key={paragraph}>{paragraph}</p>)}
-                </div>
+                <CompanyBiography id="bryan-green-biography" paragraphs={bryanGreen.biography} className="grid gap-6 text-[0.95rem] leading-8 text-[#a9bbc1]" />
               </div>
             </section>
           ) : null}
@@ -172,16 +172,11 @@ export default function CompanyPage() {
                       target="_blank"
                       rel="noreferrer"
                     >
-                      HUSTON SOLUTION INC.
+                      {bryceHuston.credentialValue}
                     </a>
-                    <span className="mt-1 block text-sm text-[#83c4d2]">
-                      Technology • AI • Security
-                    </span>
                   </div>
                 </div>
-                <div className="leadership-biography grid gap-6 text-[0.95rem] leading-8 text-[#a9bbc1]">
-                  {bryceHuston.biography.map((paragraph) => <p className="m-0" key={paragraph}>{paragraph}</p>)}
-                </div>
+                <CompanyBiography id="bryce-huston-biography" paragraphs={bryceHuston.biography} className="leadership-biography grid gap-6 text-[0.95rem] leading-8 text-[#a9bbc1]" />
               </div>
             </section>
           ) : null}

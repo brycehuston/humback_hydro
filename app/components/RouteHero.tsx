@@ -7,9 +7,11 @@ export default function RouteHero({
   copy,
   image,
   imageAlt = "",
-  mediaLabel = "CONCEPT VISUALIZATION",
+  imagePosition,
+  mediaLabel = "CONCEPTUAL TECHNOLOGY ILLUSTRATION — NOT TO SCALE",
   nextHref,
   nextLabel,
+  variant,
 }: {
   index: string;
   eyebrow: string;
@@ -17,13 +19,15 @@ export default function RouteHero({
   copy: string;
   image: string;
   imageAlt?: string;
+  imagePosition?: string;
   mediaLabel?: string | null;
   nextHref?: string;
   nextLabel?: string;
+  variant?: "decision";
 }) {
   return (
-    <section className="route-hero">
-      <img src={image} alt={imageAlt} fetchPriority="high" />
+    <section className={`route-hero${variant ? ` route-hero--${variant}` : ""}`}>
+      <img src={image} alt={imageAlt} fetchPriority="high" style={imagePosition ? { objectPosition: imagePosition } : undefined} />
       <div className="route-hero-overlay" />
       <div className="route-index">{index}</div>
       <div className="route-hero-copy">

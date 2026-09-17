@@ -225,7 +225,7 @@ export default function HomepageEconomics() {
         <div className="home-economics-teaser">
           <div>
             <p className="eyebrow"><span />Test the Arithmetic</p>
-            <h2 id="home-economics-title">Explore a transparent, user-driven generation sensitivity.</h2>
+            <h2 id="home-economics-title">Explore a Transparent, User-Driven Generation Sensitivity.</h2>
             <p className="home-economics-modes">Generation · Storage · Integrated</p>
           </div>
           <button

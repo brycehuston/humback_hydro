@@ -17,14 +17,11 @@ export default function Home() {
   return (
     <main>
       <section className="home-hero" id="top">
-        <img className="home-hero-image" src="/hero-ai-power-campus.webp" alt="Concept visualization of a coastal data-center and marine energy campus" fetchPriority="high" />
+        <img className="home-hero-image" src="/company-hero-approved.jpg" alt="Conceptual technology illustration of coastal hydroelectric infrastructure" fetchPriority="high" />
         <div className="hero-atmosphere" />
-        <div className="hero-grid" aria-hidden="true" />
-        <div className="hero-depth-rings" aria-hidden="true"><i /><i /><i /><span /></div>
-        <div className="hero-water-scan" aria-hidden="true"><i /><i /></div>
         <div className="hero-copy" data-reveal>
           <p className="eyebrow"><span />Marine Pumped-Hydro Infrastructure</p>
-          <h1 className="home-positioning-title"><span>Hydropower.</span>{" "}<span>Reimagined.</span></h1>
+          <h1 className="home-positioning-title"><span>Hydropower</span>{" "}<span>Reimagined.</span></h1>
           <p className="hero-platform-line">Generation • Storage • Dispatch Architecture</p>
           <p className="hero-lede">
             A Canadian energy technology company developing modular hydroelectric generation and long-duration energy storage infrastructure.
@@ -47,9 +44,9 @@ export default function Home() {
           <a href="/evidence">Review the Evidence <Arrow /></a>
         </div>
 
-        <div className="hero-side-label">VANCOUVER, BRITISH COLUMBIA <span>49.2827° N / 123.1207° W</span></div>
+        <div className="hero-side-label">VANCOUVER, BRITISH COLUMBIA <span>CANADIAN ENERGY TECHNOLOGY</span></div>
         <div className="hero-scroll"><span>SCROLL TO DESCEND</span><i /><Arrow direction="down" /></div>
-        <span className="concept-tag">CONCEPT VISUALIZATION</span>
+        <span className="concept-tag">TECHNOLOGY ILLUSTRATION PROCESS — NOT TO SCALE</span>
       </section>
 
       <section className="status-rail" aria-label="Humpback Hydro status">
@@ -63,19 +60,19 @@ export default function Home() {
         <div className="chapter-label"><span>01</span>THE CONSTRAINT</div>
         <div className="thesis-grid">
           <div data-reveal>
-            <p className="eyebrow dark"><span />The Speed-to-Power Problem</p>
-            <h2>The AI Race Is Becoming a Power Race.</h2>
+            <p className="eyebrow dark"><span />The Infrastructure Constraint</p>
+            <h2>Critical Systems Depend on Firm Power.</h2>
           </div>
           <div className="thesis-copy" data-reveal>
             <p>
-              Compute campuses are being designed faster than transmission and interconnection infrastructure can be delivered. Reliable power is no longer a utility detail. It is a strategic constraint.
+              Utilities and critical infrastructure face rising demand, constrained interconnection capacity and longer delivery timelines. Reliable power is no longer a background utility detail. It is a strategic infrastructure requirement.
             </p>
             <a className="text-link" href="/applications">See Where Humpback Fits <Arrow /></a>
           </div>
         </div>
 
         <div className="constraint-sequence">
-          <article data-reveal><span>DEMAND</span><h3>AI Infrastructure Expands</h3><p>High-density compute creates persistent, mission-critical power requirements.</p></article>
+          <article data-reveal><span>DEMAND</span><h3>Critical Demand Expands</h3><p>Utilities, industry and digital infrastructure require persistent, mission-critical power.</p></article>
           <i aria-hidden="true" />
           <article data-reveal><span>FRICTION</span><h3>Grid Timelines Stretch</h3><p>Interconnection queues and transmission constraints slow deployment.</p></article>
           <i aria-hidden="true" />
@@ -89,7 +86,7 @@ export default function Home() {
           <div className="section-intro inverse" data-reveal>
             <p className="eyebrow"><span />Static Offshore Pumped Hydro</p>
             <h2>See the Complete Water Cycle.</h2>
-            <p>A fixed offshore structure places two engineered reservoirs vertically inside one cutaway system. Follow how it stores energy and generates through two turbine stages.</p>
+            <p>A modular energy-transfer platform creates the required elevation within an integrated hydraulic structure, then receives, stores, generates and dispatches electricity.</p>
           </div>
           <PremiumDigitalTwin />
         </div>
@@ -101,7 +98,7 @@ export default function Home() {
         <div className="chapter-label"><span>04</span>THE MARKETS</div>
         <div className="section-intro split" data-reveal>
           <div><p className="eyebrow dark"><span />Infrastructure Applications</p><h2>One Platform. Multiple Critical Systems.</h2></div>
-          <p>Begin with the power bottleneck facing AI infrastructure. Expand through utilities, industry, island systems and water resilience.</p>
+          <p>Begin with utility integration, then evaluate AI and data centers, industry, island and remote systems, water infrastructure and food-system resilience.</p>
         </div>
         <ApplicationSelector />
       </section>
@@ -183,7 +180,7 @@ export default function Home() {
       </section>
 
       <section className="industrial-break">
-        <img src="/manufacturing-campus.webp" alt="Concept visualization of modular hydro infrastructure manufacturing" loading="lazy" decoding="async" />
+        <img src="/manufacturing-campus-approved.jpg" alt="Conceptual technology illustration of modular hydro infrastructure manufacturing" loading="lazy" decoding="async" />
         <div className="industrial-overlay" />
         <div className="industrial-copy" data-reveal>
           <p className="eyebrow"><span />Designed for Industrialization</p>
@@ -191,7 +188,7 @@ export default function Home() {
           <p>The ambition is a repeatable infrastructure platform supported by engineering, manufacturing and deployment partners.</p>
           <a className="text-link light" href="/company">Explore Delivery Capabilities <Arrow /></a>
         </div>
-        <span className="concept-tag">CONCEPT VISUALIZATION</span>
+        <span className="concept-tag">CONCEPTUAL TECHNOLOGY ILLUSTRATION — NOT TO SCALE</span>
       </section>
 
       <section className="final-cta">
@@ -204,18 +201,18 @@ export default function Home() {
           </div>
 
           <div className="cta-visual" data-reveal>
-            <img src="/grid-data-center-night.webp" alt="Concept visualization of a coastal data-center power campus" loading="lazy" decoding="async" />
+            <img src="/grid-data-center-night.webp" alt="Conceptual technology illustration of a coastal data-center power campus" loading="lazy" decoding="async" />
             <div className="cta-visual-shade" />
             <div className="cta-sonar" aria-hidden="true"><i /><i /><i /><span /></div>
             <div className="cta-visual-status"><small>VALIDATION &amp; PILOT PATHWAY</small><strong>Partner Engagement Pathway</strong></div>
-            <span className="concept-tag">CONCEPT VISUALIZATION</span>
+            <span className="concept-tag">CONCEPTUAL TECHNOLOGY ILLUSTRATION — NOT TO SCALE</span>
           </div>
         </div>
 
         <div className="cta-pathways" aria-label="Partnership pathways">
-          <a href="/partners#pilot"><span>01</span><div><small>PILOT & SITES</small><strong>Build an Operating Reference</strong></div><Arrow /></a>
-          <a href="/partners#investment"><span>02</span><div><small>STRATEGIC CAPITAL</small><strong>Fund the Next Operating Chapter</strong></div><Arrow /></a>
-          <a href="/partners#engineering"><span>03</span><div><small>ENGINEERING</small><strong>Industrialize the Platform</strong></div><Arrow /></a>
+          <a href="/partners#pilot"><span>01</span><div><small className="titanium-microtype">PILOT & SITES</small><strong>Build an Operating Reference</strong></div><Arrow /></a>
+          <a href="/partners#investment"><span>02</span><div><small className="titanium-microtype">STRATEGIC CAPITAL</small><strong>Fund the Next Operating Chapter</strong></div><Arrow /></a>
+          <a href="/partners#engineering"><span>03</span><div><small className="titanium-microtype">ENGINEERING</small><strong>Industrialize the Platform</strong></div><Arrow /></a>
         </div>
       </section>
     </main>

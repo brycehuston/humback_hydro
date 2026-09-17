@@ -102,11 +102,11 @@ function OpshCalculator({
   return (
     <section
       aria-labelledby="opsh-calculator-title"
-      className={`pointer-events-auto isolate flex w-full flex-col rounded-[1.75rem] border border-[#1d2833] bg-[#020b10] text-white shadow-[0_32px_100px_rgba(0,8,18,0.65)] ${displayMode === "embedded" ? "h-auto overflow-visible" : "h-full overflow-hidden [contain:layout_style_paint]"} ${className}`}
+      className={`opsh-calculator pointer-events-auto isolate flex w-full flex-col rounded-[1.75rem] border border-[#1d2833] bg-[#020b10] text-white shadow-[0_32px_100px_rgba(0,8,18,0.65)] ${displayMode === "embedded" ? "h-auto overflow-visible" : "h-full overflow-hidden [contain:layout_style_paint]"} ${className}`}
       data-opsh-calculator={displayMode}
     >
       <div className={`relative flex flex-col ${displayMode === "embedded" ? "h-auto" : "h-full min-h-0 flex-1"}`}>
-        <header className="relative flex shrink-0 flex-col justify-between gap-5 border-b border-[#1d2833] bg-[#031016] p-[clamp(1rem,2vh,1.5rem)] px-[clamp(1.25rem,2vw,1.75rem)] sm:flex-row sm:items-start">
+        <header className="opsh-calculator-header relative flex shrink-0 flex-col justify-between gap-5 border-b border-[#1d2833] bg-[#031016] p-[clamp(1rem,2vh,1.5rem)] px-[clamp(1.25rem,2vw,1.75rem)] sm:flex-row sm:items-start">
           <div>
             <p className="mb-2 text-[0.62rem] font-bold uppercase tracking-[0.24em] text-cyan-200/80">
               User-Driven Scenario
@@ -121,8 +121,8 @@ function OpshCalculator({
           {headerActions ? <div className="calculator-header-actions">{headerActions}</div> : null}
         </header>
 
-        <div className={`relative flex flex-1 flex-col p-[clamp(1rem,2.5vh,1.75rem)] ${displayMode === "embedded" ? "overflow-visible" : "overflow-y-auto overscroll-contain"}`}>
-          <div className="grid gap-5 rounded-2xl border border-[#1d2833] bg-[#06141c] p-[clamp(1rem,2vh,1.5rem)] lg:grid-cols-3">
+        <div className={`opsh-calculator-workspace relative flex flex-1 flex-col p-[clamp(1rem,2.5vh,1.75rem)] ${displayMode === "embedded" ? "overflow-visible" : "overflow-y-auto overscroll-contain"}`}>
+          <div className="opsh-assumptions-rail grid gap-5 rounded-2xl border border-[#1d2833] bg-[#06141c] p-[clamp(1rem,2vh,1.5rem)] lg:grid-cols-3">
             <div>
               <label className="text-[0.65rem] font-bold uppercase tracking-[0.16em] text-slate-400" htmlFor={capacityInputId}>
                 Scenario Generating Capacity
@@ -221,8 +221,8 @@ function OpshCalculator({
             </div>
           </div>
 
-          <div className="mt-5 grid gap-4 lg:grid-cols-12">
-            <article className="rounded-2xl border border-cyan-400/20 bg-[#06141c] p-[clamp(1rem,2vh,1.5rem)] lg:col-span-5">
+          <div className="opsh-results-grid mt-5 grid gap-4 lg:grid-cols-12">
+            <article className="opsh-result opsh-result-primary rounded-2xl border border-cyan-400/20 bg-[#06141c] p-[clamp(1rem,2vh,1.5rem)] lg:col-span-5">
               <h3 className="text-[0.65rem] font-bold uppercase tracking-[0.18em] text-slate-400">Annual Energy Sensitivity</h3>
               {projection.annualEnergySensitivityMwh === null ? (
                 <p className="mt-5 text-lg font-medium text-slate-500">Enter annual utilization to calculate.</p>
@@ -236,7 +236,7 @@ function OpshCalculator({
               </p>
             </article>
 
-            <article className="rounded-2xl border border-cyan-400/20 bg-[#06141c] p-[clamp(1rem,2vh,1.5rem)] lg:col-span-5">
+            <article className="opsh-result opsh-result-primary rounded-2xl border border-cyan-400/20 bg-[#06141c] p-[clamp(1rem,2vh,1.5rem)] lg:col-span-5">
               <h3 className="text-[0.65rem] font-bold uppercase tracking-[0.18em] text-slate-400">Gross Electricity-Sale Sensitivity</h3>
               <p className="mt-2 text-sm font-semibold text-amber-100">Before Charging Energy and All Project Costs</p>
               {projection.grossElectricitySaleSensitivity === null ? (
@@ -248,14 +248,14 @@ function OpshCalculator({
               )}
             </article>
 
-            <article className="rounded-2xl border border-white/10 bg-[#06141c] p-[clamp(1rem,2vh,1.5rem)] lg:col-span-2">
+            <article className="opsh-result opsh-result-secondary rounded-2xl border border-white/10 bg-[#06141c] p-[clamp(1rem,2vh,1.5rem)] lg:col-span-2">
               <h3 className="text-[0.65rem] font-bold uppercase tracking-[0.18em] text-slate-400">Illustrative Capital-Cost Arithmetic</h3>
               <p className="mt-5 text-2xl font-semibold text-slate-200">{formatCompactUsd(projection.illustrativeCapitalRequirement)}</p>
               <p className="mt-3 text-[0.68rem] leading-5 text-slate-500">Scenario capacity × US$5M/MW. Illustrative input only; not an EPC estimate.</p>
             </article>
           </div>
 
-          <details className="mt-5 rounded-xl border border-[#1d2833] bg-black/20 p-5">
+          <details className="opsh-model-boundary mt-5 rounded-xl border border-[#1d2833] bg-black/20 p-5">
             <summary className="cursor-pointer text-[0.68rem] font-bold uppercase tracking-[0.16em] text-cyan-200 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cyan-300">
               Model Details &amp; Assumptions
             </summary>

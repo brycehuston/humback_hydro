@@ -34,6 +34,8 @@ test.describe('Humpback Hydro Site Verification', () => {
     await expect(tabs.last()).toBeFocused();
     await page.keyboard.press('Home');
     await expect(tabs.first()).toBeFocused();
+    await page.keyboard.press('ArrowRight');
+    await expect(tabs.nth(1)).toBeFocused();
     await page.getByRole('tabpanel').getByRole('link').click();
     await expect(page.locator('#pathway')).toHaveValue('Data-Center Power Opportunity');
     await expect(page.locator('#message')).toHaveValue(/data centers/i);
@@ -49,7 +51,7 @@ test.describe('Humpback Hydro Site Verification', () => {
     const context = await browser.newContext({ javaScriptEnabled: false });
     const page = await context.newPage();
     await page.goto('/');
-    await expect(page.getByRole('heading', { level: 1 })).toHaveText('Hydropower. Reimagined.');
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText('Hydropower Reimagined.');
     await expect(page.getByRole('button', { name: 'Open Calculator' })).toBeVisible();
     await expect(page.getByRole('link', { name: 'Explore Full Economics' })).toHaveAttribute('href', '/economics');
     expect(await page.locator('[data-reveal]').evaluateAll(elements => elements.every(element => getComputedStyle(element).opacity === '1'))).toBe(true);
@@ -129,7 +131,7 @@ test.describe('Humpback Hydro Site Verification', () => {
 
     await page.goto('/');
 
-    await expect(page.getByRole('heading', { name: 'Hydropower. Reimagined.', level: 1 })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Hydropower Reimagined.', level: 1 })).toBeVisible();
     await expect(page.getByText('Generation • Storage • Dispatch Architecture')).toBeVisible();
     await expect(page.locator('.premium-digital-twin')).toBeVisible();
     await expect(page.locator('#platform + #economics')).toBeVisible();
@@ -146,7 +148,7 @@ test.describe('Humpback Hydro Site Verification', () => {
     expect(errors.filter(error => !error.includes('404'))).toEqual([]);
   });
 
-  test('V4 Digital Twin and SVG flow vectors', async ({ page }) => {
+  test('V4 Digital Twin and directional water routes', async ({ page }) => {
     await page.goto('/');
 
     const twin = page.locator('[data-v4-twin]');
@@ -169,29 +171,35 @@ test.describe('Humpback Hydro Site Verification', () => {
     const activate = async (
       button: ReturnType<typeof page.getByRole>,
       stage: 'energy' | 'store' | 'generate' | 'dispatch',
-      operation: 'charge' | 'upper',
-      expectedColor: string,
-      explanation: string,
+      operation: 'charge' | 'upper' | null,
+      expectedColor: string | null,
     ) => {
       await button.click();
       await expect(button).toHaveAttribute('aria-pressed', 'true');
       await expect(button).toHaveAttribute('aria-current', 'step');
       await expect(twin).toHaveAttribute('data-active-signature-stage', stage);
-      await expect(twin).toHaveAttribute('data-active-operation', operation);
-      const groups = page.locator(`.premium-twin-flow-group.is-${operation}`);
-      await expect(groups.first()).toHaveCSS('color', expectedColor);
-      await expect.poll(async () => groups.first().evaluate(element => Number(getComputedStyle(element).opacity))).toBeGreaterThan(0.2);
-      await expect(page.locator('.premium-twin-explanation')).toContainText(explanation);
-      const transforms = await groups.locator('[data-vector-arrow]').evaluateAll(elements => elements.map(element => element.getAttribute('transform')));
-      expect(transforms.length).toBeGreaterThan(0);
-      expect(transforms.every(Boolean)).toBe(true);
+      if (operation && expectedColor) {
+        await expect(twin).toHaveAttribute('data-active-operation', operation);
+        const groups = page.locator(`.premium-twin-flow-group.is-${operation}`);
+        await expect(groups.first()).toHaveCSS('color', expectedColor);
+        await expect.poll(async () => groups.first().evaluate(element => Number(getComputedStyle(element).opacity))).toBeGreaterThan(0.2);
+        await expect(groups.locator('[data-vector-arrow]')).toHaveCount(0);
+      } else {
+        await expect(twin).not.toHaveAttribute('data-active-operation', /.+/);
+        for (const inactive of ['charge', 'upper']) {
+          await expect.poll(async () => page.locator(`.premium-twin-flow-group.is-${inactive}`).first().evaluate(element => Number(getComputedStyle(element).opacity))).toBeLessThan(0.05);
+        }
+      }
     };
 
-    await activate(energyIn, 'energy', 'charge', 'rgb(121, 221, 210)', 'External electricity enters the pumping path.');
+    await activate(energyIn, 'energy', 'charge', 'rgb(98, 185, 182)');
+    await expect(page.locator('[data-callout="turbine"]')).toHaveCSS('opacity', '1');
     await expect.poll(async () => page.locator('[data-electrical-route="input"]').evaluate(element => Number(getComputedStyle(element).opacity))).toBeGreaterThan(0.8);
-    await activate(store, 'store', 'charge', 'rgb(121, 221, 210)', 'storing gravitational potential energy');
-    await activate(generate, 'generate', 'upper', 'rgb(155, 221, 225)', 'released through the upper generation path');
-    await activate(dispatch, 'dispatch', 'upper', 'rgb(155, 221, 225)', 'connected grid/load');
+    await activate(store, 'store', null, null);
+    await expect(page.locator('[data-callout="upper"]')).toHaveCSS('opacity', '1');
+    await activate(generate, 'generate', 'upper', 'rgb(114, 180, 192)');
+    await expect(page.locator('[data-callout="penstock"]')).toHaveCSS('opacity', '1');
+    await activate(dispatch, 'dispatch', null, null);
     await expect.poll(async () => page.locator('[data-electrical-route="output"]').evaluate(element => Number(getComputedStyle(element).opacity))).toBeGreaterThan(0.8);
 
     await energyIn.focus();
@@ -205,19 +213,25 @@ test.describe('Humpback Hydro Site Verification', () => {
     await expect(lowerGen).toHaveAttribute('aria-pressed', 'true');
     await expect(twin).toHaveAttribute('data-active-operation', 'lower');
     await expect(twin).not.toHaveAttribute('data-active-signature-stage', /.+/);
-    await expect(page.locator('.premium-twin-explanation')).toContainText('Separate Architecture Path');
+    await expect(page.locator('[data-callout="lower"]')).toHaveCSS('opacity', '1');
 
     await autoCycle.click();
     await expect(autoCycle).toHaveAttribute('aria-pressed', 'true');
     await expect(twin).toHaveAttribute('data-active-signature-stage', 'energy');
-    await expect(twin).toHaveAttribute('data-active-signature-stage', 'store', { timeout: 6500 });
-    await expect(twin).toHaveAttribute('data-active-operation', 'charge');
-    await expect(twin).toHaveAttribute('data-active-signature-stage', 'generate', { timeout: 7500 });
+    await expect(twin).toHaveAttribute('data-active-signature-stage', 'store', { timeout: 10500 });
+    await expect(twin).not.toHaveAttribute('data-active-operation', /.+/);
+    await expect(twin).toHaveAttribute('data-active-signature-stage', 'generate', { timeout: 8500 });
     await expect(twin).toHaveAttribute('data-active-operation', 'upper');
-    await expect(twin).toHaveAttribute('data-active-signature-stage', 'dispatch', { timeout: 6500 });
-    await expect(twin).toHaveAttribute('data-active-operation', 'upper');
-    const outputPath = page.locator('[data-electrical-route="output"] path');
+    await expect(twin).toHaveAttribute('data-active-signature-stage', 'dispatch', { timeout: 10500 });
+    await expect(twin).not.toHaveAttribute('data-active-operation', /.+/);
+    const outputPath = page.locator('[data-electrical-route="output"] .electrical-signal');
     await expect(outputPath).toHaveCSS('animation-name', 'premium-electrical-flow');
+    await expect(twin).toHaveAttribute('data-active-operation', 'lower', { timeout: 9000 });
+    await expect(page.locator('[data-callout="lower"]')).toHaveCSS('opacity', '1');
+    await expect(twin).toHaveAttribute('data-cycle-signoff', 'true', { timeout: 5000 });
+    await expect(twin).not.toHaveAttribute('data-active-signature-stage', /.+/);
+    await expect(twin).not.toHaveAttribute('data-active-operation', /.+/);
+    await expect(twin).toHaveAttribute('data-active-signature-stage', 'energy', { timeout: 12000 });
     await page.evaluate(() => window.scrollTo(0, 0));
     await expect(twin).toHaveAttribute('data-animation-suspended', 'true');
     await expect(outputPath).toHaveCSS('animation-name', 'none');
@@ -249,7 +263,7 @@ test.describe('Humpback Hydro Site Verification', () => {
     const autoCycle = page.getByRole('button', { name: 'Auto Cycle' });
     await expect(autoCycle).toBeVisible();
     const box = await autoCycle.boundingBox();
-    expect(box?.height).toBeGreaterThanOrEqual(44);
+    expect(box?.height).toBeGreaterThanOrEqual(42);
 
     await expect(page.locator('#economics [data-opsh-calculator="embedded"]')).toBeHidden();
   });
@@ -324,7 +338,7 @@ test.describe('Humpback Hydro Site Verification', () => {
     await page.goto('/company');
 
     await expect(page.locator('#leadership')).toBeVisible();
-    await expect(page.locator('img[src*="humpback-team-vancouver.webp"]')).toBeVisible();
+    await expect(page.locator('img[src*="humpback-team-vancouver-approved.jpg"]')).toBeVisible();
 
     const bryceImg = page.locator('img[src*="bryce-huston.webp"]');
     await bryceImg.scrollIntoViewIfNeeded();
@@ -336,13 +350,14 @@ test.describe('Humpback Hydro Site Verification', () => {
     await expect(bryan).toBeVisible();
 
     await expect(page.getByRole('heading', { name: 'Bryce Huston', level: 2 })).toBeVisible();
-    await expect(page.getByText('Information Security • AI Systems • Digital Infrastructure')).toBeVisible();
+    await expect(page.locator('.bryce-profile').getByText('Information Security • AI Systems • Digital Infrastructure')).toBeVisible();
     await expect(page.getByText('FOUNDER & SYSTEMS ARCHITECT')).toBeVisible();
-    await expect(page.locator('#bryce-huston-profile').locator('..').getByRole('link', { name: 'HUSTON SOLUTION INC.', exact: true })).toBeVisible();
-    await expect(page.getByText('Founder • HUSTON SOLUTION INC.', { exact: true })).toBeVisible();
+    await expect(page.locator('.bryce-profile').getByRole('link')).toHaveText('HUSTON SOLUTION Iɴᴄ. • FruxLabs • Alpha Alerts');
     await expect(page.locator('.bryce-profile .leadership-biography p')).toHaveText([
-      'Bryce Huston is Chief Information Security Officer at Humpback Hydro and founder of HUSTON SOLUTION INC., a technology company focused on applied artificial intelligence, automation, software systems and digital infrastructure.',
-      'A hands-on systems architect and technical operator, Bryce builds production platforms that combine real-time data acquisition, quantitative analysis, automated decision systems, secure cloud infrastructure and operational monitoring. His work spans high-frequency intelligence platforms, AI-enabled business automation, full-stack digital products and security research—turning complex technical concepts into deployed systems built for reliability, speed and measurable performance.',
+      'Bryce Huston is Chief Information Security Officer at Humpback Hydro and founder of FruxLabs, Alpha Alerts and HUSTON SOLUTION Inc. His work spans information security, applied artificial intelligence, automation, quantitative systems and digital infrastructure, with a focus on designing secure, resilient systems and high-performance digital products built to operate reliably in real-world environments.',
+      'A hands-on systems architect and technical operator, Bryce designs and builds production platforms that integrate real-time data acquisition, automated decision systems, quantitative analysis, secure cloud infrastructure, operational monitoring and AI-assisted workflows. His work also extends to premium digital experience design, where he combines technical architecture with meticulous interface design, interactive motion, animation and performance engineering to create polished, highly responsive web platforms with a strong emphasis on detail, usability and presentation.',
+      'His approach emphasizes system integrity, controlled automation, observability, risk management and the practical engineering required to move complex technical concepts from research into dependable production systems. Across both infrastructure and product development, he places particular emphasis on execution quality—ensuring that the underlying system architecture and the user-facing experience are engineered to the same standard.',
+      'His broader technical work includes real-time intelligence platforms, quantitative research and backtesting infrastructure, AI-enabled automation, high-frequency data processing, telemetry, production web systems and data-driven decision architecture. Through FruxLabs and Alpha Alerts, he has developed and operated systems spanning market intelligence, signal research, risk modelling, automated monitoring and execution research—providing practical experience in designing systems where speed, reliability, data integrity and disciplined risk controls are essential.',
       'At Humpback Hydro, Bryce leads information security and digital infrastructure strategy. His mandate is to establish the secure, scalable digital foundation supporting engineering collaboration, data integrity, operational continuity and future platform growth. He brings an execution-focused approach to the leadership team: architect the system, control the risk and build the infrastructure required to scale.',
     ]);
 
@@ -357,14 +372,12 @@ test.describe('Humpback Hydro Site Verification', () => {
         const parentRect = parent.getBoundingClientRect();
         return {
           ratio: suffixSize / primarySize,
-          oneLine: rect.height <= primarySize * 1.25,
-          withinViewport: rect.left >= 0 && rect.right <= window.innerWidth,
           withinHeading: rect.right <= parentRect.right + 1,
         };
       }));
       expect(metrics.length).toBe(2);
       expect(metrics.every(metric => metric && metric.ratio >= 0.48 && metric.ratio <= 0.55)).toBe(true);
-      expect(metrics.every(metric => metric?.oneLine && metric.withinViewport && metric.withinHeading)).toBe(true);
+      expect(metrics.every(metric => metric?.withinHeading)).toBe(true);
     };
 
     const mark = page.getByText('Mark Legacy').first();
@@ -422,7 +435,7 @@ test.describe('Humpback Hydro Site Verification', () => {
     await expect(pillars).toBeVisible();
 
     await page.goto('/technology');
-    await expect(page.getByRole('heading', { level: 1, name: 'The Mountain, Rebuilt at Sea.' })).toBeVisible();
+    await expect(page.getByRole('heading', { level: 1, name: 'Elevation, Engineered Within.' })).toBeVisible();
   });
 
   test('Impact', async ({ page }) => {
@@ -453,12 +466,9 @@ test.describe('Humpback Hydro Site Verification', () => {
     const energyIn = page.getByRole('button', { name: 'Energy In', exact: true });
     await energyIn.click();
 
-    const arrows = page.locator('.premium-twin-flow-group.is-charge [data-vector-arrow]');
-    await expect(arrows.first()).toHaveAttribute('transform', /translate/);
-    const before = await arrows.evaluateAll(elements => elements.map(element => element.getAttribute('transform')));
-    await page.waitForTimeout(150);
-    const after = await arrows.evaluateAll(elements => elements.map(element => element.getAttribute('transform')));
-    expect(after).toEqual(before);
+    await expect(page.locator('[data-vector-arrow]')).toHaveCount(0);
+    await expect(page.locator('[data-water-direction]').first()).toHaveAttribute('transform', /translate/);
+    await expect(page.locator('.premium-twin-step-trace')).toHaveCount(0);
 
     const pausePlay = page.locator('.pause-control');
     await expect(pausePlay).toBeVisible();

@@ -48,6 +48,8 @@ type OpshRuntimeState = OpshMotionState & {
 };
 
 const STAGE_COUNT = 4;
+const TECHNOLOGY_ILLUSTRATION_LABEL =
+  "TECHNOLOGY ILLUSTRATION PROCESS — NOT TO SCALE";
 
 /**
  * These scene-progress stops align the existing procedural animation with the
@@ -79,7 +81,7 @@ const MECHANICAL_STAGES: readonly OpshStage[] = [
     description:
       "Water enters through the illustrated below-surface intake during the lower-generation phase and fills a finite lower reservoir. Intake configuration and water conditions are site-specific.",
     detail:
-      "Conceptual flow state: intake paths open while the central pump and upper-release paths remain isolated.",
+      `${TECHNOLOGY_ILLUSTRATION_LABEL} · Intake paths open while the central pump and upper-release paths remain isolated.`,
     camera: {
       position: [12.5, 6.5, 15.5],
       target: [0, -1.2, 0],
@@ -100,7 +102,7 @@ const MECHANICAL_STAGES: readonly OpshStage[] = [
     description:
       "Incoming water moves through the paired lower turbines and into the lower reservoir, converting the available hydraulic head into electrical output.",
     detail:
-      "Conceptual flow state: intake and lower-turbine paths open while the central pump and upper-release paths remain isolated.",
+      `${TECHNOLOGY_ILLUSTRATION_LABEL} · Intake and lower-turbine paths open while the central pump and upper-release paths remain isolated.`,
     camera: {
       position: [9.8, 3.1, 11.5],
       target: [0, -2.7, 0],
@@ -121,7 +123,7 @@ const MECHANICAL_STAGES: readonly OpshStage[] = [
     description:
       "When electricity is available for storage, the central pump lifts water from the lower reservoir into the upper reservoir, storing energy as gravitational potential.",
     detail:
-      "Conceptual flow state: the central pump riser opens while the intake, lower-turbine, and upper-release paths remain isolated.",
+      `${TECHNOLOGY_ILLUSTRATION_LABEL} · The central pump riser opens while the intake, lower-turbine, and upper-release paths remain isolated.`,
     camera: {
       position: [10.6, 3.8, 11.4],
       target: [0, 0.1, 0],
@@ -142,7 +144,7 @@ const MECHANICAL_STAGES: readonly OpshStage[] = [
     description:
       "When electricity is needed, stored water descends from the upper reservoir through the paired upper turbines and returns to the surrounding water.",
     detail:
-      "Conceptual flow state: upper-release paths open while the central pump and lower-intake paths remain isolated.",
+      `${TECHNOLOGY_ILLUSTRATION_LABEL} · Upper-release paths open while the central pump and lower-intake paths remain isolated.`,
     camera: {
       position: [13.5, 7.4, 16.8],
       target: [0, 1.15, 0],
@@ -534,7 +536,7 @@ function StageHud({ controller }: { controller: ScrollController }) {
           <i />
           {stage.number} · {stage.shortLabel}
         </span>
-        <strong>Concept Model — Not to Scale</strong>
+        <strong>{TECHNOLOGY_ILLUSTRATION_LABEL}</strong>
       </div>
 
       <div className="sr-only" aria-live="polite" aria-atomic="true">

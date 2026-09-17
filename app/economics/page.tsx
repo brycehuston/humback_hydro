@@ -40,12 +40,12 @@ export default function EconomicsPage() {
         nextLabel="Review the Sensitivity"
       />
 
-      <section className="section-shell bg-[var(--ice)]" id="economics-model">
+      <section className="section-shell surface-mineral" id="economics-model">
         <div className="chapter-label"><span>01</span>ENERGY AND MODEL BOUNDARY</div>
         <div className="grid gap-10 border-b border-[#061c28]/15 pb-16 lg:grid-cols-[minmax(0,0.78fr)_minmax(0,1.22fr)] lg:gap-20" data-reveal>
           <div>
             <p className="eyebrow dark"><span />Conceptual Architecture</p>
-            <h2 className="mt-7 max-w-3xl text-[clamp(3rem,6vw,6.5rem)] font-medium leading-[0.92] tracking-[-0.065em] text-[#061c28]">
+            <h2 className="section-title mt-7 max-w-3xl">
               Energy In → Store → Generate → Dispatch
             </h2>
           </div>
@@ -62,13 +62,13 @@ export default function EconomicsPage() {
         <EconomicsScenarioSelector />
       </section>
 
-      <section className="bg-[#020d14] text-white">
+      <section className="surface-dark-primary">
         <div className="section-shell">
           <div className="chapter-label light"><span>02</span>USER-DRIVEN SENSITIVITY</div>
           <div className="grid gap-10 lg:grid-cols-[minmax(0,0.72fr)_minmax(0,1.28fr)] lg:items-end lg:gap-20" data-reveal>
             <div>
               <p className="eyebrow"><span />Conditional Arithmetic</p>
-              <h2 className="mt-7 text-[clamp(3rem,5vw,5.8rem)] font-medium leading-[0.94] tracking-[-0.06em]">
+              <h2 className="section-title mt-7">
                 Supply the Assumptions. See Only the Bounded Result.
               </h2>
             </div>
@@ -82,12 +82,12 @@ export default function EconomicsPage() {
         </div>
       </section>
 
-      <section className="section-shell bg-[var(--ice)]">
+      <section className="section-shell surface-mineral">
         <div className="chapter-label"><span>03</span>PROJECT-SPECIFIC READINESS</div>
         <div className="grid gap-12 lg:grid-cols-[minmax(0,0.72fr)_minmax(0,1.28fr)] lg:gap-24">
           <div data-reveal>
             <p className="eyebrow dark"><span />What the Public Tool Does Not Quantify</p>
-            <h2 className="mt-7 text-[clamp(3rem,5vw,5.8rem)] font-medium leading-[0.94] tracking-[-0.06em] text-[#061c28]">
+            <h2 className="section-title mt-7">
               Define the Project Before Defining the Economics.
             </h2>
           </div>

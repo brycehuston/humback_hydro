@@ -37,7 +37,7 @@ export default function ApplicationSelector({ expanded = false }: { expanded?: b
       </div>
 
       <div className="application-stage" role="tabpanel" id={`${id}-panel`} aria-labelledby={`${id}-${active.id}`} tabIndex={0}>
-        <img key={active.image} src={active.image} alt={`${active.label} concept visualization`} loading="lazy" decoding="async" />
+        <img key={active.image} src={active.image} alt={`${active.label} conceptual technology illustration`} loading="lazy" decoding="async" />
         <div className="application-overlay" />
         <div className="application-copy" key={active.id}>
           <small>{active.kicker}</small>
@@ -48,7 +48,7 @@ export default function ApplicationSelector({ expanded = false }: { expanded?: b
           </ul>
           <a className="text-link light" href={`/partners?interest=${active.id}`}>{active.cta} <Arrow /></a>
         </div>
-        <span className="concept-tag">CONCEPT VISUALIZATION</span>
+        <span className="concept-tag">CONCEPTUAL TECHNOLOGY ILLUSTRATION — NOT TO SCALE</span>
       </div>
     </div>
   );

@@ -10,7 +10,7 @@ export function pageMetadata(path: string, title: string, description: string): 
     openGraph: {
       title: `${title} | Humpback Hydro`, description, url,
       siteName: "Humpback Hydro", type: "website",
-      images: [{ url: image, alt: "Concept visualization of a coastal energy campus" }],
+      images: [{ url: image, alt: "Conceptual technology illustration of a coastal energy campus" }],
     },
     twitter: { card: "summary_large_image", title: `${title} | Humpback Hydro`, description, images: [image] },
   };

@@ -1,12 +1,13 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import type { KeyboardEvent } from "react";
+import type { CSSProperties, KeyboardEvent } from "react";
 import {
-  DIGITAL_TWIN_BASE_PLATE,
+  DIGITAL_TWIN_CYCLE_SECONDS,
+  DIGITAL_TWIN_SIGNOFF_END_SECONDS,
+  DIGITAL_TWIN_SIGNOFF_START_SECONDS,
   digitalTwinSignatureStageAt,
   digitalTwinSceneAt,
-  flagBreezeActivityAt,
   manualDigitalTwinScene,
   manualReservoirLevels,
   reservoirLevelsAt,
@@ -19,7 +20,12 @@ import type {
 } from "../digital-twin";
 
 type TwinAction = "auto" | "lower" | DigitalTwinSignatureStage;
-type Point = readonly [number, number];
+type TwinCallout = "upper" | "turbine" | "penstock" | "lower";
+type WildlifeEvent = {
+  kind: "fish" | "ray";
+  startedAt: number;
+  direction: 1 | -1;
+};
 
 type FlowVectorRoute = {
   operation: DigitalTwinOperation;
@@ -40,7 +46,7 @@ const phaseCopy = {
     energy: "EXTERNAL INPUT AND OUTPUT SHOWN",
   },
   lower: {
-    index: "01",
+    index: "S1",
     title: "LOWER GENERATION",
     route: "AMBIENT TO LOWER STORAGE",
     energy: "ILLUSTRATED OUTPUT  >  GRID / LOAD",
@@ -75,6 +81,8 @@ const signatureSteps = [
   {
     id: "energy",
     label: "Energy In",
+    rail: "External power to pump",
+    duration: "8.5s",
     operation: "charge",
     copy: "External electricity enters the pumping path.",
     route: "External input → motor–pump",
@@ -84,15 +92,19 @@ const signatureSteps = [
   {
     id: "store",
     label: "Store",
-    operation: "charge",
-    copy: "Pumping raises water into the upper reservoir, storing gravitational potential energy.",
-    route: "Lower storage → upper storage",
-    state: "Motor–pump operating",
-    direction: "Water moving upward",
+    rail: "Water held at elevation",
+    duration: "6.5s",
+    operation: null,
+    copy: "Water is held in elevated storage as gravitational potential energy; pumping is stopped.",
+    route: "Elevated storage → held state",
+    state: "Hydraulic paths static",
+    direction: "No active hydraulic flow",
   },
   {
     id: "generate",
     label: "Generate",
+    rail: "Stored water through turbines",
+    duration: "8.5s",
     operation: "upper",
     copy: "Stored water is released through the upper generation path.",
     route: "Upper storage → turbine–generator",
@@ -102,7 +114,9 @@ const signatureSteps = [
   {
     id: "dispatch",
     label: "Dispatch",
-    operation: "upper",
+    rail: "Output to grid / load",
+    duration: "7.5s",
+    operation: null,
     copy: "Electrical output leaves toward the connected grid/load.",
     route: "Generator → connected grid / load",
     state: "Output path active",
@@ -111,7 +125,9 @@ const signatureSteps = [
 ] as const satisfies ReadonlyArray<{
   id: DigitalTwinSignatureStage;
   label: string;
-  operation: DigitalTwinOperation;
+  rail: string;
+  duration: string;
+  operation: DigitalTwinOperation | null;
   copy: string;
   route: string;
   state: string;
@@ -139,35 +155,28 @@ const flowVectorRoutes: readonly FlowVectorRoute[] = [
   {
     operation: "lower",
     className: "lower-left",
-    d: "M 0 704 H 584 V 770 C 584 804 610 820 646 820 H 790",
+    d: "M 365 660 H 550 C 561 660 570 669 570 680 V 698 C 570 709 579 718 590 718 H 780",
   },
   {
     operation: "lower",
     className: "lower-right",
-    d: "M 1600 704 H 1016 V 770 C 1016 804 990 820 954 820 H 810",
+    d: "M 1235 660 H 1022 C 1011 660 1002 669 1002 680 V 698 C 1002 709 993 718 982 718 H 820",
   },
   {
     operation: "charge",
     className: "charge-center",
-    d: "M 800 800 V 188",
+    d: "M 780 720 V 250",
   },
   {
     operation: "upper",
     className: "upper-left",
-    d: "M 650 184 V 320 C 650 386 616 430 584 438 V 487 H 0",
+    d: "M 650 250 V 320 C 650 386 604 420 570 432 H 365",
   },
   {
     operation: "upper",
     className: "upper-right",
-    d: "M 950 184 V 320 C 950 386 984 430 1016 438 V 487 H 1600",
+    d: "M 950 250 V 320 C 950 386 968 420 1002 432 H 1235",
   },
-] as const;
-
-const marineFish = [
-  { side: "left", period: 18.5, offset: 0.08, depth: 0.64, scale: 0.78 },
-  { side: "left", period: 25.4, offset: 0.57, depth: 0.73, scale: 0.58 },
-  { side: "right", period: 21.7, offset: 0.31, depth: 0.66, scale: 0.72 },
-  { side: "right", period: 28.3, offset: 0.82, depth: 0.76, scale: 0.54 },
 ] as const;
 
 function FlowVectorLayer() {
@@ -179,25 +188,21 @@ function FlowVectorLayer() {
       aria-hidden="true"
       focusable="false"
     >
-      <defs>
-        <filter id="premium-flow-glow" x="-40%" y="-40%" width="180%" height="180%">
-          <feGaussianBlur stdDeviation="4" result="blur" />
-          <feMerge>
-            <feMergeNode in="blur" />
-            <feMergeNode in="SourceGraphic" />
-          </feMerge>
-        </filter>
-        <marker id="premium-electrical-arrow" markerHeight="8" markerWidth="8" orient="auto" refX="7" refY="4">
-          <path d="M 0 0 L 8 4 L 0 8 Z" />
-        </marker>
-      </defs>
       <g className="premium-twin-electrical-route is-input" data-electrical-route="input">
-        <path d="M 70 610 H 675 C 720 610 745 575 775 545" />
-        <text x="86" y="588">EXTERNAL ENERGY IN</text>
+        <path className="electrical-line" d="M 70 610 H 675 C 720 610 745 575 775 545" />
+        <path className="electrical-signal" pathLength="1" d="M 70 610 H 675 C 720 610 745 575 775 545" />
+        <circle className="external-terminal" cx="70" cy="610" r="3.2" />
+        <circle className="machine-terminal" cx="775" cy="545" r="4" />
+        <text x="86" y="582">EXTERNAL ENERGY IN</text>
+        <text x="86" y="598" className="route-sub">External Supply → Pumping System</text>
       </g>
       <g className="premium-twin-electrical-route is-output" data-electrical-route="output">
-        <path d="M 1030 420 H 1525" />
-        <text x="1230" y="397">ELECTRICAL OUTPUT</text>
+        <path className="electrical-line" d="M 1030 420 H 1525" />
+        <path className="electrical-signal" pathLength="1" d="M 1030 420 H 1525" />
+        <circle className="machine-terminal" cx="1030" cy="420" r="4" />
+        <circle className="external-terminal" cx="1525" cy="420" r="3.2" />
+        <text x="1230" y="394">ELECTRICAL OUTPUT</text>
+        <text x="1230" y="410" className="route-sub">Generator → Grid / Load</text>
       </g>
       {flowVectorRoutes.map((route) => (
         <g
@@ -206,12 +211,19 @@ function FlowVectorLayer() {
           data-operation={route.operation}
           key={route.className}
         >
-          <path className="premium-twin-flow-track" data-flow-path d={route.d} />
-          {Array.from({ length: route.operation === "charge" ? 6 : 5 }, (_, index) => (
-            <g className="premium-twin-vector-arrow" data-vector-arrow key={index}>
-              <path d="M -17 -10 L 0 0 L -17 10" />
-            </g>
-          ))}
+          <path className="premium-twin-water-volume" data-flow-path d={route.d} />
+          <g className="premium-twin-water-direction">
+            {Array.from(
+              { length: route.operation === "charge" ? 7 : 6 },
+              (_, index) => (
+                <path
+                  data-water-direction
+                  d="M -10 -4.5 L 0 0 L -10 4.5"
+                  key={index}
+                />
+              ),
+            )}
+          </g>
         </g>
       ))}
     </svg>
@@ -226,19 +238,29 @@ function isSignatureStage(value: string): value is DigitalTwinSignatureStage {
   return signatureSteps.some((step) => step.id === value);
 }
 
+function calloutForScene(
+  signatureStage: DigitalTwinSignatureStage | null,
+  phase: DigitalTwinScene["phase"],
+): TwinCallout | null {
+  if (signatureStage === "energy") return "turbine";
+  if (signatureStage === "store") return "upper";
+  if (signatureStage === "generate") return "penstock";
+  return phase === "lower" ? "lower" : null;
+}
+
 function manualSceneForSignature(stage: DigitalTwinSignatureStage) {
-  return manualDigitalTwinScene(
-    stage === "energy" || stage === "store" ? "charge" : "upper",
-  );
+  if (stage === "energy") return manualDigitalTwinScene("charge");
+  if (stage === "generate") return manualDigitalTwinScene("upper");
+  return manualDigitalTwinScene("summary");
 }
 
 function manualLevelsForSignature(
   stage: DigitalTwinSignatureStage,
 ): ReservoirLevels {
-  if (stage === "energy") return { upper: 0.172, lower: 0.798 };
-  if (stage === "store") return { upper: 0.142, lower: 0.838 };
-  if (stage === "generate") return { upper: 0.138, lower: 0.85 };
-  return { upper: 0.17, lower: 0.85 };
+  if (stage === "energy") return { upper: 0.15, lower: 0.755 };
+  if (stage === "store") return { upper: 0.13, lower: 0.78 };
+  if (stage === "generate") return { upper: 0.155, lower: 0.755 };
+  return { upper: 0.18, lower: 0.73 };
 }
 
 export default function PremiumDigitalTwin() {
@@ -250,6 +272,7 @@ export default function PremiumDigitalTwin() {
   const [paused, setPaused] = useState(false);
   const [visibleStage, setVisibleStage] =
     useState<DigitalTwinSignatureStage | null>("energy");
+  const [exitingCallout, setExitingCallout] = useState<TwinCallout | null>(null);
   const [announcedPhase, setAnnouncedPhase] = useState("Energy In");
 
   useEffect(() => {
@@ -268,38 +291,52 @@ export default function PremiumDigitalTwin() {
       lower: 0,
       charge: 0,
       upper: 0,
-      lowerAngle: 0,
-      chargeAngle: 0,
-      upperAngle: 0,
     };
+    const machineryAngles = {
+      lower: 0,
+      charge: 0,
+      upper: 0,
+    };
+    const displayedLevels: ReservoirLevels = { upper: 0.18, lower: 0.73 };
+    let levelsInitialized = false;
     const vectorRoutes = Array.from(
       root.querySelectorAll<SVGGElement>("[data-flow-vector-route]"),
     ).flatMap((group) => {
-      const path = group.querySelector<SVGPathElement>("[data-flow-path]");
       const operation = group.dataset.operation;
-      if (!path || !operation || !isOperation(operation)) return [];
+      const path = group.querySelector<SVGPathElement>("[data-flow-path]");
+      if (!operation || !isOperation(operation) || !path) return [];
       return [{
         group,
-        path,
         operation,
+        path,
         length: path.getTotalLength(),
-        arrows: Array.from(group.querySelectorAll<SVGGElement>("[data-vector-arrow]")),
+        directions: Array.from(
+          group.querySelectorAll<SVGPathElement>("[data-water-direction]"),
+        ),
       }];
     });
 
     let forcedAction: Exclude<TwinAction, "auto"> | null = null;
     let manuallyPaused = false;
     let pauseAt = 0;
-    let start = performance.now() - 5000;
+    let start = performance.now();
     let lastFrame = 0;
     let animationFrame: number | null = null;
     let documentVisible = !document.hidden;
-    let inViewport = true;
+    let inViewport = false;
+    let sequenceStarted = false;
+    let entryStartTimer: number | null = null;
     let automaticSuspensionStarted: number | null = null;
     let reducedMotion = motionQuery.matches;
     let renderedUiPhase = "";
     let renderedAnnouncement = "";
+    let renderedCallout: TwinCallout | null = "turbine";
+    let calloutExitTimer: number | null = null;
+    let wildlifeStage: DigitalTwinSignatureStage | null = "energy";
+    let transitionCount = 0;
+    let wildlifeEvents: WildlifeEvent[] = [];
     let disposed = false;
+    rootElement.dataset.animationSuspended = "true";
 
     function resize() {
       const rect = canvas.getBoundingClientRect();
@@ -325,84 +362,72 @@ export default function PremiumDigitalTwin() {
       } else {
         delete rootElement.dataset.activeSignatureStage;
       }
-      const renderedWidth = canvas.getBoundingClientRect().width;
-      const arrowScale = renderedWidth < 480 ? 2.4 : renderedWidth < 760 ? 1.55 : 1;
-
-      vectorRoutes.forEach(({ group, path, operation, length, arrows }) => {
-        let strength = machinery[operation];
-        if (signatureStage === "energy" && operation === "charge") strength *= 0.34;
-        if (signatureStage === "dispatch" && operation === "upper") strength *= 0.28;
+      vectorRoutes.forEach(({ group, operation, path, length, directions }) => {
+        let strength = 0;
+        if (scene.phase === operation) {
+          if (signatureStage === "energy" && operation === "charge") {
+            strength = motionEnvelope(scene.progress, 0.16, 0.92, 0.14) * 0.76;
+          } else if (signatureStage === "generate" && operation === "upper") {
+            strength = motionEnvelope(scene.progress, 0.12, 0.93, 0.14) * 0.86;
+          } else if (operation === "lower") {
+            strength = motionEnvelope(scene.progress, 0.1, 0.92, 0.18) * 0.72;
+          } else {
+            strength = scene.activity;
+          }
+        }
         group.style.setProperty(
           "--flow-opacity",
-          strength > 0.015 ? String(0.18 + strength * 0.82) : "0",
+          strength > 0.015 ? String(0.12 + strength * 0.82) : "0",
         );
-        const speed = operation === "charge" ? 0.12 : 0.092;
-        arrows.forEach((arrow, index) => {
+        const speed = operation === "charge" ? 0.09 : operation === "upper" ? 0.084 : 0.078;
+        directions.forEach((direction, index) => {
           const fraction = reducedMotion
-            ? (index + 0.5) / arrows.length
-            : (seconds * speed + index / arrows.length) % 1;
+            ? (index + 0.5) / directions.length
+            : (seconds * speed * 1.12 + index / directions.length) % 1;
           const distance = fraction * length;
           const point = path.getPointAtLength(distance);
           const nextPoint = path.getPointAtLength(Math.min(length, distance + 2));
-          const angle = Math.atan2(nextPoint.y - point.y, nextPoint.x - point.x) * 180 / Math.PI;
-          arrow.setAttribute(
+          const dx = nextPoint.x - point.x;
+          const dy = nextPoint.y - point.y;
+          const magnitude = Math.max(0.001, Math.hypot(dx, dy));
+          const lane = index % 2 === 0 ? -2.2 : 2.2;
+          const x = point.x + (-dy / magnitude) * lane;
+          const y = point.y + (dx / magnitude) * lane;
+          const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+          direction.setAttribute(
             "transform",
-            `translate(${point.x.toFixed(2)} ${point.y.toFixed(2)}) rotate(${angle.toFixed(2)}) scale(${arrowScale})`,
+            `translate(${x.toFixed(2)} ${y.toFixed(2)}) rotate(${angle.toFixed(2)})`,
           );
+          direction.style.opacity = String(0.42 + strength * 0.52);
         });
       });
     }
 
-    function drawRotor(
-      cx: number,
-      cy: number,
-      radius: number,
-      angle: number,
-      strength: number,
-      blades = 6,
-    ) {
-      const x = cx * canvas.width;
-      const y = cy * canvas.height;
-      const rotorRadius = radius * canvas.width;
-      ctx.save();
-      ctx.translate(x, y);
-      ctx.rotate(angle);
-      ctx.globalAlpha = 0.24 + 0.71 * strength;
-      ctx.strokeStyle =
-        strength > 0.08 ? "#bafff6" : "rgba(180,220,220,.6)";
-      ctx.fillStyle = `rgba(104,245,225,${0.1 + 0.18 * strength})`;
-      ctx.shadowColor = "#68f5e1";
-      ctx.shadowBlur = strength * rotorRadius * 0.7;
-      ctx.lineWidth = Math.max(1.2, canvas.width / 1100);
-      for (let index = 0; index < blades; index += 1) {
-        ctx.rotate((Math.PI * 2) / blades);
-        ctx.beginPath();
-        ctx.moveTo(rotorRadius * 0.18, 0);
-        ctx.quadraticCurveTo(
-          rotorRadius * 0.72,
-          -rotorRadius * 0.18,
-          rotorRadius,
-          0,
-        );
-        ctx.quadraticCurveTo(
-          rotorRadius * 0.67,
-          rotorRadius * 0.2,
-          rotorRadius * 0.18,
-          rotorRadius * 0.12,
-        );
-        ctx.closePath();
-        ctx.fill();
-        ctx.stroke();
-      }
-      ctx.beginPath();
-      ctx.arc(0, 0, rotorRadius * 0.18, 0, Math.PI * 2);
-      ctx.fillStyle = "#d8fffb";
-      ctx.fill();
-      ctx.restore();
+    function smoothUnit(value: number) {
+      const bounded = Math.max(0, Math.min(1, value));
+      return bounded * bounded * (3 - 2 * bounded);
     }
 
-    function easeToward(value: number, target: number, delta: number) {
-      const response = target > value ? 0.34 : 0.72;
+    function motionEnvelope(
+      progress: number,
+      start: number,
+      end: number,
+      edge: number,
+    ) {
+      return (
+        smoothUnit((progress - start) / edge) *
+        smoothUnit((end - progress) / edge)
+      );
+    }
+
+    function easeToward(
+      value: number,
+      target: number,
+      delta: number,
+      riseResponse = 0.34,
+      fallResponse = 0.72,
+    ) {
+      const response = target > value ? riseResponse : fallResponse;
       return value + (target - value) * (1 - Math.exp(-delta / response));
     }
 
@@ -412,26 +437,58 @@ export default function PremiumDigitalTwin() {
       delta: number,
     ) {
       const targets = {
-        lower: scene.phase === "lower" ? scene.activity : 0,
+        lower:
+          scene.phase === "lower"
+            ? motionEnvelope(scene.progress, 0.08, 0.91, 0.17) * 0.62
+            : 0,
         charge:
           scene.phase === "charge"
-            ? scene.activity * (signatureStage === "energy" ? 0.62 : 1)
-            : 0,
+            ? motionEnvelope(scene.progress, 0.07, 0.93, 0.15)
+            : signatureStage === "store"
+              ? smoothUnit((0.82 - scene.progress) / 0.28) * 0.1
+              : 0,
         upper:
           scene.phase === "upper"
-            ? scene.activity * (signatureStage === "dispatch" ? 0.38 : 1)
-            : 0,
+            ? motionEnvelope(scene.progress, 0.05, 0.93, 0.16)
+            : signatureStage === "dispatch"
+              ? smoothUnit((0.88 - scene.progress) / 0.3) * 0.28
+              : 0,
       };
       (["lower", "charge", "upper"] as const).forEach((key) => {
         machinery[key] = reducedMotion
           ? targets[key]
-          : easeToward(machinery[key], targets[key], delta);
+          : easeToward(machinery[key], targets[key], delta, 1.05, 1.34);
+        if (!reducedMotion) {
+          const angularVelocity = key === "charge" ? 2.62 : key === "upper" ? 2.34 : 1.76;
+          const direction = key === "upper" ? -1 : 1;
+          machineryAngles[key] += direction * machinery[key] * angularVelocity * delta;
+        }
       });
-      if (!reducedMotion) {
-        machinery.lowerAngle += machinery.lower * 5.2 * delta;
-        machinery.chargeAngle += machinery.charge * 5.8 * delta;
-        machinery.upperAngle += machinery.upper * 5.2 * delta;
+    }
+
+    function updateDisplayedLevels(levels: ReservoirLevels, delta: number) {
+      if (!levelsInitialized || reducedMotion) {
+        displayedLevels.upper = levels.upper;
+        displayedLevels.lower = levels.lower;
+        levelsInitialized = true;
+        return displayedLevels;
       }
+      if (manuallyPaused) return displayedLevels;
+      displayedLevels.upper = easeToward(
+        displayedLevels.upper,
+        levels.upper,
+        delta,
+        1.08,
+        1.16,
+      );
+      displayedLevels.lower = easeToward(
+        displayedLevels.lower,
+        levels.lower,
+        delta,
+        1.08,
+        1.16,
+      );
+      return displayedLevels;
     }
 
     function panel(
@@ -486,54 +543,492 @@ export default function PremiumDigitalTwin() {
       ctx.restore();
     }
 
-    function smallTag(
-      label: string,
-      x: number,
-      y: number,
-      side: "left" | "right" = "left",
+    function drawReservoirWater(
+      startX: number,
+      endX: number,
+      levelY: number,
+      bottomY: number,
+      intensity: number,
+      motionTime: number,
+      fillStrength: number,
     ) {
-      const pointX = x * canvas.width;
-      const pointY = y * canvas.height;
-      const direction = side === "left" ? -1 : 1;
-      ctx.save();
-      ctx.strokeStyle = "rgba(104,245,225,.55)";
-      ctx.lineWidth = Math.max(1, canvas.width / 1600);
-      ctx.beginPath();
-      ctx.arc(pointX, pointY, (4 * canvas.width) / 1600, 0, Math.PI * 2);
-      ctx.stroke();
-      ctx.beginPath();
-      ctx.moveTo(pointX + (direction * 8 * canvas.width) / 1600, pointY);
-      ctx.lineTo(pointX + (direction * 26 * canvas.width) / 1600, pointY);
-      ctx.stroke();
-      ctx.restore();
-      textLabel(
-        label,
-        x + direction * 0.022,
-        y + 0.005,
-        12,
-        "#c7e5e4",
-        side === "left" ? "right" : "left",
+      const left = startX * canvas.width;
+      const right = endX * canvas.width;
+      const surface = levelY * canvas.height;
+      const bottom = bottomY * canvas.height;
+      const depth = Math.max(1, bottom - surface);
+      const surfaceAmplitude = Math.max(
+        0.8,
+        (canvas.width / 1600) * (1.8 + intensity),
       );
+      const surfacePhase = motionTime * 0.42;
+      const traceWaterSurface = (offset = 0) => {
+        const segments = 5;
+        const segmentWidth = (right - left) / segments;
+        const contour = [0.18, -0.26, 0.31, -0.14, 0.09, -0.04];
+        ctx.moveTo(
+          left,
+          surface +
+            (contour[0] + Math.sin(surfacePhase) * 0.16) * surfaceAmplitude +
+            offset,
+        );
+        for (let index = 0; index < segments; index += 1) {
+          const endX = left + segmentWidth * (index + 1);
+          const endY =
+            surface +
+            (contour[index + 1] +
+              Math.sin(surfacePhase + index * 0.91) * 0.14) *
+              surfaceAmplitude +
+            offset;
+          const controlY =
+            surface +
+            (contour[index] * 0.65 +
+              Math.sin(surfacePhase * 0.78 + index * 1.47 + 0.65) * 0.42) *
+              surfaceAmplitude +
+            offset;
+          ctx.quadraticCurveTo(
+            endX - segmentWidth * 0.5,
+            controlY,
+            endX,
+            endY,
+          );
+        }
+      };
+
+      ctx.save();
+      ctx.beginPath();
+      traceWaterSurface();
+      ctx.lineTo(right, bottom);
+      ctx.lineTo(left, bottom);
+      ctx.closePath();
+      ctx.clip();
+
+      const waterFill = ctx.createLinearGradient(0, surface, 0, bottom);
+      waterFill.addColorStop(0, `rgba(20,128,166,${fillStrength + intensity * 0.025})`);
+      waterFill.addColorStop(0.42, `rgba(8,88,124,${fillStrength * 0.88})`);
+      waterFill.addColorStop(1, `rgba(2,48,74,${fillStrength * 1.08})`);
+      ctx.fillStyle = waterFill;
+      ctx.fillRect(
+        left,
+        surface - surfaceAmplitude * 2,
+        right - left,
+        depth + surfaceAmplitude * 2,
+      );
+      const edgeShade = ctx.createLinearGradient(left, 0, right, 0);
+      edgeShade.addColorStop(0, "rgba(1,17,27,.62)");
+      edgeShade.addColorStop(0.14, "rgba(1,17,27,0)");
+      edgeShade.addColorStop(0.86, "rgba(1,17,27,0)");
+      edgeShade.addColorStop(1, "rgba(1,17,27,.62)");
+      ctx.fillStyle = edgeShade;
+      ctx.fillRect(
+        left,
+        surface - surfaceAmplitude * 2,
+        right - left,
+        depth + surfaceAmplitude * 2,
+      );
+
+      const surfaceBand = ctx.createLinearGradient(0, surface, 0, surface + depth * 0.2);
+      surfaceBand.addColorStop(0, `rgba(128,219,226,${0.11 + intensity * 0.035})`);
+      surfaceBand.addColorStop(1, "rgba(45,141,169,0)");
+      ctx.fillStyle = surfaceBand;
+      ctx.fillRect(
+        left,
+        surface - surfaceAmplitude * 2,
+        right - left,
+        depth * 0.2 + surfaceAmplitude * 2,
+      );
+
+      const refraction = ctx.createLinearGradient(left, surface, right, bottom);
+      refraction.addColorStop(0, "rgba(185,238,239,.015)");
+      refraction.addColorStop(0.38, `rgba(185,238,239,${0.045 + intensity * 0.025})`);
+      refraction.addColorStop(0.52, "rgba(185,238,239,.008)");
+      refraction.addColorStop(0.78, `rgba(91,176,193,${0.035 + intensity * 0.018})`);
+      refraction.addColorStop(1, "rgba(91,176,193,0)");
+      ctx.fillStyle = refraction;
+      ctx.fillRect(
+        left,
+        surface - surfaceAmplitude * 2,
+        right - left,
+        depth + surfaceAmplitude * 2,
+      );
+
+      ctx.globalCompositeOperation = "screen";
+      for (let index = 0; index < 18; index += 1) {
+        const direction = index % 2 === 0 ? 1 : -1;
+        const drift = motionTime * (0.0045 + (index % 4) * 0.0012) * direction;
+        const position = ((index * 0.137 + drift) % 1 + 1) % 1;
+        const x = left + position * (right - left);
+        const y = surface + depth * (0.1 + (index % 7) * 0.125);
+        const length = (right - left) * (0.035 + (index % 5) * 0.01);
+        const bend = ((index % 3) - 1) * Math.max(1, depth * 0.012);
+        ctx.beginPath();
+        ctx.moveTo(Math.max(left, x - length * 0.5), y);
+        ctx.quadraticCurveTo(x, y + bend, Math.min(right, x + length * 0.5), y);
+        if (index % 3 === 0) {
+          ctx.moveTo(x, y + bend * 0.35);
+          ctx.lineTo(
+            Math.min(right, x + length * 0.18),
+            y + depth * 0.045,
+          );
+        }
+        ctx.strokeStyle = `rgba(164,230,234,${0.05 + intensity * 0.045})`;
+        ctx.lineWidth = Math.max(0.55, (0.72 * canvas.width) / 1600);
+        ctx.stroke();
+      }
+
+      for (let index = 0; index < 10; index += 1) {
+        const drift = motionTime * (0.0024 + (index % 3) * 0.0007);
+        const xFraction = ((index * 0.173 + drift) % 1 + 1) % 1;
+        const yFraction = ((index * 0.219 - drift * 0.48) % 1 + 1) % 1;
+        const x = left + xFraction * (right - left);
+        const y = surface + depth * (0.12 + yFraction * 0.78);
+        ctx.beginPath();
+        ctx.ellipse(
+          x,
+          y,
+          Math.max(0.55, canvas.width / 2200),
+          Math.max(0.35, canvas.width / 3600),
+          index * 0.37,
+          0,
+          Math.PI * 2,
+        );
+        ctx.fillStyle = `rgba(190,230,230,${0.035 + intensity * 0.025})`;
+        ctx.fill();
+      }
+      ctx.restore();
+
+      ctx.save();
+      ctx.strokeStyle = `rgba(174,235,236,${0.64 + intensity * 0.12})`;
+      ctx.lineWidth = Math.max(1, (1.35 * canvas.width) / 1600);
+      ctx.beginPath();
+      traceWaterSurface();
+      ctx.stroke();
+      for (let index = 0; index < 4; index += 1) {
+        const position = ((index * 0.29 + motionTime * 0.006) % 1 + 1) % 1;
+        const segmentX = left + position * (right - left);
+        const segmentLength = (right - left) * (0.055 + index * 0.008);
+        ctx.beginPath();
+        const shimmerY = surface + surfaceAmplitude * 0.55;
+        ctx.moveTo(segmentX, shimmerY);
+        ctx.quadraticCurveTo(
+          segmentX + segmentLength * 0.5,
+          shimmerY - surfaceAmplitude * 0.35,
+          Math.min(right, segmentX + segmentLength),
+          shimmerY,
+        );
+        ctx.strokeStyle = `rgba(221,247,246,${0.11 + intensity * 0.055})`;
+        ctx.lineWidth = Math.max(0.75, (1.05 * canvas.width) / 1600);
+        ctx.stroke();
+      }
+      if (intensity > 0.06) {
+        const disturbanceX = (left + right) * 0.5;
+        ctx.globalAlpha = Math.min(0.28, intensity * 0.24);
+        for (let index = 0; index < 2; index += 1) {
+          const spread =
+            (right - left) *
+            (0.045 + index * 0.035 + ((motionTime * 0.018) % 0.025));
+          ctx.beginPath();
+          ctx.ellipse(
+            disturbanceX,
+            surface + surfaceAmplitude * 0.35,
+            spread,
+            surfaceAmplitude * (0.5 + index * 0.2),
+            0,
+            Math.PI,
+            Math.PI * 2,
+          );
+          ctx.strokeStyle = "rgba(205,241,241,.42)";
+          ctx.lineWidth = Math.max(0.7, canvas.width / 1800);
+          ctx.stroke();
+        }
+      }
+      ctx.restore();
     }
 
-    function drawLevels(levels: ReservoirLevels, activity: number) {
+    function drawMachineryCue(
+      cx: number,
+      cy: number,
+      radiusRatio: number,
+      angle: number,
+      strength: number,
+    ) {
+      if (strength < 0.025) return;
+      const x = cx * canvas.width;
+      const y = cy * canvas.height;
+      const radius = radiusRatio * canvas.width;
       ctx.save();
-      ctx.strokeStyle = `rgba(104,245,225,${0.48 + 0.37 * activity})`;
-      ctx.lineWidth = (2 * canvas.width) / 1600;
-      ctx.shadowColor = "#68f5e1";
-      ctx.shadowBlur = ((4 + 4 * activity) * canvas.width) / 1600;
+      ctx.translate(x, y);
       ctx.beginPath();
-      ctx.moveTo(0.395 * canvas.width, levels.upper * canvas.height);
-      ctx.lineTo(0.605 * canvas.width, levels.upper * canvas.height);
-      ctx.stroke();
+      ctx.arc(0, 0, radius, 0, Math.PI * 2);
+      ctx.clip();
+
+      const housingShade = ctx.createRadialGradient(0, 0, radius * 0.26, 0, 0, radius);
+      housingShade.addColorStop(0, "rgba(2,10,13,.03)");
+      housingShade.addColorStop(0.62, "rgba(2,10,13,.12)");
+      housingShade.addColorStop(1, "rgba(1,6,9,.38)");
+      ctx.fillStyle = housingShade;
+      ctx.fillRect(-radius, -radius, radius * 2, radius * 2);
+
+      ctx.rotate(angle);
+      ctx.lineCap = "round";
+      const bladeCount = 7;
+      for (let index = 0; index < bladeCount; index += 1) {
+        ctx.save();
+        ctx.rotate((index / bladeCount) * Math.PI * 2);
+        ctx.beginPath();
+        ctx.moveTo(radius * 0.02, -radius * 0.12);
+        ctx.quadraticCurveTo(
+          radius * 0.44,
+          -radius * 0.3,
+          radius * 0.67,
+          -radius * 0.1,
+        );
+        ctx.quadraticCurveTo(
+          radius * 0.48,
+          radius * 0.02,
+          radius * 0.16,
+          radius * 0.12,
+        );
+        ctx.closePath();
+        const bladeMetal = ctx.createLinearGradient(
+          -radius * 0.08,
+          -radius * 0.25,
+          radius * 0.62,
+          0,
+        );
+        bladeMetal.addColorStop(0, `rgba(35,70,76,${0.5 + strength * 0.18})`);
+        bladeMetal.addColorStop(0.52, `rgba(224,233,229,${0.56 + strength * 0.28})`);
+        bladeMetal.addColorStop(1, `rgba(70,126,130,${0.44 + strength * 0.2})`);
+        ctx.fillStyle = bladeMetal;
+        ctx.fill();
+        ctx.strokeStyle = `rgba(224,236,232,${0.48 + strength * 0.28})`;
+        ctx.lineWidth = Math.max(0.75, (1.15 * canvas.width) / 1600);
+        ctx.stroke();
+        ctx.restore();
+      }
+
+      ctx.save();
+      ctx.globalCompositeOperation = "screen";
+      ctx.globalAlpha = 0.075 + strength * 0.085;
+      ctx.lineWidth = Math.max(1.4, (3.1 * canvas.width) / 1600);
+      ctx.strokeStyle = "rgba(178,226,224,.72)";
       ctx.beginPath();
-      ctx.moveTo(0.405 * canvas.width, levels.lower * canvas.height);
-      ctx.lineTo(0.595 * canvas.width, levels.lower * canvas.height);
+      ctx.arc(0, 0, radius * 0.59, -1.55, -0.45);
       ctx.stroke();
       ctx.restore();
+
+      const metallicSweep = ctx.createConicGradient(-0.45, 0, 0);
+      metallicSweep.addColorStop(0, "rgba(185,210,207,0)");
+      metallicSweep.addColorStop(0.09, `rgba(185,210,207,${0.11 + strength * 0.15})`);
+      metallicSweep.addColorStop(0.2, "rgba(185,210,207,0)");
+      metallicSweep.addColorStop(0.62, "rgba(99,155,156,0)");
+      metallicSweep.addColorStop(0.7, `rgba(99,155,156,${0.06 + strength * 0.09})`);
+      metallicSweep.addColorStop(0.79, "rgba(99,155,156,0)");
+      metallicSweep.addColorStop(1, "rgba(185,210,207,0)");
+      ctx.fillStyle = metallicSweep;
+      ctx.beginPath();
+      ctx.arc(0, 0, radius * 0.84, 0, Math.PI * 2);
+      ctx.fill();
+
+      const hubMetal = ctx.createRadialGradient(
+        -radius * 0.08,
+        -radius * 0.1,
+        radius * 0.04,
+        0,
+        0,
+        radius * 0.24,
+      );
+      hubMetal.addColorStop(0, `rgba(211,225,222,${0.25 + strength * 0.12})`);
+      hubMetal.addColorStop(0.48, `rgba(96,137,140,${0.27 + strength * 0.11})`);
+      hubMetal.addColorStop(1, "rgba(20,49,54,.72)");
+      ctx.fillStyle = hubMetal;
+      ctx.beginPath();
+      ctx.arc(0, 0, radius * 0.23, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = `rgba(189,222,219,${0.28 + strength * 0.24})`;
+      ctx.lineWidth = Math.max(0.8, (1.25 * canvas.width) / 1600);
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.arc(0, 0, radius * 0.76, 0, Math.PI * 2);
+      ctx.arc(0, 0, radius * 0.5, 0, Math.PI * 2, true);
+      ctx.fillStyle = `rgba(136,164,162,${0.025 + strength * 0.045})`;
+      ctx.fill("evenodd");
+
+      ctx.beginPath();
+      ctx.arc(0, 0, radius * 0.69, -0.42, 0.62);
+      ctx.strokeStyle = `rgba(188,207,204,${0.1 + strength * 0.16})`;
+      ctx.lineWidth = Math.max(1, (2.6 * canvas.width) / 1600);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.arc(0, 0, radius * 0.43, Math.PI * 0.78, Math.PI * 1.58);
+      ctx.strokeStyle = `rgba(111,174,176,${0.07 + strength * 0.12})`;
+      ctx.lineWidth = Math.max(0.8, (1.55 * canvas.width) / 1600);
+      ctx.stroke();
+
+      const edgeOcclusion = ctx.createRadialGradient(0, 0, radius * 0.48, 0, 0, radius);
+      edgeOcclusion.addColorStop(0, "rgba(1,7,10,0)");
+      edgeOcclusion.addColorStop(0.72, "rgba(1,7,10,.04)");
+      edgeOcclusion.addColorStop(1, "rgba(1,7,10,.34)");
+      ctx.fillStyle = edgeOcclusion;
+      ctx.fillRect(-radius, -radius, radius * 2, radius * 2);
+      ctx.restore();
+    }
+
+    function drawMachineryMotion() {
+      drawMachineryCue(0.364, 0.48, 0.027, machineryAngles.charge, machinery.charge);
+      drawMachineryCue(0.617, 0.48, 0.027, -machineryAngles.charge, machinery.charge);
+      drawMachineryCue(0.486, 0.555, 0.024, machineryAngles.charge * 0.92, machinery.charge * 0.9);
+      drawMachineryCue(0.364, 0.48, 0.027, machineryAngles.upper, machinery.upper);
+      drawMachineryCue(0.617, 0.48, 0.027, -machineryAngles.upper, machinery.upper);
+      drawMachineryCue(0.364, 0.735, 0.026, machineryAngles.lower, machinery.lower);
+      drawMachineryCue(0.626, 0.735, 0.026, -machineryAngles.lower, machinery.lower);
+    }
+
+    function drawFish(x: number, y: number, size: number, direction: 1 | -1, alpha: number) {
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.scale(direction, 1);
+      ctx.globalAlpha = alpha;
+      ctx.fillStyle = "rgba(7,37,45,.88)";
+      ctx.strokeStyle = "rgba(111,177,181,.3)";
+      ctx.lineWidth = Math.max(0.7, canvas.width / 2400);
+      ctx.beginPath();
+      ctx.ellipse(0, 0, size, size * 0.38, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(-size * 0.82, 0);
+      ctx.lineTo(-size * 1.38, -size * 0.48);
+      ctx.lineTo(-size * 1.26, size * 0.5);
+      ctx.closePath();
+      ctx.fill();
+      ctx.restore();
+    }
+
+    function drawStingray(x: number, y: number, size: number, direction: 1 | -1, alpha: number) {
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.scale(direction, 1);
+      ctx.globalAlpha = alpha;
+      ctx.fillStyle = "rgba(5,29,38,.9)";
+      ctx.strokeStyle = "rgba(111,177,181,.34)";
+      ctx.lineWidth = Math.max(0.8, canvas.width / 2200);
+      ctx.beginPath();
+      ctx.moveTo(size, 0);
+      ctx.quadraticCurveTo(size * 0.22, -size * 0.7, -size * 0.88, -size * 0.12);
+      ctx.quadraticCurveTo(-size * 0.2, size * 0.62, size, 0);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(-size * 0.72, 0);
+      ctx.quadraticCurveTo(-size * 1.45, size * 0.16, -size * 2.05, size * 0.42);
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    function drawMarineWildlife(elapsed: number) {
+      if (reducedMotion || wildlifeEvents.length === 0) return;
+      wildlifeEvents = wildlifeEvents.filter((event) => {
+        const duration = event.kind === "ray" ? 7.4 : 5.8;
+        const age = elapsed - event.startedAt;
+        if (age < 0 || age > duration) return false;
+        const progress = age / duration;
+        const fade = Math.min(1, age / 0.8, (duration - age) / 0.9);
+        if (event.kind === "ray") {
+          const excursion = Math.sin(progress * Math.PI) * 0.2;
+          const xFraction = event.direction === 1
+            ? -0.035 + excursion
+            : 1.035 - excursion;
+          drawStingray(
+            xFraction * canvas.width,
+            canvas.height * (0.59 + Math.sin(progress * Math.PI) * 0.012),
+            canvas.width * 0.018,
+            event.direction,
+            fade * 0.27,
+          );
+        } else {
+          // Wildlife is peripheral ambience only. Keep each school inside the
+          // open-water margins so it can never pass over the structure.
+          const edgeTravel = smoothUnit(progress);
+          const xFraction = event.direction === 1
+            ? 0.05 + edgeTravel * 0.12
+            : 0.95 - edgeTravel * 0.12;
+          const x = xFraction * canvas.width;
+          for (let index = 0; index < 3; index += 1) {
+            drawFish(
+              x - event.direction * index * canvas.width * 0.024,
+              canvas.height * (0.61 + index * 0.026 + Math.sin(progress * 8 + index) * 0.006),
+              canvas.width * (0.0072 - index * 0.0007),
+              event.direction,
+              fade * (0.3 - index * 0.045),
+            );
+          }
+        }
+        return true;
+      });
+    }
+
+    function drawLevels(
+      levels: ReservoirLevels,
+      activity: number,
+      motionTime: number,
+    ) {
+      ctx.save();
+      const upperVoid = ctx.createLinearGradient(
+        0,
+        0.11 * canvas.height,
+        0,
+        levels.upper * canvas.height,
+      );
+      upperVoid.addColorStop(0, "rgba(2,11,16,.84)");
+      upperVoid.addColorStop(1, "rgba(3,18,24,.64)");
+      ctx.fillStyle = upperVoid;
+      ctx.fillRect(
+        0.395 * canvas.width,
+        0.11 * canvas.height,
+        0.21 * canvas.width,
+        Math.max(0, levels.upper - 0.11) * canvas.height,
+      );
+      const lowerVoid = ctx.createLinearGradient(
+        0,
+        0.64 * canvas.height,
+        0,
+        levels.lower * canvas.height,
+      );
+      lowerVoid.addColorStop(0, "rgba(2,11,16,.78)");
+      lowerVoid.addColorStop(1, "rgba(3,18,24,.58)");
+      ctx.fillStyle = lowerVoid;
+      ctx.fillRect(
+        0.405 * canvas.width,
+        0.64 * canvas.height,
+        0.19 * canvas.width,
+        Math.max(0, levels.lower - 0.64) * canvas.height,
+      );
+      ctx.restore();
+
+      drawReservoirWater(
+        0.395,
+        0.605,
+        levels.upper,
+        0.285,
+        activity,
+        motionTime,
+        0.19,
+      );
+      drawReservoirWater(
+        0.405,
+        0.595,
+        levels.lower,
+        0.865,
+        activity * 0.72,
+        motionTime + 1.8,
+        0.22,
+      );
       textLabel(
         "UPPER LEVEL",
-        0.61,
+        0.565,
         levels.upper + 0.004,
         10,
         "rgba(205,240,239,.8)",
@@ -547,410 +1042,49 @@ export default function PremiumDigitalTwin() {
       );
     }
 
-    function clipPolygon(points: readonly Point[]) {
-      ctx.beginPath();
-      points.forEach(([x, y], index) => {
-        if (index) ctx.lineTo(x * canvas.width, y * canvas.height);
-        else ctx.moveTo(x * canvas.width, y * canvas.height);
-      });
-      ctx.closePath();
-      ctx.clip();
-    }
-
-    function drawOceanSurface(seconds: number) {
-      if (reducedMotion) return;
-      const waterline =
-        DIGITAL_TWIN_BASE_PLATE.ambientWaterlineY /
-        DIGITAL_TWIN_BASE_PLATE.height;
-      const regions: readonly (readonly Point[])[] = [
-        [[0, waterline - 0.018], [0.31, waterline - 0.018], [0.29, waterline + 0.052], [0, waterline + 0.052]],
-        [[0.69, waterline - 0.018], [1, waterline - 0.018], [1, waterline + 0.052], [0.71, waterline + 0.052]],
-      ];
-      regions.forEach((region) => {
-        ctx.save();
-        clipPolygon(region);
-        for (let band = 0; band < 5; band += 1) {
-          const yStart = (waterline - 0.009 + band * 0.0125) * canvas.height;
-          const phase = seconds * (0.22 + band * 0.037) + band * 1.87;
-          ctx.beginPath();
-          for (let step = 0; step <= 36; step += 1) {
-            const x = (step / 36) * canvas.width;
-            const y =
-              yStart +
-              (Math.sin((x / canvas.width) * 15.2 + phase) * 1.7 +
-                Math.sin((x / canvas.width) * 31.7 - phase * 0.61) * 0.8) *
-                (canvas.width / 1600);
-            if (step) ctx.lineTo(x, y);
-            else ctx.moveTo(x, y);
-          }
-          ctx.strokeStyle = `rgba(226,255,252,${0.026 + band * 0.007})`;
-          ctx.lineWidth = ((1 + band * 0.12) * canvas.width) / 1600;
-          ctx.stroke();
-        }
-        const sheen = ctx.createLinearGradient(
-          0,
-          (waterline - 0.014) * canvas.height,
-          0,
-          (waterline + 0.056) * canvas.height,
-        );
-        sheen.addColorStop(0, "rgba(194,255,250,.018)");
-        sheen.addColorStop(
-          0.5,
-          `rgba(225,255,252,${0.018 + 0.008 * Math.sin(seconds * 0.31)})`,
-        );
-        sheen.addColorStop(1, "rgba(120,228,230,0)");
-        ctx.fillStyle = sheen;
-        ctx.fillRect(
-          0,
-          (waterline - 0.018) * canvas.height,
-          canvas.width,
-          0.075 * canvas.height,
-        );
-        ctx.restore();
-      });
-    }
-
-    function drawFish(
-      x: number,
-      y: number,
-      scale: number,
-      direction: 1 | -1,
-      alpha: number,
-    ) {
-      const unit = (canvas.width / 1600) * scale;
-      ctx.save();
-      ctx.translate(x * canvas.width, y * canvas.height);
-      ctx.scale(direction * unit, unit);
-      ctx.fillStyle = `rgba(126,180,188,${alpha})`;
-      ctx.beginPath();
-      ctx.ellipse(0, 0, 14, 5.2, 0, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.beginPath();
-      ctx.moveTo(-12, 0);
-      ctx.lineTo(-22, -7);
-      ctx.lineTo(-21, 7);
-      ctx.closePath();
-      ctx.fill();
-      ctx.fillStyle = `rgba(224,246,242,${alpha * 0.72})`;
-      ctx.beginPath();
-      ctx.arc(8, -1, 1.2, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.restore();
-    }
-
-    function drawSeal(
-      x: number,
-      y: number,
-      scale: number,
-      direction: 1 | -1,
-      alpha: number,
-    ) {
-      const unit = (canvas.width / 1600) * scale;
-      ctx.save();
-      ctx.translate(x * canvas.width, y * canvas.height);
-      ctx.rotate(Math.sin(x * 19 + y * 11) * 0.035);
-      ctx.scale(direction * unit, unit);
-      ctx.fillStyle = `rgba(50,91,103,${alpha})`;
-      ctx.beginPath();
-      ctx.ellipse(0, 0, 30, 8.5, 0, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.beginPath();
-      ctx.arc(27, -2, 7, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.beginPath();
-      ctx.moveTo(-24, 2);
-      ctx.lineTo(-39, -6);
-      ctx.lineTo(-34, 7);
-      ctx.closePath();
-      ctx.fill();
-      ctx.beginPath();
-      ctx.moveTo(1, 5);
-      ctx.lineTo(12, 14);
-      ctx.lineTo(-6, 8);
-      ctx.closePath();
-      ctx.fill();
-      ctx.restore();
-    }
-
-    function drawMarineLife(seconds: number) {
-      if (reducedMotion) return;
-
-      marineFish.forEach((fish, index) => {
-        const progress = (seconds / fish.period + fish.offset) % 1;
-        const fromLeft = fish.side === "left";
-        const x = fromLeft
-          ? -0.035 + progress * 0.34
-          : 1.035 - progress * 0.34;
-        const y =
-          fish.depth +
-          Math.sin(progress * Math.PI * 2 + index * 1.73) * 0.012;
-        const edgeFade = Math.sin(progress * Math.PI);
-        drawFish(
-          x,
-          y,
-          fish.scale,
-          fromLeft ? 1 : -1,
-          (0.08 + 0.08 * edgeFade) * edgeFade,
-        );
-      });
-
-      const encounter = seconds % 47;
-      if (encounter >= 7 && encounter <= 18) {
-        const progress = (encounter - 7) / 11;
-        const alternateSide = Math.floor(seconds / 47) % 2 === 1;
-        const x = alternateSide
-          ? 1.05 - progress * 0.34
-          : -0.05 + progress * 0.34;
-        const y = 0.59 + Math.sin(progress * Math.PI * 1.35) * 0.018;
-        drawSeal(
-          x,
-          y,
-          0.82,
-          alternateSide ? -1 : 1,
-          0.13 * Math.sin(progress * Math.PI),
-        );
-      }
-    }
-
-    function drawFlagBreeze(seconds: number) {
-      if (reducedMotion) return;
-      const breeze = flagBreezeActivityAt(seconds);
-      if (breeze <= 0.001) return;
-      const poleX = 0.501 * canvas.width;
-      const top = 0.036 * canvas.height;
-      const flagWidth = 0.066 * canvas.width;
-      const flagHeight = 0.075 * canvas.height;
-      const primary =
-        breeze *
-        (Math.sin(seconds * 3.2) + 0.36 * Math.sin(seconds * 5.1 + 0.9));
-      ctx.save();
-      ctx.beginPath();
-      ctx.moveTo(poleX, top);
-      ctx.lineTo(
-        poleX + flagWidth,
-        top + (primary * 0.42 * canvas.width) / 1600,
-      );
-      ctx.lineTo(
-        poleX + flagWidth,
-        top + flagHeight + (primary * 0.7 * canvas.width) / 1600,
-      );
-      ctx.lineTo(poleX, top + flagHeight);
-      ctx.closePath();
-      ctx.clip();
-      for (let fold = 0; fold < 3; fold += 1) {
-        const travel =
-          (seconds * (0.11 + fold * 0.014) + fold * 0.31) % 1;
-        const x = poleX + (0.18 + travel * 0.82) * flagWidth;
-        const width = (0.09 + fold * 0.015) * flagWidth;
-        const shade = ctx.createLinearGradient(x - width, 0, x + width, 0);
-        shade.addColorStop(0, "rgba(255,255,255,0)");
-        shade.addColorStop(0.42, `rgba(255,255,255,${0.052 * breeze})`);
-        shade.addColorStop(0.58, `rgba(0,22,42,${0.046 * breeze})`);
-        shade.addColorStop(1, "rgba(255,255,255,0)");
-        ctx.fillStyle = shade;
-        ctx.fillRect(
-          x - width,
-          top,
-          width * 2,
-          flagHeight + (3 * canvas.width) / 1600,
-        );
-      }
-      ctx.restore();
-    }
-
     function drawHud(
       scene: DigitalTwinScene,
       signatureStage: DigitalTwinSignatureStage | null,
     ) {
-      const phase = signatureStage
-        ? signaturePhaseCopy[signatureStage]
-        : phaseCopy[scene.phase];
-      panel(0.027, 0.04, 0.205, 0.102);
-      textLabel("HUMPBACK HYDRO", 0.045, 0.074, 11, "#68f5e1", "left", true);
-      textLabel("ARCHITECTURE MODEL", 0.045, 0.104, 20, "#eefdfc");
+      if (window.innerWidth <= 760) return;
+      const phase = signatureStage ? signaturePhaseCopy[signatureStage] : phaseCopy[scene.phase];
+      const elapsed = manuallyPaused ? pauseAt / 1000 : (performance.now() - start) / 1000;
+      const t = elapsed % DIGITAL_TWIN_CYCLE_SECONDS;
+      if (t >= DIGITAL_TWIN_SIGNOFF_START_SECONDS && !forcedAction) return;
+
+      panel(0.025, 0.035, 0.19, 0.09, 0.7);
+      textLabel("HUMPBACK HYDRO", 0.042, 0.066, 10, "#70d9e8", "left", true);
+      textLabel("SIGNATURE TECHNOLOGY", 0.042, 0.097, 17, "#f3fbfd");
       textLabel(
-        "ILLUSTRATIVE DIGITAL TWIN",
-        0.045,
-        0.128,
-        10,
+        "CONCEPTUAL MARINE ARCHITECTURE",
+        0.042,
+        0.117,
+        8,
         "rgba(196,226,225,.72)",
         "left",
         true,
       );
 
-      panel(0.76, 0.04, 0.213, 0.102);
+      panel(0.795, 0.042, 0.18, 0.112, 0.7);
       textLabel(
-        "ILLUSTRATED STATE",
-        0.782,
-        0.077,
-        10,
+        "ILLUSTRATED STATE  /  " + phase.index,
+        0.812,
+        0.073,
+        8,
         "rgba(196,226,225,.72)",
         "left",
         true,
       );
-      const systemStatus = signatureStage
-        ? "SIGNATURE OPERATING SEQUENCE"
-        : scene.phase === "establish"
-          ? "SEQUENCE OVERVIEW"
-          : scene.phase === "summary"
-            ? "SEQUENCE ILLUSTRATED"
-            : scene.phase === "handoff"
-              ? "STATE TRANSITION"
-              : "PROCESS ILLUSTRATED";
-      textLabel(systemStatus, 0.782, 0.107, 18, "#eefdfc");
+      textLabel(phase.title, 0.812, 0.108, 16, "#f3fbfd");
       textLabel(
-        "QUALITATIVE DISPLAY — NOT TO SCALE",
-        0.782,
-        0.13,
-        9,
-        "#68f5e1",
+        "PROCESS STATE / QUALITATIVE",
+        0.812,
+        0.134,
+        8,
+        "#70d9e8",
         "left",
         true,
       );
-
-      panel(0.027, 0.825, 0.262, 0.128);
-      textLabel(phase.index, 0.062, 0.907, 22, "#68f5e1", "center", true);
-      ctx.save();
-      ctx.strokeStyle = "rgba(104,245,225,.52)";
-      ctx.lineWidth = (2 * canvas.width) / 1600;
-      ctx.beginPath();
-      ctx.arc(
-        0.062 * canvas.width,
-        0.885 * canvas.height,
-        (27 * canvas.width) / 1600,
-        0,
-        Math.PI * 2,
-      );
-      ctx.stroke();
-      ctx.restore();
-      textLabel(
-        "ILLUSTRATED SEQUENCE",
-        0.105,
-        0.868,
-        10,
-        "rgba(196,226,225,.72)",
-        "left",
-        true,
-      );
-      textLabel(phase.title, 0.105, 0.905, 18, "#eefdfc");
-
-      panel(0.715, 0.815, 0.258, 0.138);
-      textLabel(
-        "FLOW STATE",
-        0.74,
-        0.853,
-        10,
-        "rgba(196,226,225,.72)",
-        "left",
-        true,
-      );
-      textLabel(phase.route, 0.74, 0.888, 16, "#eefdfc");
-      textLabel(phase.energy, 0.74, 0.92, 10, "#68f5e1", "left", true);
-
-      const machinePhase = isOperation(scene.phase)
-        ? scene.phase
-        : scene.phase === "handoff"
-          ? scene.from
-          : null;
-      if (machinePhase && machinery[machinePhase] > 0.035) {
-        const anchor =
-          machinePhase === "lower"
-            ? [0.355, 0.76]
-            : machinePhase === "charge"
-              ? [0.5, 0.59]
-              : [0.645, 0.48];
-        const box =
-          machinePhase === "lower"
-            ? [0.4, 0.66]
-            : machinePhase === "charge"
-              ? [0.56, 0.58]
-              : [0.58, 0.38];
-        panel(box[0], box[1], 0.148, 0.11, 0.58 + 0.16 * scene.activity);
-        ctx.save();
-        ctx.strokeStyle = "rgba(104,245,225,.48)";
-        ctx.lineWidth = canvas.width / 1600;
-        ctx.beginPath();
-        ctx.moveTo(anchor[0] * canvas.width, anchor[1] * canvas.height);
-        ctx.lineTo(box[0] * canvas.width, box[1] * canvas.height);
-        ctx.stroke();
-        ctx.restore();
-        const machine =
-          machinePhase === "lower"
-            ? "LOWER TURBINE PAIR"
-            : machinePhase === "charge"
-              ? "CENTRAL MOTOR–PUMP"
-              : "UPPER TURBINE PAIR";
-        textLabel(machine, box[0] + 0.014, box[1] + 0.029, 9, "#68f5e1", "left", true);
-        const machineStatus = signatureStage === "energy"
-          ? "INPUT PATH ENERGIZED"
-          : signatureStage === "store"
-            ? "WATER LIFT SHOWN"
-            : signatureStage === "generate"
-              ? "GENERATION SHOWN"
-              : signatureStage === "dispatch"
-                ? "OUTPUT PATH SHOWN"
-                : scene.phase === "handoff"
-            ? "TRANSITION SHOWN"
-            : scene.progress < 0.16
-              ? "FLOW START SHOWN"
-              : scene.progress > 0.82
-                ? "FLOW END SHOWN"
-                : "FLOW ILLUSTRATED";
-        textLabel(machineStatus, box[0] + 0.014, box[1] + 0.06, 16, "#eefdfc");
-        textLabel(
-          machinePhase === "charge"
-            ? "LOWER ↓   UPPER ↑"
-            : machinePhase === "lower"
-              ? "LOWER LEVEL ↑"
-              : "UPPER LEVEL ↓",
-          box[0] + 0.014,
-          box[1] + 0.088,
-          10,
-          "rgba(196,226,225,.82)",
-          "left",
-          true,
-        );
-      }
-
-      if (signatureStage === "store" || signatureStage === "generate") {
-        smallTag("ELEVATED UPPER STORAGE", 0.61, 0.145, "right");
-      }
-      if (!signatureStage || scene.phase === "lower") {
-        smallTag(
-          "AMBIENT OCEAN / LAKE",
-          0.115,
-          DIGITAL_TWIN_BASE_PLATE.ambientWaterlineY /
-            DIGITAL_TWIN_BASE_PLATE.height,
-          "right",
-        );
-      }
-      if (signatureStage === "energy" || signatureStage === "store" || scene.phase === "lower") {
-        smallTag("INTERNAL LOWER STORAGE", 0.665, 0.79, "right");
-      }
-
-      const timelineY = 0.975;
-      const positions = [0.31, 0.43, 0.56, 0.69];
-      ctx.save();
-      ctx.strokeStyle = "rgba(164,205,203,.35)";
-      ctx.lineWidth = canvas.width / 1600;
-      ctx.beginPath();
-      ctx.moveTo(positions[0] * canvas.width, timelineY * canvas.height);
-      ctx.lineTo(positions[3] * canvas.width, timelineY * canvas.height);
-      ctx.stroke();
-      positions.forEach((x, index) => {
-        const active = index === signatureSteps.findIndex((step) => step.id === signatureStage);
-        ctx.fillStyle = active ? "#68f5e1" : "rgba(180,215,214,.45)";
-        ctx.beginPath();
-        ctx.arc(
-          x * canvas.width,
-          timelineY * canvas.height,
-          ((active ? 5 : 3) * canvas.width) / 1600,
-          0,
-          Math.PI * 2,
-        );
-        ctx.fill();
-      });
-      ctx.restore();
     }
 
     function syncPhaseUi(
@@ -961,6 +1095,24 @@ export default function PremiumDigitalTwin() {
       if (nextVisibleStage !== renderedUiPhase) {
         renderedUiPhase = nextVisibleStage;
         setVisibleStage(signatureStage);
+      }
+
+      const nextCallout = calloutForScene(signatureStage, scene.phase);
+      if (nextCallout !== renderedCallout) {
+        const departingCallout = renderedCallout;
+        renderedCallout = nextCallout;
+        if (departingCallout) {
+          if (calloutExitTimer !== null) window.clearTimeout(calloutExitTimer);
+          setExitingCallout(departingCallout);
+          calloutExitTimer = window.setTimeout(() => {
+            setExitingCallout(null);
+            calloutExitTimer = null;
+          }, departingCallout === "lower"
+            ? 1180
+            : departingCallout === "upper" || departingCallout === "penstock"
+              ? 1080
+              : 980);
+        }
       }
 
       const announcement = signatureStage
@@ -983,7 +1135,9 @@ export default function PremiumDigitalTwin() {
           ? 0
           : Math.min(0.05, Math.max(0, (now - lastFrame) / 1000));
       if (!manuallyPaused) lastFrame = now;
-      const elapsed = (manuallyPaused ? pauseAt : now - start) / 1000;
+      const elapsed = sequenceStarted
+        ? (manuallyPaused ? pauseAt : now - start) / 1000
+        : 0;
       const signatureStage = forcedAction && isSignatureStage(forcedAction)
         ? forcedAction
         : forcedAction === "lower"
@@ -999,6 +1153,21 @@ export default function PremiumDigitalTwin() {
             ? manualSceneForSignature("energy")
             : digitalTwinSceneAt(elapsed);
       const motionTime = reducedMotion ? 0 : elapsed;
+      if (!forcedAction && signatureStage && signatureStage !== wildlifeStage) {
+        wildlifeStage = signatureStage;
+        transitionCount += 1;
+        const direction: 1 | -1 = transitionCount % 2 === 0 ? -1 : 1;
+        if (transitionCount % 3 === 0) {
+          wildlifeEvents.push({ kind: "fish", startedAt: elapsed, direction });
+        }
+        if (transitionCount % 10 === 0) {
+          wildlifeEvents.push({
+            kind: "ray",
+            startedAt: elapsed,
+            direction: direction === 1 ? -1 : 1,
+          });
+        }
+      }
       const levels = forcedAction && isSignatureStage(forcedAction)
         ? manualLevelsForSignature(forcedAction)
         : forcedAction === "lower"
@@ -1006,82 +1175,86 @@ export default function PremiumDigitalTwin() {
         : reducedMotion
           ? manualLevelsForSignature("energy")
           : reservoirLevelsAt(elapsed);
+      const cycleTime =
+        ((elapsed % DIGITAL_TWIN_CYCLE_SECONDS) + DIGITAL_TWIN_CYCLE_SECONDS) %
+        DIGITAL_TWIN_CYCLE_SECONDS;
+      const cycleComplete =
+        !forcedAction &&
+        cycleTime >= DIGITAL_TWIN_SIGNOFF_START_SECONDS &&
+        cycleTime < DIGITAL_TWIN_SIGNOFF_END_SECONDS;
+      if (cycleComplete) {
+        rootElement.dataset.cycleSignoff = "true";
+      } else {
+        delete rootElement.dataset.cycleSignoff;
+      }
+      if (!forcedAction && sequenceStarted && elapsed >= DIGITAL_TWIN_SIGNOFF_END_SECONDS) {
+        rootElement.dataset.sequenceComplete = "true";
+      }
       updateMachinery(scene, signatureStage, delta);
 
       const width = canvas.width;
       const height = canvas.height;
       ctx.clearRect(0, 0, width, height);
-      const push =
-        1.006 + (reducedMotion ? 0 : 0.0018 * Math.sin(motionTime * 0.075));
-      const drawWidth = width * push;
-      const drawHeight = height * push;
+      const sceneScale = 1;
+      ctx.save();
+      ctx.fillStyle = "#021019";
+      ctx.fillRect(0, 0, width, height);
+      ctx.translate(
+        ((1 - sceneScale) * width) / 2,
+        ((1 - sceneScale) * height) / 2,
+      );
+      ctx.scale(sceneScale, sceneScale);
+      ctx.filter = "saturate(.9) brightness(.76) contrast(1.1)";
       ctx.drawImage(
         image,
-        (width - drawWidth) / 2,
-        (height - drawHeight) / 2,
-        drawWidth,
-        drawHeight,
+        0,
+        0,
+        image.naturalWidth,
+        image.naturalHeight,
+        0,
+        0,
+        width,
+        height,
       );
-      drawOceanSurface(motionTime);
-      drawMarineLife(motionTime);
-      drawFlagBreeze(motionTime);
+      ctx.filter = "none";
+      ctx.fillStyle = "rgba(1,14,23,.07)";
+      ctx.fillRect(0, 0, width, height);
 
-      const vignette = ctx.createRadialGradient(
-        width * 0.5,
-        height * 0.48,
-        width * 0.15,
-        width * 0.5,
-        height * 0.48,
-        width * 0.72,
+      const underwaterTone = ctx.createLinearGradient(
+        0,
+        height * 0.43,
+        0,
+        height,
       );
-      vignette.addColorStop(0, "rgba(0,20,24,.018)");
-      vignette.addColorStop(1, "rgba(0,8,14,.54)");
-      ctx.fillStyle = vignette;
-      ctx.fillRect(0, 0, width, height);
-      ctx.fillStyle = "rgba(1,19,26,.08)";
-      ctx.fillRect(0, 0, width, height);
+      underwaterTone.addColorStop(0, "rgba(8,44,56,.08)");
+      underwaterTone.addColorStop(1, "rgba(5,34,47,.14)");
+      ctx.fillStyle = underwaterTone;
+      ctx.fillRect(0, height * 0.43, width, height * 0.57);
+
+      const waterMotionTime = motionTime * (
+        signatureStage === "energy" ||
+        signatureStage === "generate" ||
+        scene.phase === "lower"
+          ? 1
+          : 0.16
+      );
+      drawLevels(
+        updateDisplayedLevels(levels, delta),
+        scene.activity,
+        waterMotionTime,
+      );
+      drawMarineWildlife(motionTime);
+      drawMachineryMotion();
+      ctx.restore();
 
       updateFlowVectors(scene, signatureStage, motionTime);
-
-      drawRotor(0.365, 0.487, 0.022, machinery.upperAngle, machinery.upper);
-      drawRotor(0.635, 0.487, 0.022, -machinery.upperAngle, machinery.upper);
-      drawRotor(0.365, 0.782, 0.022, machinery.lowerAngle, machinery.lower);
-      drawRotor(0.635, 0.782, 0.022, -machinery.lowerAngle, machinery.lower);
-      drawRotor(0.5, 0.59, 0.022, machinery.chargeAngle, machinery.charge, 5);
-      drawLevels(levels, scene.activity);
-
-      if (!reducedMotion && scene.activity > 0.08 && isOperation(scene.phase)) {
-        const activeAnchor =
-          scene.phase === "lower"
-            ? [0.365, 0.782]
-            : scene.phase === "charge"
-              ? [0.5, 0.59]
-              : [0.635, 0.487];
-        ctx.save();
-        ctx.globalAlpha = 0.22 * scene.activity;
-        ctx.strokeStyle = "rgba(104,245,225,.62)";
-        ctx.lineWidth = width / 1600;
-        for (let index = 1; index <= 2; index += 1) {
-          ctx.beginPath();
-          ctx.arc(
-            activeAnchor[0] * width,
-            activeAnchor[1] * height,
-            ((32 + index * 25) * width) / 1600 +
-              Math.sin(motionTime * 1.15 + index) * 2,
-            0,
-            Math.PI * 2,
-          );
-          ctx.stroke();
-        }
-        ctx.restore();
-      }
 
       drawHud(scene, signatureStage);
       syncPhaseUi(scene, signatureStage);
     }
 
     function shouldAnimate() {
-      return !manuallyPaused && !reducedMotion && documentVisible && inViewport;
+      return sequenceStarted && !manuallyPaused && !reducedMotion && documentVisible && inViewport;
     }
 
     function scheduleFrame() {
@@ -1096,6 +1269,26 @@ export default function PremiumDigitalTwin() {
     function syncAutomaticSuspension() {
       const active = documentVisible && inViewport;
       const now = performance.now();
+      if (!sequenceStarted) {
+        rootElement.dataset.animationSuspended = "true";
+        if (active && !reducedMotion && entryStartTimer === null) {
+          entryStartTimer = window.setTimeout(() => {
+            entryStartTimer = null;
+            if (disposed || !documentVisible || !inViewport) return;
+            sequenceStarted = true;
+            start = performance.now();
+            lastFrame = start;
+            automaticSuspensionStarted = null;
+            delete rootElement.dataset.animationSuspended;
+            scheduleFrame();
+          }, 1500);
+        } else if (!active && entryStartTimer !== null) {
+          window.clearTimeout(entryStartTimer);
+          entryStartTimer = null;
+        }
+        scheduleFrame();
+        return;
+      }
       if (active) delete rootElement.dataset.animationSuspended;
       else rootElement.dataset.animationSuspended = "true";
       if (!active && automaticSuspensionStarted === null) {
@@ -1112,8 +1305,8 @@ export default function PremiumDigitalTwin() {
       select(action) {
         forcedAction = action === "auto" ? null : action;
         if (action === "auto") {
-          if (manuallyPaused) pauseAt = 5000;
-          else start = performance.now() - 5000;
+          if (manuallyPaused) pauseAt = 0;
+          else start = performance.now() - 700;
         }
         lastFrame = performance.now();
         scheduleFrame();
@@ -1133,10 +1326,10 @@ export default function PremiumDigitalTwin() {
     resizeObserver.observe(root);
     const intersectionObserver = new IntersectionObserver(
       ([entry]) => {
-        inViewport = entry?.isIntersecting ?? true;
+        inViewport = Boolean(entry?.isIntersecting && entry.intersectionRatio >= 0.18);
         syncAutomaticSuspension();
       },
-      { rootMargin: "120px" },
+      { rootMargin: "0px", threshold: [0, 0.18] },
     );
     intersectionObserver.observe(root);
 
@@ -1155,7 +1348,7 @@ export default function PremiumDigitalTwin() {
     motionQuery.addEventListener("change", handleMotionChange);
 
     image.onload = () => scheduleFrame();
-    image.src = "/digital-twin/humpback-digital-twin-v4-geometry.jpg";
+    image.src = "/digital-twin/humpback-digital-twin-approved-dusk-no-rays.png";
     if (image.complete) scheduleFrame();
 
     return () => {
@@ -1167,6 +1360,8 @@ export default function PremiumDigitalTwin() {
       document.removeEventListener("visibilitychange", handleVisibility);
       motionQuery.removeEventListener("change", handleMotionChange);
       if (animationFrame !== null) cancelAnimationFrame(animationFrame);
+      if (calloutExitTimer !== null) window.clearTimeout(calloutExitTimer);
+      if (entryStartTimer !== null) window.clearTimeout(entryStartTimer);
     };
   }, []);
 
@@ -1223,6 +1418,10 @@ export default function PremiumDigitalTwin() {
       data-selected-action={selectedAction}
       data-paused={paused}
       data-active-signature-stage={visibleStage ?? undefined}
+      data-exiting-callout={exitingCallout ?? undefined}
+      style={{
+        "--active-stage-duration": activeStep?.duration ?? "8.5s",
+      } as CSSProperties}
     >
       <div className="premium-twin-stage">
         <canvas
@@ -1230,102 +1429,135 @@ export default function PremiumDigitalTwin() {
           aria-label="Animated Humpback Hydro operating model showing external energy input, storage, generation, and electrical dispatch; lower-stage generation is shown as a separate architecture path"
         />
         <FlowVectorLayer />
-      </div>
-
-      <div className="premium-twin-status">
-        <span>Illustrated Architecture Sequence</span>
-        <strong>{announcedPhase}</strong>
-        <small>Concept Model — Not to Scale</small>
-      </div>
-
-      <section className="premium-twin-signature" aria-labelledby="premium-twin-signature-title" data-signature-rail>
-        <div className="premium-twin-signature-header">
-          <div>
-            <small>Signature Operating Sequence</small>
-            <h3 id="premium-twin-signature-title">Energy In → Store → Generate → Dispatch</h3>
+        <div className="premium-twin-annotations" aria-hidden="true">
+          <svg viewBox="0 0 1600 900" preserveAspectRatio="none">
+            <g data-leader="upper"><circle className="callout-anchor-ring" cx="900" cy="190" r="11" /><circle className="callout-anchor-dot" cx="900" cy="190" r="4" /><path pathLength="1" d="M 1024 155 H 960 L 900 190" /></g>
+            <g data-leader="turbine"><circle className="callout-anchor-ring" cx="572" cy="474" r="11" /><circle className="callout-anchor-dot" cx="572" cy="474" r="4" /><path pathLength="1" d="M 319 411 H 485 L 572 474" /></g>
+            <g data-leader="penstock"><circle className="callout-anchor-ring" cx="1013" cy="487" r="11" /><circle className="callout-anchor-dot" cx="1013" cy="487" r="4" /><path pathLength="1" d="M 1278 431 H 1120 L 1013 487" /></g>
+            <g data-leader="lower"><circle className="callout-anchor-ring" cx="933" cy="724" r="11" /><circle className="callout-anchor-dot" cx="933" cy="724" r="4" /><path pathLength="1" d="M 1265 653 H 1112 L 933 724" /></g>
+          </svg>
+          <div className="premium-twin-callout is-upper" data-callout="upper">
+            <strong>Upper Reservoir</strong><span>Stored Water at Elevation</span>
+            <svg className="premium-twin-callout-trace" viewBox="0 0 100 100" preserveAspectRatio="none">
+              <rect className="premium-twin-callout-base" x=".6" y=".6" width="98.8" height="98.8" />
+              <path className="premium-twin-callout-progress" pathLength="1" d="M .6 50 V .6 H 99.4 V 99.4 H .6 V 50" />
+            </svg>
           </div>
-          <div className="premium-twin-mode-controls" aria-label="Sequence playback controls">
-            <button
-              type="button"
-              aria-pressed={selectedAction === "auto"}
-              className={selectedAction === "auto" ? "is-selected" : undefined}
-              onClick={() => selectAction("auto")}
-            >
-              Auto Cycle
-            </button>
-            <button
-              type="button"
-              className="pause-control"
-              aria-pressed={paused}
-              onClick={togglePause}
-            >
-              {paused ? "Play" : "Pause"}
-            </button>
+          <div className="premium-twin-callout is-turbine" data-callout="turbine">
+            <strong>Reversible Machinery</strong><span>Conceptual Pump / Generate Path</span>
+            <svg className="premium-twin-callout-trace" viewBox="0 0 100 100" preserveAspectRatio="none">
+              <rect className="premium-twin-callout-base" x=".6" y=".6" width="98.8" height="98.8" />
+              <path className="premium-twin-callout-progress" pathLength="1" d="M 99.4 50 V .6 H .6 V 99.4 H 99.4 V 50" />
+            </svg>
+          </div>
+          <div className="premium-twin-callout is-penstock" data-callout="penstock">
+            <strong>Penstock System</strong><span>Illustrative Hydraulic Route</span>
+            <svg className="premium-twin-callout-trace" viewBox="0 0 100 100" preserveAspectRatio="none">
+              <rect className="premium-twin-callout-base" x=".6" y=".6" width="98.8" height="98.8" />
+              <path className="premium-twin-callout-progress" pathLength="1" d="M .6 50 V .6 H 99.4 V 99.4 H .6 V 50" />
+            </svg>
+          </div>
+          <div className="premium-twin-callout is-lower" data-callout="lower">
+            <strong>Lower Reservoir</strong><span>Integrated in Marine Structure</span>
+            <svg className="premium-twin-callout-trace" viewBox="0 0 100 100" preserveAspectRatio="none">
+              <rect className="premium-twin-callout-base" x=".6" y=".6" width="98.8" height="98.8" />
+              <path className="premium-twin-callout-progress" pathLength="1" d="M .6 50 V .6 H 99.4 V 99.4 H .6 V 50" />
+            </svg>
           </div>
         </div>
-
-        <div className="premium-twin-sequence" role="group" aria-label="Select an operating stage">
-          {signatureSteps.map((step, index) => {
-            const active = visibleStage === step.id;
-            return (
+        <div className="premium-twin-cycle-signoff" aria-hidden="true">
+          <i />
+          <strong>
+            <span>Ocean Energy</span>
+            <span>For A Stronger</span>
+            <span>Tomorrow</span>
+          </strong>
+        </div>
+        <div className="premium-twin-frame-label" aria-hidden="true">
+          <span>Illustrated State</span>
+          <strong>Conceptual Model · Not To Scale</strong>
+        </div>
+        <div className="premium-twin-continue-cue" aria-hidden="true">
+          <span>Continue</span>
+          <svg viewBox="0 0 20 20">
+            <path d="M 4 7 L 10 13 L 16 7" />
+          </svg>
+        </div>
+      </div>
+      <div className="premium-twin-exhibit-rail">
+          <div className="premium-twin-rail-label">
+            <small>Operating Sequence</small>
+          </div>
+          <span className="sr-only">Energy In → Store → Generate → Dispatch</span>
+          <div className="premium-twin-sequence" role="group" aria-label="Select an operating stage">
+            {signatureSteps.map((step, index) => {
+              const active = visibleStage === step.id;
+              return (
+                <button
+                  ref={(button) => { signatureButtonRefs.current[index] = button; }}
+                  type="button"
+                  className="premium-twin-sequence-step"
+                  data-active={active}
+                  aria-label={step.label}
+                  aria-current={active ? "step" : undefined}
+                  aria-pressed={selectedAction === step.id}
+                  onClick={() => selectAction(step.id)}
+                  onKeyDown={(event) => handleSignatureKeyDown(event, index)}
+                  key={step.id}
+                >
+                  <span className="premium-twin-step-orbit">0{index + 1}</span>
+                  <span className="premium-twin-step-copy">
+                    <strong>{step.label}</strong>
+                    <small>{step.rail}</small>
+                  </span>
+                  <i className="premium-twin-step-connector" aria-hidden="true" />
+                </button>
+              );
+            })}
+          </div>
+          <section className="premium-twin-signature" aria-labelledby="premium-twin-signature-title" data-signature-rail>
+            <h3 className="sr-only" id="premium-twin-signature-title">Energy In, Store, Generate and Dispatch Operating Sequence</h3>
+            <div className="premium-twin-utility">
+              <p className="premium-twin-utility-note">
+                <span>External Electricity Powers Pumping • System Losses Require Make-Up Energy</span>
+              </p>
               <button
-                ref={(button) => { signatureButtonRefs.current[index] = button; }}
                 type="button"
-                className="premium-twin-sequence-step"
-                data-active={active}
-                aria-label={step.label}
-                aria-current={active ? "step" : undefined}
-                aria-pressed={selectedAction === step.id}
-                onClick={() => selectAction(step.id)}
-                onKeyDown={(event) => handleSignatureKeyDown(event, index)}
-                key={step.id}
+                className="premium-twin-secondary-path"
+                aria-label="Lower-Stage Generation"
+                aria-pressed={selectedAction === "lower"}
+                data-active={selectedAction === "lower"}
+                onClick={() => selectAction("lower")}
               >
-                <small>0{index + 1}</small>
-                <span>{step.label}</span>
-                <i aria-hidden="true" />
+                <small>Secondary Path</small>
+                <strong>Lower-Stage Generation</strong>
               </button>
-            );
-          })}
-        </div>
-
-        <div className="premium-twin-explanation">
-          {activeStep ? (
-            <>
-              <div className="premium-twin-explanation-copy">
-                <small>Active Stage · {activeStep.label}</small>
-                <p>{activeStep.copy}</p>
+              <div className="premium-twin-mode-controls" aria-label="Sequence playback controls">
+                <button
+                  type="button"
+                  aria-pressed={selectedAction === "auto"}
+                  className={selectedAction === "auto" ? "is-selected" : undefined}
+                  onClick={() => selectAction("auto")}
+                >
+                  Auto Cycle
+                </button>
+                <button
+                  type="button"
+                  className="pause-control"
+                  aria-pressed={paused}
+                  onClick={togglePause}
+                >
+                  {paused ? "Play" : "Pause"}
+                </button>
               </div>
-              <dl aria-label={`${activeStep.label} technical detail`}>
-                <div><dt>Route</dt><dd>{activeStep.route}</dd></div>
-                <div><dt>Operating State</dt><dd>{activeStep.state}</dd></div>
-                <div><dt>Energy Direction</dt><dd>{activeStep.direction}</dd></div>
-              </dl>
-            </>
-          ) : (
-            <div className="premium-twin-explanation-copy is-secondary-path">
-              <small>Separate Architecture Path</small>
-              <p>Ambient flow through the lower-stage generation path is illustrated separately and is not assumed to power the storage pump.</p>
             </div>
-          )}
+          </section>
         </div>
-      </section>
-
-      <div className="premium-twin-boundary">
-        <strong>External Input Required for Storage</strong>
-        <p>External electricity powers pumping. System losses require make-up energy. This qualitative sequence is not a quantitative energy balance; duration, usable storage capacity and efficiency are project-specific.</p>
-        <p>Humpback&apos;s lower-stage ambient-flow generation is a separate architecture path. It is not assumed to power the pump.</p>
-      </div>
-
-      <div className="premium-twin-controls" aria-label="Secondary architecture controls">
-        <span>Additional Illustrated Path</span>
-        <button
-          type="button"
-          aria-pressed={selectedAction === "lower"}
-          className={selectedAction === "lower" ? "is-selected" : undefined}
-          onClick={() => selectAction("lower")}
-        >
-          Lower-Stage Generation
-        </button>
+      <div className="premium-twin-mobile-state" aria-hidden="true">
+        <span data-mobile-stage="energy">External Energy In → Pump</span>
+        <span data-mobile-stage="store">Elevated Storage · Flow Stopped</span>
+        <span data-mobile-stage="generate">Stored Water → Generation</span>
+        <span data-mobile-stage="dispatch">Electrical Output → Grid / Load</span>
       </div>
 
       <p className="sr-only" aria-live="polite" aria-atomic="true">

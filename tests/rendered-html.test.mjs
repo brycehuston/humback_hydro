@@ -81,8 +81,8 @@ test("publishes qualified evidence and the complete IEEE reference", async () =>
   assert.match(combined, /10 MW configuration with three hours of delivery and a maximum cycle efficiency of 70\.2%/);
   assert.match(combined, /two-stage static structure designed for 10\.6 MW and continuous operation as needed/);
   assert.match(combined, /not measured output from an operating facility/i);
-  assert.match(combined, /Concept Model — Not to Scale/);
-  assert.match(combined, /Company Record in Verification/i);
+  assert.match(combined, /Technology Illustration Process — Not to Scale/i);
+  assert.doesNotMatch(combined, /GLOBE Emerging-Technology Recognition/i);
   assert.match(combined, /Peer-Reviewed IEEE Conference Paper/i);
   assert.match(combined, /University Engineering Study/i);
   assert.match(combined, /Independent Third-Party Qualification/i);
@@ -131,14 +131,14 @@ test("renders leadership portraits and generic delivery capabilities", async () 
     /Portrait of Bryce Huston/,
     /Portrait of Col\. Bryan Green \(Ret\.\)/,
     /CHIEF INFORMATION SECURITY OFFICER/,
-    /Founder • HUSTON SOLUTION INC\./,
+    /HUSTON SOLUTION Iɴᴄ\. • FruxLabs • Alpha Alerts/,
     /SECURITY &amp; DIGITAL INFRASTRUCTURE/,
     /Information Security • AI Systems • Digital Infrastructure/,
     /FOUNDER &amp; SYSTEMS ARCHITECT/,
-    /Bryce Huston is Chief Information Security Officer at Humpback Hydro and founder of HUSTON SOLUTION INC\./,
-    /A hands-on systems architect and technical operator, Bryce builds production platforms/,
+    /Bryce Huston is Chief Information Security Officer at Humpback Hydro and founder of FruxLabs, Alpha Alerts and HUSTON SOLUTION Inc\./,
+    /A hands-on systems architect and technical operator, Bryce designs and builds production platforms/,
     /architect the system, control the risk and build the infrastructure required to scale/,
-    /\/company\/humpback-team-vancouver\.webp/,
+    /\/company\/humpback-team-vancouver-approved\.jpg/,
     /PROJECT PHOTOGRAPH/,
     /U\.S\. Army Corps of Engineers retired colonel and former commander and military laboratory director/i,
     /3,000 researchers and scientists and budgets exceeding \$2 billion/i,
@@ -188,7 +188,7 @@ test("publishes the approved homepage hierarchy and native V4 controls", async (
   const { html } = await fetchRoute(worker, "/");
 
   for (const required of [
-    /Hydropower\.[\s\S]*?Reimagined\./,
+    /Hydropower[\s\S]*?Reimagined\./,
     /Generation • Storage • Dispatch Architecture/,
     /A Canadian energy technology company developing modular hydroelectric generation and long-duration energy storage infrastructure\./,
     /data-v4-twin/,
@@ -216,43 +216,51 @@ test("publishes the approved homepage hierarchy and native V4 controls", async (
   assert.doesNotMatch(html, /1-10 MW|10-100 MW|Semi-Automated/i);
 });
 
-test("uses the authoritative 29-second cycle with readable signature-stage pacing", () => {
-  assert.equal(DIGITAL_TWIN_CYCLE_SECONDS, 29);
+test("uses the authoritative calm cycle with causal signature-stage pacing", () => {
+  assert.equal(DIGITAL_TWIN_CYCLE_SECONDS, 47);
   assert.equal(digitalTwinSceneAt(0).phase, "establish");
-  assert.equal(digitalTwinSceneAt(1).phase, "lower");
+  assert.equal(digitalTwinSceneAt(0.71).phase, "charge");
   assert.deepEqual(
-    { phase: digitalTwinSceneAt(4).phase, from: digitalTwinSceneAt(4).from, to: digitalTwinSceneAt(4).to },
-    { phase: "handoff", from: "lower", to: "charge" },
+    { phase: digitalTwinSceneAt(9.21).phase, from: digitalTwinSceneAt(9.21).from, to: digitalTwinSceneAt(9.21).to },
+    { phase: "handoff", from: "charge", to: "summary" },
   );
-  assert.equal(digitalTwinSceneAt(5).phase, "charge");
-  assert.equal(digitalTwinSceneAt(15).phase, "handoff");
-  assert.equal(digitalTwinSceneAt(16).phase, "upper");
-  assert.equal(digitalTwinSceneAt(26).phase, "handoff");
-  assert.equal(digitalTwinSceneAt(27).phase, "summary");
-  assert.equal(digitalTwinSceneAt(29).phase, "establish");
+  assert.equal(digitalTwinSceneAt(9.81).phase, "summary");
+  assert.equal(digitalTwinSceneAt(16.91).phase, "upper");
+  assert.equal(digitalTwinSceneAt(25.41).phase, "handoff");
+  assert.equal(digitalTwinSceneAt(26.01).phase, "summary");
+  assert.equal(digitalTwinSceneAt(34.11).phase, "lower");
+  assert.equal(digitalTwinSceneAt(38.59).phase, "lower");
+  assert.equal(digitalTwinSceneAt(38.61).phase, "summary");
+  assert.equal(digitalTwinSceneAt(47).phase, "establish");
   assert.equal(manualDigitalTwinScene("lower").activity, 1);
 
-  assert.equal(digitalTwinSignatureStageAt(5), "energy");
+  assert.equal(digitalTwinSignatureStageAt(1), "energy");
   assert.equal(digitalTwinSignatureStageAt(10), "store");
-  assert.equal(digitalTwinSignatureStageAt(15), null);
-  assert.equal(digitalTwinSignatureStageAt(16), "generate");
-  assert.equal(digitalTwinSignatureStageAt(21), "dispatch");
-  assert.equal(digitalTwinSignatureStageAt(27), null);
+  assert.equal(digitalTwinSignatureStageAt(18), "generate");
+  assert.equal(digitalTwinSignatureStageAt(27), "dispatch");
+  assert.equal(digitalTwinSignatureStageAt(35), null);
 
   for (const [seconds, stage, operation] of [
-    [5, "energy", "charge"],
-    [10, "store", "charge"],
-    [16, "generate", "upper"],
-    [21, "dispatch", "upper"],
+    [1, "energy", "charge"],
+    [10, "store", "summary"],
+    [18, "generate", "upper"],
+    [27, "dispatch", "summary"],
   ]) {
     assert.equal(digitalTwinSignatureStageAt(seconds), stage);
     assert.equal(digitalTwinSceneAt(seconds).phase, operation);
   }
 
-  assert.deepEqual(reservoirLevelsAt(0), { upper: 0.18, lower: 0.85 });
-  assert.deepEqual(reservoirLevelsAt(4), { upper: 0.18, lower: 0.79 });
-  assert.deepEqual(reservoirLevelsAt(16), { upper: 0.125, lower: 0.85 });
-  assert.deepEqual(reservoirLevelsAt(27), { upper: 0.18, lower: 0.85 });
+  assert.deepEqual(reservoirLevelsAt(0), { upper: 0.18, lower: 0.73 });
+  assert.deepEqual(reservoirLevelsAt(1.5), { upper: 0.18, lower: 0.73 });
+  assert.deepEqual(reservoirLevelsAt(9.21), { upper: 0.13, lower: 0.78 });
+  assert.deepEqual(reservoirLevelsAt(17.3), { upper: 0.13, lower: 0.78 });
+  assert.deepEqual(reservoirLevelsAt(25.41), { upper: 0.18, lower: 0.73 });
+  assert.deepEqual(reservoirLevelsAt(35), { upper: 0.18, lower: 0.73 });
+
+  const justBeforeWrap = reservoirLevelsAt(47 - 1e-6);
+  const atWrap = reservoirLevelsAt(47);
+  assert.ok(Math.abs(justBeforeWrap.upper - atWrap.upper) < 1e-9);
+  assert.ok(Math.abs(justBeforeWrap.lower - atWrap.lower) < 1e-9);
 });
 
 test("pins the corrected base geometry and state-mapped SVG vectors", async () => {
@@ -290,27 +298,44 @@ test("pins the corrected base geometry and state-mapped SVG vectors", async () =
   assert.match(component, /premium-twin-flow-vectors/);
   assert.match(component, /data-flow-vector-route/);
   assert.match(component, /is-\$\{route\.operation\}/);
-  assert.match(component, /M 0 704 H 584 V 770 C 584 804 610 820 646 820 H 790/);
-  assert.match(component, /M 800 800 V 188/);
-  assert.match(component, /M 650 184 V 320 C 650 386 616 430 584 438 V 487 H 0/);
-  assert.match(component, /humpback-digital-twin-v4-geometry\.jpg/);
+  assert.match(component, /M 365 660 H 550 C 561 660 570 669 570 680 V 698 C 570 709 579 718 590 718 H 780/);
+  assert.match(component, /M 780 720 V 250/);
+  assert.match(component, /M 650 250 V 320 C 650 386 604 420 570 432 H 365/);
+  assert.match(component, /M 950 250 V 320 C 950 386 968 420 1002 432 H 1235/);
+  assert.match(component, /humpback-digital-twin-approved-dusk-no-rays\.png/);
+  assert.doesNotMatch(component, /humpback-digital-twin-v4-geometry\.jpg/);
   assert.doesNotMatch(component, /function drawFlow/);
-  assert.match(component, /function drawMarineLife/);
+  assert.match(component, /function drawMarineWildlife/);
   assert.match(component, /function drawFish/);
-  assert.match(component, /function drawSeal/);
-  assert.match(component, /if \(reducedMotion\) return;/);
-  assert.match(styles, /\.premium-twin-flow-group\.is-lower\s*\{\s*color:\s*#82a7b5/);
-  assert.match(styles, /\.premium-twin-flow-group\.is-charge\s*\{\s*color:\s*#79ddd2/);
-  assert.match(styles, /\.premium-twin-flow-group\.is-upper\s*\{\s*color:\s*#9bdde1/);
+  assert.doesNotMatch(component, /function drawRotor/);
+  assert.doesNotMatch(component, /function drawWaterSurface/);
+  assert.match(component, /function drawReservoirWater/);
+  assert.doesNotMatch(component, /data-vector-arrow|<marker/);
+  assert.doesNotMatch(component, /function drawSeal/);
+  assert.match(component, /function drawMachineryCue/);
+  assert.match(component, /const direction = key === "upper" \? -1 : 1/);
+  assert.match(component, /signatureStage === "store"/);
+  assert.match(component, /signatureStage === "dispatch"/);
+  assert.doesNotMatch(component, /data-water-particle/);
+  assert.match(component, /data-water-direction/);
+  assert.match(component, /pathLength="1" d="M 1024 155 H 960 L 900 190"/);
+  assert.doesNotMatch(component, /premium-twin-flow-pulse|premium-twin-flow-core/);
+  assert.doesNotMatch(component, /premium-twin-step-trace/);
+  assert.match(styles, /\.premium-twin-flow-group\.is-lower\s*\{\s*color:\s*#68f5e1/);
+  assert.match(styles, /\.premium-twin-flow-group\.is-charge\s*\{\s*color:\s*#62b9b6/);
+  assert.match(styles, /\.premium-twin-flow-group\.is-upper\s*\{\s*color:\s*#72b4c0/);
+  assert.doesNotMatch(styles, /data-active-signature-stage="generate"\]\s+\[data-callout="turbine"\]/);
   assert.match(styles, /\.premium-twin-sequence\s*\{[^}]*grid-template-columns:\s*repeat\(4,minmax\(0,1fr\)\)/s);
   assert.match(styles, /data-active-signature-stage="energy"/);
   assert.match(styles, /data-active-signature-stage="dispatch"/);
+  assert.match(styles, /@keyframes premium-callout-anchor/);
+  assert.match(styles, /@keyframes premium-callout-leader/);
 
   assert.equal(flagBreezeActivityAt(0), 0);
-  assert.ok(flagBreezeActivityAt(1.2) > 0.99);
+  assert.ok(flagBreezeActivityAt(2.3) > 0.99);
   assert.equal(flagBreezeActivityAt(8), 0);
-  assert.ok(flagBreezeActivityAt(26.75) > 0.99);
-  assert.equal(flagBreezeActivityAt(29), 0);
+  assert.ok(flagBreezeActivityAt(40.3) > 0.99);
+  assert.equal(flagBreezeActivityAt(47), 0);
 });
 
 test("removes standalone seeking language and external V4 payloads", async () => {
@@ -330,7 +355,8 @@ test("removes standalone seeking language and external V4 payloads", async () =>
   ).join("\n");
   const v4Output = `${combined}\n${premiumSource}`;
 
-  assert.match(premiumSource, /\/digital-twin\/humpback-digital-twin-v4-geometry\.jpg/);
+  assert.match(premiumSource, /\/digital-twin\/humpback-digital-twin-approved-dusk-no-rays\.png/);
+  assert.doesNotMatch(premiumSource, /\/digital-twin\/humpback-digital-twin-v4-geometry\.jpg/);
   for (const required of [
     /Evidence You Can Examine/i,
     /advancing through independent engineering validation/i,
@@ -360,7 +386,8 @@ test("renders the linked company credit without the obsolete website link on eve
   const worker = await loadWorker();
   for (const route of publicRoutes) {
     const { html } = await fetchRoute(worker, route);
-    assert.match(html, /<span class="text-balance">HUMPBACK HYDRO © 2026 \| SITE BY <a class="huston-shimmer" href="https:\/\/www\.brycehuston\.com\/solutions" target="_blank" rel="noreferrer">HUSTON SOLUTION INC\.<\/a><\/span>/, route);
+    assert.match(html, /HUMPBACK HYDRO © 2026 \| SITE BY/, route);
+    assert.match(html, /<a[^>]*href="https:\/\/www\.brycehuston\.com\/solutions"[^>]*target="_blank"[^>]*rel="noreferrer">HUSTON SOLUTION INC\.<\/a>/, route);
     assert.doesNotMatch(html, /Huston Solutions|Current Website/i, route);
   }
 });
@@ -495,7 +522,7 @@ test("places a collapsed economics teaser directly after the homepage operating 
   assert.match(homepage.html, /class="home-economics-calculator" hidden="" id="homepage-economics-calculator"/i);
   assert.match(homepage.html, /href="\/economics">Explore Full Economics/i);
   assert.match(homepage.html, /<a[^>]*href="\/#economics"[^>]*>(?:<span[^>]*>)?Calculator(?:<\/span>)?<\/a>/i);
-  assert.match(homepage.html, /Concept Imagery Does Not Depict Completed Projects · Vancouver, Canada/i);
+  assert.match(homepage.html, /Technology Imagery Does Not Depict Completed Projects • Vancouver, Canada/i);
   assert.doesNotMatch(homepage.html, /<div><small>CONNECT<\/small>[\s\S]*?<span>Vancouver, Canada<\/span>/i);
   assert.match(economics.html, /data-economics-calculator="true"[\s\S]*?data-opsh-calculator="embedded"/i);
 });

@@ -17,7 +17,7 @@ const evidenceHierarchy = [
 export default function EvidencePage() {
   return (
     <main>
-      <RouteHero index="05" eyebrow="Engineering Foundation" title="Evidence Before Scale." copy="A structured view of the public record, modeled study results and the validation pathway supporting engineering and commercial advancement." image="/turbine-macro.webp" nextHref="#vault" nextLabel="Open the Evidence Vault" />
+      <RouteHero index="05" eyebrow="Engineering Foundation" title="Evidence Before Scale." copy="A structured view of the public record, modeled study results and the validation pathway supporting engineering and commercial advancement." image="/turbine-macro-approved.jpg" nextHref="#vault" nextLabel="Open the Evidence Vault" />
       <section className="evidence-vault section-shell" id="vault">
         <div className="chapter-label"><span>01</span>CLAIMS REGISTER</div>
         <div className="section-intro split" data-reveal>
@@ -29,7 +29,7 @@ export default function EvidencePage() {
           {evidence.map((item) => (
             <article key={item.index} data-reveal>
               <span>{item.index}</span>
-              <div><small>{item.category}</small><h3>{item.title}</h3><p>{item.description}</p></div>
+              <div><small className="titanium-microtype titanium-microtype--ink">{item.category}</small><h3>{item.title}</h3><p>{item.description}</p></div>
               <div className={`claim-status ${item.statusTone}`}><i />{item.status}</div>
               {item.href ? (
                 <a
@@ -55,11 +55,11 @@ export default function EvidencePage() {
           </div>
           <div className="study-grid">
             {studyEvidence.map((item) => (
-              <article key={item.index} data-reveal>
-                <div className="study-head"><span>{item.index}</span><small>{item.year} · {item.source}</small></div>
+              <article key={item.index} data-reveal tabIndex={0}>
+                <div className="study-head"><span>{item.index}</span><small className="titanium-microtype">{item.year} · {item.source}</small></div>
                 <h3>{item.title}</h3>
                 <p>{item.result}</p>
-                <div className="study-limit"><small>LIMITATION</small><span>{item.limitation}</span></div>
+                <div className="study-limit"><small className="titanium-microtype">LIMITATION</small><span>{item.limitation}</span></div>
                 {item.href ? (
                   <a className="text-link light" href={item.href} target="_blank" rel="noreferrer">
                     {item.linkLabel} <Arrow />
@@ -69,26 +69,23 @@ export default function EvidencePage() {
             ))}
           </div>
           <div className="ieee-citation" data-reveal>
-            <small>COMPLETE IEEE CITATION</small>
+            <small className="titanium-microtype">COMPLETE IEEE CITATION</small>
             <p>{ieeeCitation}</p>
             <div>
               <a href="https://doi.org/10.1109/EESAT59125.2024.10471215" target="_blank" rel="noreferrer">
                 DOI 10.1109/EESAT59125.2024.10471215
-              </a>
-              <a href="https://ieeexplore.ieee.org/document/10471215" target="_blank" rel="noreferrer">
-                Official IEEE Record <Arrow />
               </a>
             </div>
           </div>
         </div>
       </section>
 
-      <section className="section-shell bg-[var(--ice)]">
+      <section className="section-shell surface-mineral">
         <div className="chapter-label"><span>03</span>VALIDATION AND ASSURANCE</div>
         <div className="grid gap-12 lg:grid-cols-[minmax(0,0.72fr)_minmax(0,1.28fr)] lg:gap-24">
           <div data-reveal>
             <p className="eyebrow dark"><span />What Comes Next</p>
-            <h2 className="text-[clamp(3rem,5vw,5.8rem)] font-medium leading-[0.94] tracking-[-0.06em] text-[#061c28]">
+            <h2 className="section-title mt-7">
               A Roadmap Toward Independent Assurance.
             </h2>
             <p className="mt-7 text-base leading-8 text-[#607780]">
@@ -117,9 +114,9 @@ export default function EvidencePage() {
       <section className="claim-policy">
         <div className="section-shell">
           <div className="chapter-label light"><span>04</span>EVIDENCE HIERARCHY</div>
-          <div className="claim-policy-grid">
+          <div className="claim-policy-grid evidence-spine evidence-hierarchy-sequence" data-reveal>
             {evidenceHierarchy.map(([index, title, copy]) => (
-              <article data-reveal key={index}>
+              <article key={index}>
                 <span>{index}</span>
                 <h3>{title}</h3>
                 <p>{copy}</p>

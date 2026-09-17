@@ -124,17 +124,17 @@ export default function ImpactPage() {
         eyebrow="Impact"
         title="Measure Impact From the Baseline."
         copy="A balanced framework for evaluating the proposed environmental profile, potential development alignment and the monitoring required to establish project-level outcomes."
-        image="/island-energy-water.webp"
+        image="/island-energy-water-approved.jpg"
         nextHref="#impact-boundary"
         nextLabel="Review the Impact Framework"
       />
 
-      <section className="section-shell bg-[var(--ice)]" id="impact-boundary">
+      <section className="section-shell surface-mineral" id="impact-boundary">
         <div className="chapter-label"><span>01</span>LIFECYCLE BOUNDARY</div>
         <div className="grid gap-12 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:gap-24" data-reveal>
           <div>
             <p className="eyebrow dark"><span />Operational Profile</p>
-            <h2 className="text-[clamp(3rem,6vw,6.5rem)] font-medium leading-[0.92] tracking-[-0.065em] text-[#061c28]">
+            <h2 className="section-title mt-7">
               Near-Zero Operation Is the Design Objective.
             </h2>
           </div>
@@ -149,13 +149,13 @@ export default function ImpactPage() {
         </div>
       </section>
 
-      <section className="bg-[#031721] text-white">
+      <section className="surface-dark-secondary">
         <div className="section-shell">
           <div className="chapter-label light"><span>02</span>OPPORTUNITIES AND RISKS</div>
           <div className="mb-14 grid gap-8 lg:grid-cols-2 lg:gap-20" data-reveal>
             <div>
               <p className="eyebrow"><span />Design and Research Objective</p>
-              <h2 className="mt-7 text-[clamp(3rem,5vw,5.8rem)] font-medium leading-[0.94] tracking-[-0.06em]">
+              <h2 className="section-title mt-7">
                 Net Positive Marine Infrastructure
               </h2>
             </div>
@@ -164,7 +164,7 @@ export default function ImpactPage() {
             </p>
           </div>
 
-          <div className="grid gap-8 lg:grid-cols-2">
+          <div className="impact-assessment-grid grid gap-8 lg:grid-cols-2">
             <div data-reveal>
               <small className="font-mono text-[0.68rem] font-semibold tracking-[0.16em] text-[#68f5e1] uppercase">Established Design Mechanisms</small>
               <p className="mt-3 mb-5 text-sm leading-7 text-[#78969e]">Mechanisms that can be designed into a project without claiming that a Humpback installation has produced the intended benefit.</p>
@@ -200,7 +200,7 @@ export default function ImpactPage() {
 
           <div className="mt-14" data-reveal>
             <small className="font-mono text-[0.68rem] font-semibold tracking-[0.16em] text-amber-200 uppercase">Material Risks Requiring Assessment</small>
-            <div className="mt-5 grid gap-3 lg:grid-cols-2">
+            <div className="impact-risk-register mt-5 grid gap-3 lg:grid-cols-2">
               {risks.map((item) => (
                 <details className="group border border-amber-100/15 bg-amber-100/[0.035] p-5" key={item.title}>
                   <summary className="cursor-pointer list-none text-lg font-semibold tracking-[-0.025em] text-white focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-amber-200">
@@ -214,12 +214,12 @@ export default function ImpactPage() {
         </div>
       </section>
 
-      <section className="section-shell bg-[var(--ice)]">
+      <section className="section-shell surface-mineral">
         <div className="chapter-label"><span>03</span>POTENTIAL SDG ALIGNMENT</div>
         <div className="grid gap-12 lg:grid-cols-[minmax(0,0.72fr)_minmax(0,1.28fr)] lg:gap-24">
           <div data-reveal>
             <p className="eyebrow dark"><span />Development Context</p>
-            <h2 className="text-[clamp(3rem,5vw,5.8rem)] font-medium leading-[0.94] tracking-[-0.06em] text-[#061c28]">
+            <h2 className="section-title mt-7">
               Use the SDGs as a Planning and Measurement Framework.
             </h2>
             <p className="mt-7 text-base leading-8 text-[#607780]">
@@ -270,20 +270,20 @@ export default function ImpactPage() {
         </div>
       </section>
 
-      <section className="bg-[#020d14] text-white">
+      <section className="surface-dark-primary">
         <div className="section-shell">
           <div className="chapter-label light"><span>04</span>MONITORING &amp; ADAPTIVE MANAGEMENT</div>
           <div className="grid gap-12 lg:grid-cols-[minmax(0,0.72fr)_minmax(0,1.28fr)] lg:gap-24">
             <div data-reveal>
               <p className="eyebrow"><span />Research and Validation</p>
-              <h2 className="mt-7 text-[clamp(3rem,5vw,5.8rem)] font-medium leading-[0.94] tracking-[-0.06em]">
+              <h2 className="section-title mt-7">
                 Establish the Baseline. Measure the Change.
               </h2>
               <p className="mt-8 text-base leading-8 text-[#a9bbc1]">
                 Monitoring priorities must be adapted to the site, jurisdiction, species and final engineering design.
               </p>
             </div>
-            <ol className="grid gap-3 sm:grid-cols-2" data-reveal>
+            <ol className="impact-monitoring-register grid gap-3 sm:grid-cols-2" data-reveal>
               {monitoringPriorities.map((priority, index) => (
                 <li className="flex gap-4 border border-white/10 bg-white/[0.035] p-5 text-sm leading-6 text-[#b4c9ce]" key={priority}>
                   <span className="font-mono text-xs font-semibold text-[#59acc2]">{String(index + 1).padStart(2, "0")}</span>

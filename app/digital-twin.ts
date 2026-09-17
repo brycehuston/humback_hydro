@@ -1,4 +1,21 @@
-export const DIGITAL_TWIN_CYCLE_SECONDS = 29;
+export const DIGITAL_TWIN_CYCLE_SECONDS = 47;
+export const DIGITAL_TWIN_SIGNOFF_START_SECONDS = 38.6;
+export const DIGITAL_TWIN_SIGNOFF_END_SECONDS = 46.5;
+
+const DIGITAL_TWIN_TIMELINE = Object.freeze({
+  establishEnd: 0.7,
+  energyEnd: 9.2,
+  energyHandoffEnd: 9.8,
+  storeEnd: 16.3,
+  storeHandoffEnd: 16.9,
+  generateEnd: 25.4,
+  generateHandoffEnd: 26,
+  dispatchEnd: 33.5,
+  dispatchHandoffEnd: 34.1,
+  lowerEnd: 38.6,
+  lowerHandoffEnd: DIGITAL_TWIN_SIGNOFF_START_SECONDS,
+  signoffEnd: DIGITAL_TWIN_SIGNOFF_END_SECONDS,
+});
 
 export const DIGITAL_TWIN_BASE_PLATE = Object.freeze({
   width: 1600,
@@ -8,6 +25,7 @@ export const DIGITAL_TWIN_BASE_PLATE = Object.freeze({
   ambientWaterlineY: 493,
   externalPipeAngleDegrees: 0,
   embedmentDepthFeet: Object.freeze([30, 50] as const),
+  signatureSequenceDuration: DIGITAL_TWIN_CYCLE_SECONDS,
 });
 
 export type DigitalTwinOperation = "lower" | "charge" | "upper";
@@ -62,21 +80,27 @@ export function flagBreezeActivityAt(seconds: number) {
     return Math.sin(((time - start) / (end - start)) * Math.PI);
   };
 
-  return Math.max(pulse(0, 2.4), pulse(24.5, DIGITAL_TWIN_CYCLE_SECONDS));
+  return Math.max(
+    pulse(DIGITAL_TWIN_TIMELINE.establishEnd, 3.9),
+    pulse(
+      DIGITAL_TWIN_TIMELINE.dispatchHandoffEnd,
+      DIGITAL_TWIN_TIMELINE.signoffEnd,
+    ),
+  );
 }
 
 function operationScene(
   phase: DigitalTwinOperation,
   progress: number,
 ): DigitalTwinScene {
-  const inRamp = smoothstep(progress / 0.16);
-  const outRamp = smoothstep((1 - progress) / 0.18);
+  const inRamp = smoothstep(progress / 0.09);
+  const outRamp = smoothstep((1 - progress) / 0.09);
 
   return {
     phase,
     progress,
     activity: inRamp * outRamp,
-    cardsVisible: progress > 0.13 && progress < 0.87,
+    cardsVisible: progress > 0.075 && progress < 0.925,
   };
 }
 
@@ -100,24 +124,82 @@ export function digitalTwinSceneAt(seconds: number): DigitalTwinScene {
     ((seconds % DIGITAL_TWIN_CYCLE_SECONDS) + DIGITAL_TWIN_CYCLE_SECONDS) %
     DIGITAL_TWIN_CYCLE_SECONDS;
 
-  if (time < 1) {
+  if (time < DIGITAL_TWIN_TIMELINE.establishEnd) {
     return {
       phase: "establish",
-      progress: time,
+      progress: time / DIGITAL_TWIN_TIMELINE.establishEnd,
       activity: 0,
       cardsVisible: false,
     };
   }
-  if (time < 4) return operationScene("lower", (time - 1) / 3);
-  if (time < 5) return handoffScene("lower", "charge", time - 4);
-  if (time < 15) return operationScene("charge", (time - 5) / 10);
-  if (time < 16) return handoffScene("charge", "upper", time - 15);
-  if (time < 26) return operationScene("upper", (time - 16) / 10);
-  if (time < 27) return handoffScene("upper", "summary", time - 26);
+  if (time < DIGITAL_TWIN_TIMELINE.energyEnd) {
+    return operationScene(
+      "charge",
+      (time - DIGITAL_TWIN_TIMELINE.establishEnd) / 8.5,
+    );
+  }
+  if (time < DIGITAL_TWIN_TIMELINE.energyHandoffEnd) {
+    return handoffScene(
+      "charge",
+      "summary",
+      (time - DIGITAL_TWIN_TIMELINE.energyEnd) / 0.6,
+    );
+  }
+  if (time < DIGITAL_TWIN_TIMELINE.storeHandoffEnd) {
+    return {
+      phase: "summary",
+      progress:
+        (time - DIGITAL_TWIN_TIMELINE.energyHandoffEnd) /
+        (DIGITAL_TWIN_TIMELINE.storeHandoffEnd -
+          DIGITAL_TWIN_TIMELINE.energyHandoffEnd),
+      activity: 0,
+      cardsVisible: false,
+    };
+  }
+  if (time < DIGITAL_TWIN_TIMELINE.generateEnd) {
+    return operationScene(
+      "upper",
+      (time - DIGITAL_TWIN_TIMELINE.storeHandoffEnd) / 8.5,
+    );
+  }
+  if (time < DIGITAL_TWIN_TIMELINE.generateHandoffEnd) {
+    return handoffScene(
+      "upper",
+      "summary",
+      (time - DIGITAL_TWIN_TIMELINE.generateEnd) / 0.6,
+    );
+  }
+
+  if (time < DIGITAL_TWIN_TIMELINE.dispatchHandoffEnd) {
+    return {
+      phase: "summary",
+      progress:
+        (time - DIGITAL_TWIN_TIMELINE.generateHandoffEnd) /
+        (DIGITAL_TWIN_TIMELINE.dispatchHandoffEnd -
+          DIGITAL_TWIN_TIMELINE.generateHandoffEnd),
+      activity: 0,
+      cardsVisible: false,
+    };
+  }
+  if (time < DIGITAL_TWIN_TIMELINE.lowerEnd) {
+    return operationScene(
+      "lower",
+      (time - DIGITAL_TWIN_TIMELINE.dispatchHandoffEnd) / 3.5,
+    );
+  }
+  if (time < DIGITAL_TWIN_TIMELINE.lowerHandoffEnd) {
+    return handoffScene(
+      "lower",
+      "summary",
+      (time - DIGITAL_TWIN_TIMELINE.lowerEnd) / 0.6,
+    );
+  }
 
   return {
     phase: "summary",
-    progress: (time - 27) / 2,
+    progress:
+      (time - DIGITAL_TWIN_TIMELINE.lowerHandoffEnd) /
+      (DIGITAL_TWIN_CYCLE_SECONDS - DIGITAL_TWIN_TIMELINE.lowerHandoffEnd),
     activity: 0,
     cardsVisible: false,
   };
@@ -130,10 +212,22 @@ export function digitalTwinSignatureStageAt(
     ((seconds % DIGITAL_TWIN_CYCLE_SECONDS) + DIGITAL_TWIN_CYCLE_SECONDS) %
     DIGITAL_TWIN_CYCLE_SECONDS;
 
-  if (time >= 5 && time < 10) return "energy";
-  if (time >= 10 && time < 15) return "store";
-  if (time >= 16 && time < 21) return "generate";
-  if (time >= 21 && time < 27) return "dispatch";
+  if (
+    time >= DIGITAL_TWIN_TIMELINE.establishEnd &&
+    time < DIGITAL_TWIN_TIMELINE.energyEnd
+  ) return "energy";
+  if (
+    time >= DIGITAL_TWIN_TIMELINE.energyHandoffEnd &&
+    time < DIGITAL_TWIN_TIMELINE.storeEnd
+  ) return "store";
+  if (
+    time >= DIGITAL_TWIN_TIMELINE.storeHandoffEnd &&
+    time < DIGITAL_TWIN_TIMELINE.generateEnd
+  ) return "generate";
+  if (
+    time >= DIGITAL_TWIN_TIMELINE.generateHandoffEnd &&
+    time < DIGITAL_TWIN_TIMELINE.dispatchEnd
+  ) return "dispatch";
   return null;
 }
 
@@ -142,22 +236,49 @@ export function reservoirLevelsAt(seconds: number): ReservoirLevels {
     ((seconds % DIGITAL_TWIN_CYCLE_SECONDS) + DIGITAL_TWIN_CYCLE_SECONDS) %
     DIGITAL_TWIN_CYCLE_SECONDS;
   let upper = 0.18;
-  let lower = 0.85;
+  let lower = 0.73;
 
-  if (time >= 1 && time < 4) {
-    lower = 0.85 - 0.06 * smoothstep((time - 1) / 3);
-  } else if (time >= 4 && time < 5) {
-    lower = 0.79;
-  } else if (time >= 5 && time < 15) {
-    const progress = smoothstep((time - 5) / 10);
-    lower = 0.79 + 0.06 * progress;
-    upper = 0.18 - 0.055 * progress;
-  } else if (time >= 15 && time < 16) {
-    lower = 0.85;
-    upper = 0.125;
-  } else if (time >= 16 && time < 26) {
-    upper = 0.125 + 0.055 * smoothstep((time - 16) / 10);
-  } else if (time >= 26 && time < 27) {
+  if (
+    time >= DIGITAL_TWIN_TIMELINE.establishEnd &&
+    time < DIGITAL_TWIN_TIMELINE.energyEnd
+  ) {
+    const progress = smoothstep(
+      (time - (DIGITAL_TWIN_TIMELINE.establishEnd + 1.25)) /
+        (DIGITAL_TWIN_TIMELINE.energyEnd -
+          DIGITAL_TWIN_TIMELINE.establishEnd -
+          2.05),
+    );
+    lower = 0.73 + 0.05 * progress;
+    upper = 0.18 - 0.05 * progress;
+  } else if (
+    time >= DIGITAL_TWIN_TIMELINE.energyEnd &&
+    time < DIGITAL_TWIN_TIMELINE.storeHandoffEnd
+  ) {
+    lower = 0.78;
+    upper = 0.13;
+  } else if (
+    time >= DIGITAL_TWIN_TIMELINE.storeHandoffEnd + 0.9 &&
+    time < DIGITAL_TWIN_TIMELINE.generateEnd
+  ) {
+    const progress = smoothstep(
+      (time - (DIGITAL_TWIN_TIMELINE.storeHandoffEnd + 0.9)) /
+        (DIGITAL_TWIN_TIMELINE.generateEnd -
+          DIGITAL_TWIN_TIMELINE.storeHandoffEnd -
+          1.7),
+    );
+    lower = 0.78 - 0.05 * progress;
+    upper = 0.13 + 0.05 * progress;
+  } else if (
+    time >= DIGITAL_TWIN_TIMELINE.storeHandoffEnd &&
+    time < DIGITAL_TWIN_TIMELINE.storeHandoffEnd + 0.9
+  ) {
+    lower = 0.78;
+    upper = 0.13;
+  } else if (
+    time >= DIGITAL_TWIN_TIMELINE.generateEnd &&
+    time < DIGITAL_TWIN_TIMELINE.dispatchHandoffEnd
+  ) {
+    lower = 0.73;
     upper = 0.18;
   }
 
@@ -167,10 +288,10 @@ export function reservoirLevelsAt(seconds: number): ReservoirLevels {
 export function manualReservoirLevels(
   phase: DigitalTwinOperation | "summary",
 ): ReservoirLevels {
-  if (phase === "lower") return { upper: 0.18, lower: 0.82 };
-  if (phase === "charge") return { upper: 0.152, lower: 0.822 };
-  if (phase === "upper") return { upper: 0.152, lower: 0.85 };
-  return { upper: 0.18, lower: 0.85 };
+  if (phase === "lower") return { upper: 0.18, lower: 0.74 };
+  if (phase === "charge") return { upper: 0.152, lower: 0.755 };
+  if (phase === "upper") return { upper: 0.152, lower: 0.755 };
+  return { upper: 0.18, lower: 0.73 };
 }
 
 export function manualDigitalTwinScene(
