@@ -1,6 +1,6 @@
-export const DIGITAL_TWIN_CYCLE_SECONDS = 47;
-export const DIGITAL_TWIN_SIGNOFF_START_SECONDS = 38.6;
-export const DIGITAL_TWIN_SIGNOFF_END_SECONDS = 46.5;
+export const DIGITAL_TWIN_CYCLE_SECONDS = 55;
+export const DIGITAL_TWIN_SIGNOFF_START_SECONDS = 42.6;
+export const DIGITAL_TWIN_SIGNOFF_END_SECONDS = 55;
 
 const DIGITAL_TWIN_TIMELINE = Object.freeze({
   establishEnd: 0.7,
@@ -12,7 +12,7 @@ const DIGITAL_TWIN_TIMELINE = Object.freeze({
   generateHandoffEnd: 26,
   dispatchEnd: 33.5,
   dispatchHandoffEnd: 34.1,
-  lowerEnd: 38.6,
+  lowerEnd: 42.6,
   lowerHandoffEnd: DIGITAL_TWIN_SIGNOFF_START_SECONDS,
   signoffEnd: DIGITAL_TWIN_SIGNOFF_END_SECONDS,
 });
@@ -93,8 +93,8 @@ function operationScene(
   phase: DigitalTwinOperation,
   progress: number,
 ): DigitalTwinScene {
-  const inRamp = smoothstep(progress / 0.09);
-  const outRamp = smoothstep((1 - progress) / 0.09);
+  const inRamp = smoothstep(progress / 0.15);
+  const outRamp = smoothstep((1 - progress) / 0.15);
 
   return {
     phase,
@@ -184,7 +184,7 @@ export function digitalTwinSceneAt(seconds: number): DigitalTwinScene {
   if (time < DIGITAL_TWIN_TIMELINE.lowerEnd) {
     return operationScene(
       "lower",
-      (time - DIGITAL_TWIN_TIMELINE.dispatchHandoffEnd) / 3.5,
+      (time - DIGITAL_TWIN_TIMELINE.dispatchHandoffEnd) / 7.5,
     );
   }
   if (time < DIGITAL_TWIN_TIMELINE.lowerHandoffEnd) {

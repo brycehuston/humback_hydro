@@ -212,18 +212,6 @@ function FlowVectorLayer() {
           key={route.className}
         >
           <path className="premium-twin-water-volume" data-flow-path d={route.d} />
-          <g className="premium-twin-water-direction">
-            {Array.from(
-              { length: route.operation === "charge" ? 7 : 6 },
-              (_, index) => (
-                <path
-                  data-water-direction
-                  d="M -10 -4.5 L 0 0 L -10 4.5"
-                  key={index}
-                />
-              ),
-            )}
-          </g>
         </g>
       ))}
     </svg>
@@ -268,12 +256,53 @@ export default function PremiumDigitalTwin() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const signatureButtonRefs = useRef<Array<HTMLButtonElement | null>>([]);
   const controlApiRef = useRef<ControlApi | null>(null);
+  const upperRef = useRef<HTMLDivElement>(null);
+  const turbineRef = useRef<HTMLDivElement>(null);
+  const penstockRef = useRef<HTMLDivElement>(null);
+  const lowerRef = useRef<HTMLDivElement>(null);
+
   const [selectedAction, setSelectedAction] = useState<TwinAction>("auto");
   const [paused, setPaused] = useState(false);
   const [visibleStage, setVisibleStage] =
     useState<DigitalTwinSignatureStage | null>("energy");
   const [exitingCallout, setExitingCallout] = useState<TwinCallout | null>(null);
   const [announcedPhase, setAnnouncedPhase] = useState("Energy In");
+  const [leaderY, setLeaderY] = useState({
+    upper: 155,
+    turbine: 331,
+    penstock: 351,
+    lower: 573,
+  });
+
+  useEffect(() => {
+    const root = rootRef.current;
+    if (!root) return;
+
+    const observer = new ResizeObserver(() => {
+      const rootRect = root.getBoundingClientRect();
+      const getCenterY = (el: HTMLDivElement | null, defaultY: number) => {
+        if (!el) return defaultY;
+        const rect = el.getBoundingClientRect();
+        const centerPx = rect.top - rootRect.top + rect.height / 2;
+        return (centerPx / rootRect.height) * 900;
+      };
+
+      setLeaderY({
+        upper: getCenterY(upperRef.current, 155),
+        turbine: getCenterY(turbineRef.current, 331),
+        penstock: getCenterY(penstockRef.current, 351),
+        lower: getCenterY(lowerRef.current, 573),
+      });
+    });
+
+    observer.observe(root);
+    if (upperRef.current) observer.observe(upperRef.current);
+    if (turbineRef.current) observer.observe(turbineRef.current);
+    if (penstockRef.current) observer.observe(penstockRef.current);
+    if (lowerRef.current) observer.observe(lowerRef.current);
+
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     const root = rootRef.current;
@@ -310,9 +339,6 @@ export default function PremiumDigitalTwin() {
         operation,
         path,
         length: path.getTotalLength(),
-        directions: Array.from(
-          group.querySelectorAll<SVGPathElement>("[data-water-direction]"),
-        ),
       }];
     });
 
@@ -362,7 +388,11 @@ export default function PremiumDigitalTwin() {
       } else {
         delete rootElement.dataset.activeSignatureStage;
       }
-      vectorRoutes.forEach(({ group, operation, path, length, directions }) => {
+
+      ctx.save();
+      ctx.scale(canvas.width / 1600, canvas.height / 900);
+
+      vectorRoutes.forEach(({ group, operation, path, length }) => {
         let strength = 0;
         if (scene.phase === operation) {
           if (signatureStage === "energy" && operation === "charge") {
@@ -375,32 +405,72 @@ export default function PremiumDigitalTwin() {
             strength = scene.activity;
           }
         }
+        
+        let speed = 0.08; 
+        let particleOpacity = strength;
+        
+        if (signatureStage === "store") {
+          speed = 0;
+          particleOpacity = 0; 
+        } else if (operation === "charge" && (signatureStage === "energy" || scene.phase === "charge")) {
+          speed = 0.22; 
+        }
+
         group.style.setProperty(
           "--flow-opacity",
           strength > 0.015 ? String(0.12 + strength * 0.82) : "0",
         );
-        const speed = operation === "charge" ? 0.09 : operation === "upper" ? 0.084 : 0.078;
-        directions.forEach((direction, index) => {
-          const fraction = reducedMotion
-            ? (index + 0.5) / directions.length
-            : (seconds * speed * 1.12 + index / directions.length) % 1;
-          const distance = fraction * length;
-          const point = path.getPointAtLength(distance);
-          const nextPoint = path.getPointAtLength(Math.min(length, distance + 2));
-          const dx = nextPoint.x - point.x;
-          const dy = nextPoint.y - point.y;
-          const magnitude = Math.max(0.001, Math.hypot(dx, dy));
-          const lane = index % 2 === 0 ? -2.2 : 2.2;
-          const x = point.x + (-dy / magnitude) * lane;
-          const y = point.y + (dx / magnitude) * lane;
-          const angle = Math.atan2(dy, dx) * 180 / Math.PI;
-          direction.setAttribute(
-            "transform",
-            `translate(${x.toFixed(2)} ${y.toFixed(2)}) rotate(${angle.toFixed(2)})`,
-          );
-          direction.style.opacity = String(0.42 + strength * 0.52);
-        });
+
+        if (particleOpacity <= 0.015) return;
+
+        const particleCount = operation === "charge" ? 7 : 6;
+        const tailLength = 3; 
+
+        ctx.strokeStyle = "#00f0ff";
+        ctx.lineJoin = "miter";
+
+        for (let index = 0; index < particleCount; index += 1) {
+          const baseFraction = reducedMotion
+            ? (index + 0.5) / particleCount
+            : (seconds * speed + index / particleCount) % 1;
+
+          for (let trail = 0; trail < tailLength; trail++) {
+            const stretch = speed > 0 ? (0.008 * (speed / 0.08)) : 0.008;
+            const trailFraction = (baseFraction - (trail * stretch) + 1) % 1;
+            
+            const distance = trailFraction * length;
+            const point = path.getPointAtLength(distance);
+            const nextPoint = path.getPointAtLength(Math.min(length, distance + 2));
+            const dx = nextPoint.x - point.x;
+            const dy = nextPoint.y - point.y;
+            const magnitude = Math.max(0.001, Math.hypot(dx, dy));
+            
+            const lane = index % 2 === 0 ? -2.2 : 2.2;
+            const px = point.x + (-dy / magnitude) * lane;
+            const py = point.y + (dx / magnitude) * lane;
+            const angle = Math.atan2(dy, dx);
+            
+            ctx.save();
+            ctx.translate(px, py);
+            ctx.rotate(angle);
+            
+            const activeOpacity = Math.min(1, particleOpacity * 1.5);
+            ctx.globalAlpha = activeOpacity * (trail === 0 ? 1 : trail === 1 ? 0.5 : 0.2);
+            
+            const size = 6.5;
+            ctx.lineWidth = 2.5;
+            
+            ctx.beginPath();
+            ctx.moveTo(-size, -size * 0.7);
+            ctx.lineTo(size, 0);
+            ctx.lineTo(-size, size * 0.7);
+            
+            ctx.stroke();
+            ctx.restore();
+          }
+        }
       });
+      ctx.restore();
     }
 
     function smoothUnit(value: number) {
@@ -459,7 +529,10 @@ export default function PremiumDigitalTwin() {
           ? targets[key]
           : easeToward(machinery[key], targets[key], delta, 1.05, 1.34);
         if (!reducedMotion) {
-          const angularVelocity = key === "charge" ? 2.62 : key === "upper" ? 2.34 : 1.76;
+          let angularVelocity = key === "charge" ? (2.62 * 3) : key === "upper" ? 2.34 : 1.76;
+          if (signatureStage === "store") {
+            angularVelocity = 0;
+          }
           const direction = key === "upper" ? -1 : 1;
           machineryAngles[key] += direction * machinery[key] * angularVelocity * delta;
         }
@@ -1065,22 +1138,28 @@ export default function PremiumDigitalTwin() {
         true,
       );
 
-      panel(0.795, 0.042, 0.18, 0.112, 0.7);
+      panel(0.775, 0.042, 0.20, 0.13, 0.7);
       textLabel(
         "ILLUSTRATED STATE  /  " + phase.index,
-        0.812,
+        0.792,
         0.073,
         8,
         "rgba(196,226,225,.72)",
         "left",
         true,
       );
-      textLabel(phase.title, 0.812, 0.108, 16, "#f3fbfd");
+      textLabel(phase.title, 0.792, 0.108, 16, "#f3fbfd");
+      
+      let telemetry = "STATUS: INTAKE | RPM: 1,800 | FLOW: BALANCED";
+      if (signatureStage === "store") telemetry = "STATUS: HOLD | RPM: 0 | ENERGY: STORED";
+      else if (signatureStage === "energy" || scene.phase === "charge") telemetry = "STATUS: PUMPING | RPM: 3,200 | ARB: $28/MWh";
+      else if (signatureStage === "generate" || scene.phase === "upper") telemetry = "STATUS: DISPATCH | RPM: MAX | OUTPUT: 10MW";
+
       textLabel(
-        "PROCESS STATE / QUALITATIVE",
-        0.812,
-        0.134,
-        8,
+        telemetry,
+        0.792,
+        0.142,
+        11,
         "#70d9e8",
         "left",
         true,
@@ -1431,33 +1510,33 @@ export default function PremiumDigitalTwin() {
         <FlowVectorLayer />
         <div className="premium-twin-annotations" aria-hidden="true">
           <svg viewBox="0 0 1600 900" preserveAspectRatio="none">
-            <g data-leader="upper"><circle className="callout-anchor-ring" cx="900" cy="190" r="11" /><circle className="callout-anchor-dot" cx="900" cy="190" r="4" /><path pathLength="1" d="M 1024 155 H 960 L 900 190" /></g>
-            <g data-leader="turbine"><circle className="callout-anchor-ring" cx="572" cy="474" r="11" /><circle className="callout-anchor-dot" cx="572" cy="474" r="4" /><path pathLength="1" d="M 319 411 H 485 L 572 474" /></g>
-            <g data-leader="penstock"><circle className="callout-anchor-ring" cx="1013" cy="487" r="11" /><circle className="callout-anchor-dot" cx="1013" cy="487" r="4" /><path pathLength="1" d="M 1278 431 H 1120 L 1013 487" /></g>
-            <g data-leader="lower"><circle className="callout-anchor-ring" cx="933" cy="724" r="11" /><circle className="callout-anchor-dot" cx="933" cy="724" r="4" /><path pathLength="1" d="M 1265 653 H 1112 L 933 724" /></g>
+            <g data-leader="upper"><circle className="callout-anchor-ring" cx="900" cy="190" r="11" /><circle className="callout-anchor-dot" cx="900" cy="190" r="4" /><path pathLength="1" d={`M 1024 ${leaderY.upper} H 960 L 900 190`} /></g>
+            <g data-leader="turbine"><circle className="callout-anchor-ring" cx="572" cy="474" r="11" /><circle className="callout-anchor-dot" cx="572" cy="474" r="4" /><path pathLength="1" d={`M 319 ${leaderY.turbine} H 485 L 572 474`} /></g>
+            <g data-leader="penstock"><circle className="callout-anchor-ring" cx="1013" cy="487" r="11" /><circle className="callout-anchor-dot" cx="1013" cy="487" r="4" /><path pathLength="1" d={`M 1278 ${leaderY.penstock} H 1120 L 1013 487`} /></g>
+            <g data-leader="lower"><circle className="callout-anchor-ring" cx="933" cy="724" r="11" /><circle className="callout-anchor-dot" cx="933" cy="724" r="4" /><path pathLength="1" d={`M 1265 ${leaderY.lower} H 1112 L 933 724`} /></g>
           </svg>
-          <div className="premium-twin-callout is-upper" data-callout="upper">
+          <div className="premium-twin-callout is-upper" data-callout="upper" ref={upperRef}>
             <strong>Upper Reservoir</strong><span>Stored Water at Elevation</span>
             <svg className="premium-twin-callout-trace" viewBox="0 0 100 100" preserveAspectRatio="none">
               <rect className="premium-twin-callout-base" x=".6" y=".6" width="98.8" height="98.8" />
               <path className="premium-twin-callout-progress" pathLength="1" d="M .6 50 V .6 H 99.4 V 99.4 H .6 V 50" />
             </svg>
           </div>
-          <div className="premium-twin-callout is-turbine" data-callout="turbine">
+          <div className="premium-twin-callout is-turbine" data-callout="turbine" ref={turbineRef}>
             <strong>Reversible Machinery</strong><span>Conceptual Pump / Generate Path</span>
             <svg className="premium-twin-callout-trace" viewBox="0 0 100 100" preserveAspectRatio="none">
               <rect className="premium-twin-callout-base" x=".6" y=".6" width="98.8" height="98.8" />
               <path className="premium-twin-callout-progress" pathLength="1" d="M 99.4 50 V .6 H .6 V 99.4 H 99.4 V 50" />
             </svg>
           </div>
-          <div className="premium-twin-callout is-penstock" data-callout="penstock">
+          <div className="premium-twin-callout is-penstock" data-callout="penstock" ref={penstockRef}>
             <strong>Penstock System</strong><span>Illustrative Hydraulic Route</span>
             <svg className="premium-twin-callout-trace" viewBox="0 0 100 100" preserveAspectRatio="none">
               <rect className="premium-twin-callout-base" x=".6" y=".6" width="98.8" height="98.8" />
               <path className="premium-twin-callout-progress" pathLength="1" d="M .6 50 V .6 H 99.4 V 99.4 H .6 V 50" />
             </svg>
           </div>
-          <div className="premium-twin-callout is-lower" data-callout="lower">
+          <div className="premium-twin-callout is-lower" data-callout="lower" ref={lowerRef}>
             <strong>Lower Reservoir</strong><span>Integrated in Marine Structure</span>
             <svg className="premium-twin-callout-trace" viewBox="0 0 100 100" preserveAspectRatio="none">
               <rect className="premium-twin-callout-base" x=".6" y=".6" width="98.8" height="98.8" />

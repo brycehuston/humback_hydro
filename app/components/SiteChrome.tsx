@@ -96,6 +96,13 @@ export default function SiteChrome({ children }: { children: React.ReactNode }) 
       if (element.getBoundingClientRect().top > window.innerHeight) element.classList.add("reveal-ready");
     });
 
+    if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      document.querySelectorAll<HTMLElement>(".eyebrow > span").forEach((element) => {
+        element.classList.add("accent-rule-ready");
+        observer.observe(element);
+      });
+    }
+
     return () => {
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("pointermove", onPointerMove);
@@ -154,8 +161,8 @@ export default function SiteChrome({ children }: { children: React.ReactNode }) 
 
       {children}
 
-      <footer className="site-footer">
-        <div className="footer-primary">
+      <footer className="site-footer footer-reveal-root" data-reveal>
+        <div className="footer-primary footer-reveal">
           <div className="footer-brand-zone">
             <Link className="brand brand-lockup footer-brand" href="/" aria-label="Humpback Hydro home">
               <span className="brandmark-wrap footer-brandmark" aria-hidden="true">
@@ -163,16 +170,16 @@ export default function SiteChrome({ children }: { children: React.ReactNode }) 
               </span>
             </Link>
           </div>
-          <p className="footer-statement brand-chrome">MODULAR HYDRO POWER &amp; STORAGE FOR CRITICAL INFRASTRUCTURE.</p>
+          <p className="footer-statement brand-chrome">NATURAL POWER. REAL IMPACT.</p>
           <a className="footer-email" href="mailto:info@humpbackenergy.com">info@humpbackenergy.com</a>
         </div>
-        <div className="footer-grid">
+        <div className="footer-grid footer-reveal">
           <div><small className="titanium-microtype">EXPLORE</small>{navItems.map((item) => <Link key={item.href} href={item.href}>{item.label}</Link>)}<Link data-open-homepage-calculator href="/#economics">Calculator</Link></div>
           <div><small className="titanium-microtype">PARTNER</small><Link href="/partners#pilot">Pilot &amp; Site Evaluation</Link><Link href="/partners#investment">Investment</Link><Link href="/partners#engineering">Engineering &amp; Delivery</Link></div>
           <div><small className="titanium-microtype">CONNECT</small><Link href="/partners">Contact</Link><a href="https://www.linkedin.com/company/humpback-hydro/" target="_blank" rel="noreferrer">LinkedIn</a></div>
         </div>
-        <div className="footer-legal">
-          <span className="titanium-microtype">Technology Imagery Does Not Depict Completed Projects • Vancouver, Canada</span>
+        <div className="footer-legal footer-reveal">
+          <span className="titanium-microtype">VANCOUVER, CANADA</span>
           <span className="text-balance footer-copyright titanium-microtype">HUMPBACK HYDRO © 2026 | SITE BY <a className="footer-credit-link" href="https://www.brycehuston.com/solutions" target="_blank" rel="noreferrer">HUSTON SOLUTION INC.</a></span>
         </div>
       </footer>

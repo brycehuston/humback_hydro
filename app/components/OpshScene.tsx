@@ -9,9 +9,10 @@ import {
   useRef,
 } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { OrbitControls, useAnimations, useGLTF } from "@react-three/drei";
+import { CameraShake, OrbitControls, useAnimations, useGLTF } from "@react-three/drei";
 import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
 import {
+  ACESFilmicToneMapping,
   AdditiveBlending,
   Box3,
   CatmullRomCurve3,
@@ -598,8 +599,8 @@ function FlowConduit({
         />
         <meshStandardMaterial
           color={COLORS.steelDark}
-          roughness={0.3}
-          metalness={0.82}
+          roughness={0.15}
+          metalness={0.94}
         />
       </mesh>
       <mesh renderOrder={6}>
@@ -645,12 +646,13 @@ function Turbine({
 
   return (
     <group position={position}>
+      <pointLight color="#00f0ff" intensity={2} distance={15} />
       <mesh rotation={[0, 0, Math.PI / 2]} castShadow>
         <cylinderGeometry args={[0.72, 0.72, 0.86, 20]} />
         <meshStandardMaterial
           color={COLORS.steelDark}
-          metalness={0.88}
-          roughness={0.24}
+          metalness={0.94}
+          roughness={0.15}
         />
       </mesh>
       {[-0.44, 0.44].map((x) => (
@@ -658,8 +660,8 @@ function Turbine({
           <torusGeometry args={[0.56, 0.1, 10, 24]} />
           <meshStandardMaterial
             color={COLORS.steel}
-            metalness={0.82}
-            roughness={0.3}
+            metalness={0.92}
+            roughness={0.15}
           />
         </mesh>
       ))}
@@ -707,20 +709,21 @@ function CentralPump({
 
   return (
     <group position={[0, -0.75, -0.2]}>
+      <pointLight color="#00f0ff" intensity={2} distance={15} />
       <mesh castShadow>
         <cylinderGeometry args={[0.62, 0.72, 1.15, 20]} />
         <meshStandardMaterial
           color={COLORS.steelDark}
-          metalness={0.86}
-          roughness={0.25}
+          metalness={0.94}
+          roughness={0.15}
         />
       </mesh>
       <mesh rotation={[Math.PI / 2, 0, 0]}>
         <torusGeometry args={[0.57, 0.09, 10, 24]} />
         <meshStandardMaterial
           color={COLORS.steel}
-          metalness={0.82}
-          roughness={0.28}
+          metalness={0.92}
+          roughness={0.15}
         />
       </mesh>
       <group ref={rotorRef}>
@@ -1435,15 +1438,57 @@ function SceneContent({
   | "resetSignal"
 >) {
   const controlsRef = useRef<OrbitControlsImpl>(null);
+  const shakeRef = useRef<any>(null);
+  const ambientRef = useRef<any>(null);
+  const dirRef = useRef<any>(null);
+  const hemiRef = useRef<any>(null);
+  
+  const baseAmb = useMemo(() => new Color("#78aebd"), []);
+  const baseDir = useMemo(() => new Color("#d9f8ff"), []);
+  const pumpColor = useMemo(() => new Color("#02131c"), []);
+  const releaseColor = useMemo(() => new Color("#00f0ff"), []);
+
+  useFrame(() => {
+    const runtime = motionRef.current as ExtendedMotionState;
+    const p = runtime.progress;
+    
+    if (shakeRef.current) {
+      const isPumping = p >= 0.31 && p <= 0.54;
+      shakeRef.current.setIntensity(isPumping ? (runtime.velocity ?? 0) * 2.0 : 0);
+    }
+    
+    if (ambientRef.current && dirRef.current && hemiRef.current) {
+      const pumpingAmount = windowSignal(p, 0.31, 0.54, 0.065);
+      const releaseAmount = windowSignal(p, 0.48, 0.79, 0.065);
+      
+      ambientRef.current.color.copy(baseAmb).lerp(pumpColor, pumpingAmount).lerp(releaseColor, releaseAmount);
+      dirRef.current.color.copy(baseDir).lerp(pumpColor, pumpingAmount).lerp(releaseColor, releaseAmount);
+      
+      let hemiIntensity = MathUtils.lerp(1.22, 0.15, pumpingAmount);
+      hemiIntensity = MathUtils.lerp(hemiIntensity, 0.8, releaseAmount);
+      hemiRef.current.intensity = hemiIntensity;
+    }
+  });
 
   return (
     <>
       <color attach="background" args={[COLORS.background]} />
       <fog attach="fog" args={[COLORS.fog, 18, 45]} />
 
-      <ambientLight intensity={0.34} color="#78aebd" />
-      <hemisphereLight args={["#9ddce9", "#02090d", 1.22]} />
+      <CameraShake
+        ref={shakeRef}
+        maxYaw={0.03}
+        maxPitch={0.03}
+        maxRoll={0.03}
+        yawFrequency={0.25}
+        pitchFrequency={0.25}
+        rollFrequency={0.25}
+      />
+
+      <ambientLight ref={ambientRef} intensity={2.5} color="#a0d8f0" />
+      <hemisphereLight ref={hemiRef} color="#ffffff" groundColor="#005577" intensity={2.0} />
       <directionalLight
+        ref={dirRef}
         position={[8, 14, 10]}
         intensity={2.35}
         color="#d9f8ff"
@@ -1451,9 +1496,13 @@ function SceneContent({
         shadow-mapSize-width={compact ? 512 : 1024}
         shadow-mapSize-height={compact ? 512 : 1024}
       />
-      <pointLight position={[-6, -1, 6]} intensity={1.1} color={COLORS.intake} />
-      <pointLight position={[0, 0, 4]} intensity={0.9} color={COLORS.pump} />
-      <pointLight position={[6, 2, 6]} intensity={1.0} color={COLORS.release} />
+      {/* Cinematic Hollywood Night Rim Light */}
+      <directionalLight
+        position={[-12, 15, -15]}
+        intensity={3.5}
+        color="#c9efff"
+        castShadow={!compact}
+      />
 
       {EXTERNAL_MODEL_ENABLED ? (
         <Suspense
@@ -1531,6 +1580,8 @@ export default function OpshScene(props: OpshSceneProps) {
       frameloop={props.renderActive ? "always" : "never"}
       fallback={props.fallback}
       gl={{
+        toneMapping: ACESFilmicToneMapping,
+        toneMappingExposure: 1.5,
         antialias: !props.compact,
         alpha: false,
         depth: true,

@@ -81,6 +81,7 @@ export default function Home() {
       </section>
 
       <section className="platform-section" id="platform">
+        <div className="platform-rings" aria-hidden="true"><i /><i /><i /></div>
         <div className="section-shell">
           <div className="chapter-label light"><span>02</span>THE PLATFORM</div>
           <div className="section-intro inverse" data-reveal>
@@ -112,10 +113,10 @@ export default function Home() {
             <p>Humpback Hydro&apos;s public foundation includes a patent record, an IEEE-published architecture and university proof-of-concept studies. Modeled results are presented within their source-specific boundaries.</p>
           </div>
 
-          <div className="evidence-ledger">
+          <div className="evidence-ledger foundation-sequence" data-reveal>
             {evidence.map((item) => {
               const content = <><span>{item.index}</span><small>{item.category}</small><h3>{item.title}</h3><p>{item.status}</p><Arrow /></>;
-              return item.href ? <a key={item.index} href={item.href} target={item.external ? "_blank" : undefined} rel={item.external ? "noreferrer" : undefined} data-reveal>{content}</a> : <div key={item.index} data-reveal>{content}</div>;
+              return item.href ? <a key={item.index} href={item.href} target={item.external ? "_blank" : undefined} rel={item.external ? "noreferrer" : undefined}>{content}</a> : <div key={item.index}>{content}</div>;
             })}
           </div>
           <a className="button outline-light" href="/evidence">Review the Evidence <Arrow /></a>
@@ -128,9 +129,9 @@ export default function Home() {
           <div><p className="eyebrow dark"><span />Evidence-Controlled Development</p><h2>Engineering &amp; Operational Roadmap</h2></div>
           <p>Humpback Hydro is advancing from its documented patent, publication and study foundation toward independent engineering validation and pilot deployment. An approved roadmap and supporting technical basis will define commercial scale, manufacturing configuration and timing.</p>
         </div>
-        <div className="roadmap-line">
+        <div className="roadmap-line validation-pathway" data-reveal>
           {roadmap.map((item) => (
-            <article key={item.phase} data-reveal>
+            <article key={item.phase}>
               <div className="roadmap-node"><span>{item.phase}</span><i /></div>
               <small>{item.label}</small><strong>{item.status}</strong><h3>{item.title}</h3><p>{item.copy}</p>
             </article>

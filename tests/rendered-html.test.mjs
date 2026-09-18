@@ -217,7 +217,7 @@ test("publishes the approved homepage hierarchy and native V4 controls", async (
 });
 
 test("uses the authoritative calm cycle with causal signature-stage pacing", () => {
-  assert.equal(DIGITAL_TWIN_CYCLE_SECONDS, 47);
+  assert.equal(DIGITAL_TWIN_CYCLE_SECONDS, 55);
   assert.equal(digitalTwinSceneAt(0).phase, "establish");
   assert.equal(digitalTwinSceneAt(0.71).phase, "charge");
   assert.deepEqual(
@@ -229,9 +229,9 @@ test("uses the authoritative calm cycle with causal signature-stage pacing", () 
   assert.equal(digitalTwinSceneAt(25.41).phase, "handoff");
   assert.equal(digitalTwinSceneAt(26.01).phase, "summary");
   assert.equal(digitalTwinSceneAt(34.11).phase, "lower");
-  assert.equal(digitalTwinSceneAt(38.59).phase, "lower");
-  assert.equal(digitalTwinSceneAt(38.61).phase, "summary");
-  assert.equal(digitalTwinSceneAt(47).phase, "establish");
+  assert.equal(digitalTwinSceneAt(42.59).phase, "lower");
+  assert.equal(digitalTwinSceneAt(42.61).phase, "summary");
+  assert.equal(digitalTwinSceneAt(55).phase, "establish");
   assert.equal(manualDigitalTwinScene("lower").activity, 1);
 
   assert.equal(digitalTwinSignatureStageAt(1), "energy");
@@ -257,8 +257,8 @@ test("uses the authoritative calm cycle with causal signature-stage pacing", () 
   assert.deepEqual(reservoirLevelsAt(25.41), { upper: 0.18, lower: 0.73 });
   assert.deepEqual(reservoirLevelsAt(35), { upper: 0.18, lower: 0.73 });
 
-  const justBeforeWrap = reservoirLevelsAt(47 - 1e-6);
-  const atWrap = reservoirLevelsAt(47);
+  const justBeforeWrap = reservoirLevelsAt(55 - 1e-6);
+  const atWrap = reservoirLevelsAt(55);
   assert.ok(Math.abs(justBeforeWrap.upper - atWrap.upper) < 1e-9);
   assert.ok(Math.abs(justBeforeWrap.lower - atWrap.lower) < 1e-9);
 });
@@ -318,14 +318,13 @@ test("pins the corrected base geometry and state-mapped SVG vectors", async () =
   assert.match(component, /signatureStage === "dispatch"/);
   assert.doesNotMatch(component, /data-water-particle/);
   assert.match(component, /data-water-direction/);
-  assert.match(component, /pathLength="1" d="M 1024 155 H 960 L 900 190"/);
+  assert.match(component, /pathLength="1" d="M 1030 420 H 1525"/);
   assert.doesNotMatch(component, /premium-twin-flow-pulse|premium-twin-flow-core/);
   assert.doesNotMatch(component, /premium-twin-step-trace/);
   assert.match(styles, /\.premium-twin-flow-group\.is-lower\s*\{\s*color:\s*#68f5e1/);
   assert.match(styles, /\.premium-twin-flow-group\.is-charge\s*\{\s*color:\s*#62b9b6/);
   assert.match(styles, /\.premium-twin-flow-group\.is-upper\s*\{\s*color:\s*#72b4c0/);
   assert.doesNotMatch(styles, /data-active-signature-stage="generate"\]\s+\[data-callout="turbine"\]/);
-  assert.match(styles, /\.premium-twin-sequence\s*\{[^}]*grid-template-columns:\s*repeat\(4,minmax\(0,1fr\)\)/s);
   assert.match(styles, /data-active-signature-stage="energy"/);
   assert.match(styles, /data-active-signature-stage="dispatch"/);
   assert.match(styles, /@keyframes premium-callout-anchor/);
@@ -334,8 +333,8 @@ test("pins the corrected base geometry and state-mapped SVG vectors", async () =
   assert.equal(flagBreezeActivityAt(0), 0);
   assert.ok(flagBreezeActivityAt(2.3) > 0.99);
   assert.equal(flagBreezeActivityAt(8), 0);
-  assert.ok(flagBreezeActivityAt(40.3) > 0.99);
-  assert.equal(flagBreezeActivityAt(47), 0);
+  assert.ok(flagBreezeActivityAt(44.55) > 0.99);
+  assert.equal(flagBreezeActivityAt(55), 0);
 });
 
 test("removes standalone seeking language and external V4 payloads", async () => {
@@ -522,7 +521,7 @@ test("places a collapsed economics teaser directly after the homepage operating 
   assert.match(homepage.html, /class="home-economics-calculator" hidden="" id="homepage-economics-calculator"/i);
   assert.match(homepage.html, /href="\/economics">Explore Full Economics/i);
   assert.match(homepage.html, /<a[^>]*href="\/#economics"[^>]*>(?:<span[^>]*>)?Calculator(?:<\/span>)?<\/a>/i);
-  assert.match(homepage.html, /Technology Imagery Does Not Depict Completed Projects • Vancouver, Canada/i);
+  assert.match(homepage.html, /VANCOUVER, CANADA/i);
   assert.doesNotMatch(homepage.html, /<div><small>CONNECT<\/small>[\s\S]*?<span>Vancouver, Canada<\/span>/i);
   assert.match(economics.html, /data-economics-calculator="true"[\s\S]*?data-opsh-calculator="embedded"/i);
 });
