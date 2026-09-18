@@ -185,6 +185,10 @@ export const evidence = [
     external: false,
     action: "READ STUDY SUMMARIES",
   },
+  /*
+   * Temporarily hidden from public Evidence until primary-source verification is complete.
+   * Preserve this record for later restoration.
+   *
   {
     index: "04",
     category: "Industry Recognition",
@@ -196,6 +200,7 @@ export const evidence = [
     external: false,
     action: "VERIFICATION IN PROGRESS",
   },
+   */
 ];
 
 export const roadmap = [
