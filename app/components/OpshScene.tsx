@@ -9,7 +9,7 @@ import {
   useRef,
 } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { CameraShake, OrbitControls, useAnimations, useGLTF } from "@react-three/drei";
+import { CameraShake, OrbitControls, Sky, useAnimations, useGLTF } from "@react-three/drei";
 import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
 import {
   ACESFilmicToneMapping,
@@ -1442,6 +1442,15 @@ function SceneContent({
   const ambientRef = useRef<any>(null);
   const dirRef = useRef<any>(null);
   const hemiRef = useRef<any>(null);
+  const skyRef = useRef<any>(null);
+  const sunPosRef = useRef(new Vector3(0, -1, 0));
+  
+  const sunCurve = useMemo(() => new CatmullRomCurve3([
+    new Vector3(0, -1, 0),    // Stage 1 (Night / Off-Peak Pumping)
+    new Vector3(1, 0.05, 0),  // Stage 2 (Store / Pre-Dawn)
+    new Vector3(0, 1, 0),     // Stage 3 (Generate / Midday)
+    new Vector3(-1, 0.05, 0), // Stage 4 (Dispatch / Peak Evening)
+  ]), []);
   
   const baseAmb = useMemo(() => new Color("#78aebd"), []);
   const baseDir = useMemo(() => new Color("#d9f8ff"), []);
@@ -1468,11 +1477,17 @@ function SceneContent({
       hemiIntensity = MathUtils.lerp(hemiIntensity, 0.8, releaseAmount);
       hemiRef.current.intensity = hemiIntensity;
     }
+    
+    // Tween the sun's physical position
+    sunCurve.getPoint(p, sunPosRef.current);
+    if (skyRef.current?.material?.uniforms?.sunPosition) {
+      skyRef.current.material.uniforms.sunPosition.value.copy(sunPosRef.current);
+    }
   });
 
   return (
     <>
-      <color attach="background" args={[COLORS.background]} />
+      <Sky ref={skyRef} sunPosition={sunPosRef.current} />
       <fog attach="fog" args={[COLORS.fog, 18, 45]} />
 
       <CameraShake

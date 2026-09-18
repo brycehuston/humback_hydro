@@ -173,14 +173,32 @@ export default function SiteChrome({ children }: { children: React.ReactNode }) 
           <p className="footer-statement brand-chrome">NATURAL POWER. REAL IMPACT.</p>
           <a className="footer-email" href="mailto:info@humpbackenergy.com">info@humpbackenergy.com</a>
         </div>
-        <div className="footer-grid footer-reveal">
-          <div><small className="titanium-microtype">EXPLORE</small>{navItems.map((item) => <Link key={item.href} href={item.href}>{item.label}</Link>)}<Link data-open-homepage-calculator href="/#economics">Calculator</Link></div>
-          <div><small className="titanium-microtype">PARTNER</small><Link href="/partners#pilot">Pilot &amp; Site Evaluation</Link><Link href="/partners#investment">Investment</Link><Link href="/partners#engineering">Engineering &amp; Delivery</Link></div>
-          <div><small className="titanium-microtype">CONNECT</small><Link href="/partners">Contact</Link><a href="https://www.linkedin.com/company/humpback-hydro/" target="_blank" rel="noreferrer">LinkedIn</a></div>
+        <div className="footer-reveal flex flex-wrap gap-x-16 md:gap-x-28 lg:gap-x-40 gap-y-12 mt-16 md:mt-24 text-sm">
+          <div className="flex flex-col gap-5">
+            <small className="titanium-microtype opacity-50 mb-2">EXPLORE</small>
+            {navItems.slice(0, 3).map((item) => <Link key={item.href} href={item.href} className="hover:text-white transition-colors">{item.label}</Link>)}
+            <Link data-open-homepage-calculator href="/#economics" className="hover:text-white transition-colors">Calculator</Link>
+          </div>
+          <div className="flex flex-col gap-5">
+            <small className="titanium-microtype opacity-0 hidden md:block pointer-events-none select-none mb-2" aria-hidden="true">EXPLORE</small>
+            {navItems.slice(3).map((item) => <Link key={item.href} href={item.href} className="hover:text-white transition-colors">{item.label}</Link>)}
+          </div>
+          <div className="flex flex-col gap-5">
+            <small className="titanium-microtype opacity-50 mb-2">PARTNER</small>
+            <Link href="/partners#pilot" className="hover:text-white transition-colors">Pilot Opportunity</Link>
+            <Link href="/partners#evaluate" className="hover:text-white transition-colors">Evaluate a Site</Link>
+            <Link href="/partners#investment" className="hover:text-white transition-colors">Investment</Link>
+          </div>
+          <div className="flex flex-col gap-5">
+            <small className="titanium-microtype opacity-50 mb-2">CONNECT</small>
+            <Link href="/partners" className="hover:text-white transition-colors">Contact</Link>
+            <a href="https://www.linkedin.com/company/humpback-hydro/" target="_blank" rel="noreferrer" className="hover:text-white transition-colors">LinkedIn</a>
+          </div>
         </div>
-        <div className="footer-legal footer-reveal">
-          <span className="titanium-microtype">VANCOUVER, CANADA</span>
-          <span className="text-balance footer-copyright titanium-microtype">HUMPBACK HYDRO © 2026 | SITE BY <a className="footer-credit-link" href="https://www.brycehuston.com/solutions" target="_blank" rel="noreferrer">HUSTON SOLUTION INC.</a></span>
+        <div className="footer-reveal flex flex-col md:flex-row justify-between items-center w-full mt-24 pt-8 border-t border-white/10 titanium-microtype gap-4 md:gap-0">
+          <span>2026 © HUMPBACK HYDRO</span>
+          <span className="flex items-center gap-2">📍 VANCOUVER, CANADA</span>
+          <span>SITE BY <a className="footer-credit-link hover:text-white transition-colors" href="https://www.brycehuston.com/solutions" target="_blank" rel="noreferrer">HUSTON SOLUTION INC.</a></span>
         </div>
       </footer>
     </>

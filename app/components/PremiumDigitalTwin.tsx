@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import gsap from "gsap";
 import type { CSSProperties, KeyboardEvent } from "react";
 import {
   DIGITAL_TWIN_CYCLE_SECONDS,
@@ -155,27 +156,27 @@ const flowVectorRoutes: readonly FlowVectorRoute[] = [
   {
     operation: "lower",
     className: "lower-left",
-    d: "M 365 660 H 550 C 561 660 570 669 570 680 V 698 C 570 709 579 718 590 718 H 780",
+    d: "M 365 673 H 635 C 646 673 655 682 655 693 V 711 C 655 722 664 731 675 731 H 785",
   },
   {
     operation: "lower",
     className: "lower-right",
-    d: "M 1235 660 H 1022 C 1011 660 1002 669 1002 680 V 698 C 1002 709 993 718 982 718 H 820",
+    d: "M 1235 673 H 950 C 939 673 930 682 930 693 V 711 C 930 722 921 731 910 731 H 785",
   },
   {
     operation: "charge",
     className: "charge-center",
-    d: "M 780 720 V 250",
+    d: "M 785 720 V 250",
   },
   {
     operation: "upper",
     className: "upper-left",
-    d: "M 650 250 V 320 C 650 386 604 420 570 432 H 365",
+    d: "M 655 250 V 320 C 655 386 604 430 570 445 H 365",
   },
   {
     operation: "upper",
     className: "upper-right",
-    d: "M 950 250 V 320 C 950 386 968 420 1002 432 H 1235",
+    d: "M 930 250 V 320 C 930 386 968 430 1002 445 H 1235",
   },
 ] as const;
 
@@ -254,12 +255,18 @@ function manualLevelsForSignature(
 export default function PremiumDigitalTwin() {
   const rootRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const telemetryRef = useRef<HTMLDivElement>(null);
   const signatureButtonRefs = useRef<Array<HTMLButtonElement | null>>([]);
   const controlApiRef = useRef<ControlApi | null>(null);
   const upperRef = useRef<HTMLDivElement>(null);
   const turbineRef = useRef<HTMLDivElement>(null);
   const penstockRef = useRef<HTMLDivElement>(null);
   const lowerRef = useRef<HTMLDivElement>(null);
+  const signoffARef = useRef<HTMLSpanElement>(null);
+  const signoffBRef = useRef<HTMLSpanElement>(null);
+  const signoffCRef = useRef<HTMLSpanElement>(null);
+  const signoffTlRef = useRef<gsap.core.Timeline | null>(null);
+  const signoffActiveRef = useRef(false);
 
   const [selectedAction, setSelectedAction] = useState<TwinAction>("auto");
   const [paused, setPaused] = useState(false);
@@ -302,6 +309,54 @@ export default function PremiumDigitalTwin() {
     if (lowerRef.current) observer.observe(lowerRef.current);
 
     return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    const elA = signoffARef.current;
+    const elB = signoffBRef.current;
+    const elC = signoffCRef.current;
+    const root = rootRef.current;
+    if (!elA || !elB || !elC || !root) return;
+
+    const ctx = gsap.context(() => {
+      // Use repeat: -1 as requested, but with a massive delay so it NEVER naturally overlaps
+      // within the 12.4s active window. We explicitly sync it to the cycle via requestAnimationFrame.
+      const tl = gsap.timeline({ repeat: -1, repeatDelay: 30, paused: true });
+      signoffTlRef.current = tl;
+
+      tl.set(elA, { opacity: 0, filter: "blur(0px)", scale: 1, letterSpacing: "0.17em" })
+        .set(elB, { opacity: 0, filter: "blur(0px)", scale: 1, letterSpacing: "0.17em" })
+        .set(elC, { opacity: 0, filter: "blur(12px)", scale: 0.9, letterSpacing: "0.05em" })
+        .to(elA, {
+          opacity: 0.96,
+          duration: 2.0,
+          ease: "power2.inOut",
+        }, "+=1.5")
+        .to(elB, {
+          opacity: 0.96,
+          duration: 2.0,
+          ease: "power2.inOut",
+        }, "+=2.0")
+        .to(elC, {
+          opacity: 0.96,
+          filter: "blur(0px)",
+          scale: 1,
+          letterSpacing: "0.17em",
+          duration: 2.0,
+          ease: "power2.inOut",
+        }, "+=1.0")
+        .to([elA, elB, elC], {
+          opacity: 0,
+          filter: "blur(2px)",
+          scale: 0.985,
+          duration: 3.0,
+          ease: "power2.inOut",
+        }, "+=3.0");
+    });
+
+    return () => {
+      ctx.revert();
+    };
   }, []);
 
   useEffect(() => {
@@ -424,50 +479,48 @@ export default function PremiumDigitalTwin() {
         if (particleOpacity <= 0.015) return;
 
         const particleCount = operation === "charge" ? 7 : 6;
-        const tailLength = 3; 
 
-        ctx.strokeStyle = "#00f0ff";
-        ctx.lineJoin = "miter";
+        ctx.fillStyle = "rgba(164, 230, 234, 0.85)";
+        ctx.strokeStyle = "rgba(164, 230, 234, 0.85)";
+        ctx.lineJoin = "round";
+        ctx.lineWidth = 2.5;
+        ctx.shadowBlur = 0;
 
         for (let index = 0; index < particleCount; index += 1) {
-          const baseFraction = reducedMotion
+          const fraction = reducedMotion
             ? (index + 0.5) / particleCount
             : (seconds * speed + index / particleCount) % 1;
-
-          for (let trail = 0; trail < tailLength; trail++) {
-            const stretch = speed > 0 ? (0.008 * (speed / 0.08)) : 0.008;
-            const trailFraction = (baseFraction - (trail * stretch) + 1) % 1;
             
-            const distance = trailFraction * length;
-            const point = path.getPointAtLength(distance);
-            const nextPoint = path.getPointAtLength(Math.min(length, distance + 2));
-            const dx = nextPoint.x - point.x;
-            const dy = nextPoint.y - point.y;
-            const magnitude = Math.max(0.001, Math.hypot(dx, dy));
-            
-            const lane = index % 2 === 0 ? -2.2 : 2.2;
-            const px = point.x + (-dy / magnitude) * lane;
-            const py = point.y + (dx / magnitude) * lane;
-            const angle = Math.atan2(dy, dx);
-            
-            ctx.save();
-            ctx.translate(px, py);
-            ctx.rotate(angle);
-            
-            const activeOpacity = Math.min(1, particleOpacity * 1.5);
-            ctx.globalAlpha = activeOpacity * (trail === 0 ? 1 : trail === 1 ? 0.5 : 0.2);
-            
-            const size = 6.5;
-            ctx.lineWidth = 2.5;
-            
-            ctx.beginPath();
-            ctx.moveTo(-size, -size * 0.7);
-            ctx.lineTo(size, 0);
-            ctx.lineTo(-size, size * 0.7);
-            
-            ctx.stroke();
-            ctx.restore();
-          }
+          const distance = fraction * length;
+          const point = path.getPointAtLength(distance);
+          const nextPoint = path.getPointAtLength(Math.min(length, distance + 2));
+          const dx = nextPoint.x - point.x;
+          const dy = nextPoint.y - point.y;
+          const magnitude = Math.max(0.001, Math.hypot(dx, dy));
+          
+          const lane = 0;
+          const px = point.x + (-dy / magnitude) * lane;
+          const py = point.y + (dx / magnitude) * lane;
+          const angle = Math.atan2(dy, dx);
+          
+          ctx.save();
+          ctx.translate(px, py);
+          ctx.rotate(angle);
+          
+          ctx.globalAlpha = Math.min(1, particleOpacity * 1.5);
+          
+          const size = 6.5;
+          
+          ctx.beginPath();
+          ctx.moveTo(size * 1.1, 0);
+          ctx.lineTo(-size * 0.9, size * 1.15);
+          ctx.lineTo(-size * 0.25, 0);
+          ctx.lineTo(-size * 0.9, -size * 1.15);
+          ctx.closePath();
+          
+          ctx.fill();
+          ctx.stroke();
+          ctx.restore();
         }
       });
       ctx.restore();
@@ -949,13 +1002,13 @@ export default function PremiumDigitalTwin() {
     }
 
     function drawMachineryMotion() {
-      drawMachineryCue(0.364, 0.48, 0.027, machineryAngles.charge, machinery.charge);
-      drawMachineryCue(0.617, 0.48, 0.027, -machineryAngles.charge, machinery.charge);
-      drawMachineryCue(0.486, 0.555, 0.024, machineryAngles.charge * 0.92, machinery.charge * 0.9);
-      drawMachineryCue(0.364, 0.48, 0.027, machineryAngles.upper, machinery.upper);
-      drawMachineryCue(0.617, 0.48, 0.027, -machineryAngles.upper, machinery.upper);
-      drawMachineryCue(0.364, 0.735, 0.026, machineryAngles.lower, machinery.lower);
-      drawMachineryCue(0.626, 0.735, 0.026, -machineryAngles.lower, machinery.lower);
+      drawMachineryCue(0.364, 0.494, 0.027, machineryAngles.charge, machinery.charge);
+      drawMachineryCue(0.617, 0.494, 0.027, -machineryAngles.charge, machinery.charge);
+      drawMachineryCue(0.4875, 0.56, 0.024, machineryAngles.charge * 0.92, machinery.charge * 0.9);
+      drawMachineryCue(0.364, 0.494, 0.027, machineryAngles.upper, machinery.upper);
+      drawMachineryCue(0.617, 0.494, 0.027, -machineryAngles.upper, machinery.upper);
+      drawMachineryCue(0.364, 0.747, 0.026, machineryAngles.lower, machinery.lower);
+      drawMachineryCue(0.626, 0.747, 0.026, -machineryAngles.lower, machinery.lower);
     }
 
     function drawFish(x: number, y: number, size: number, direction: 1 | -1, alpha: number) {
@@ -1138,32 +1191,15 @@ export default function PremiumDigitalTwin() {
         true,
       );
 
-      panel(0.775, 0.042, 0.20, 0.13, 0.7);
-      textLabel(
-        "ILLUSTRATED STATE  /  " + phase.index,
-        0.792,
-        0.073,
-        8,
-        "rgba(196,226,225,.72)",
-        "left",
-        true,
-      );
-      textLabel(phase.title, 0.792, 0.108, 16, "#f3fbfd");
-      
-      let telemetry = "STATUS: INTAKE | RPM: 1,800 | FLOW: BALANCED";
-      if (signatureStage === "store") telemetry = "STATUS: HOLD | RPM: 0 | ENERGY: STORED";
-      else if (signatureStage === "energy" || scene.phase === "charge") telemetry = "STATUS: PUMPING | RPM: 3,200 | ARB: $28/MWh";
-      else if (signatureStage === "generate" || scene.phase === "upper") telemetry = "STATUS: DISPATCH | RPM: MAX | OUTPUT: 10MW";
+      let telemetryHTML = `<div class="telemetry-header">ILLUSTRATED STATE  /  ${phase.index}</div><div class="telemetry-title">${phase.title}</div><div class="telemetry-data">STATUS: <span>INTAKE</span> &nbsp;|&nbsp; RPM: <span>1,800</span> &nbsp;|&nbsp; FLOW: <span>BALANCED</span></div>`;
+      if (signatureStage === "store") telemetryHTML = `<div class="telemetry-header">ILLUSTRATED STATE  /  ${phase.index}</div><div class="telemetry-title">${phase.title}</div><div class="telemetry-data">STATUS: <span>HOLD</span> &nbsp;|&nbsp; RPM: <span>0</span> &nbsp;|&nbsp; ENERGY: <span>STORED</span></div>`;
+      else if (signatureStage === "energy" || scene.phase === "charge") telemetryHTML = `<div class="telemetry-header">ILLUSTRATED STATE  /  ${phase.index}</div><div class="telemetry-title">${phase.title}</div><div class="telemetry-data">STATUS: <span>PUMPING</span> &nbsp;|&nbsp; RPM: <span>3,200</span> &nbsp;|&nbsp; ARB: <span>$28/MWh</span></div>`;
+      else if (signatureStage === "generate" || scene.phase === "upper") telemetryHTML = `<div class="telemetry-header">ILLUSTRATED STATE  /  ${phase.index}</div><div class="telemetry-title">${phase.title}</div><div class="telemetry-data">STATUS: <span>DISPATCH</span> &nbsp;|&nbsp; RPM: <span>MAX</span> &nbsp;|&nbsp; OUTPUT: <span>10MW</span></div>`;
 
-      textLabel(
-        telemetry,
-        0.792,
-        0.142,
-        11,
-        "#70d9e8",
-        "left",
-        true,
-      );
+      if (telemetryRef.current && telemetryRef.current.dataset.stage !== String(signatureStage || scene.phase)) {
+        telemetryRef.current.dataset.stage = String(signatureStage || scene.phase);
+        telemetryRef.current.innerHTML = telemetryHTML;
+      }
     }
 
     function syncPhaseUi(
@@ -1262,9 +1298,24 @@ export default function PremiumDigitalTwin() {
         cycleTime >= DIGITAL_TWIN_SIGNOFF_START_SECONDS &&
         cycleTime < DIGITAL_TWIN_SIGNOFF_END_SECONDS;
       if (cycleComplete) {
-        rootElement.dataset.cycleSignoff = "true";
+        if (!signoffActiveRef.current) {
+          signoffActiveRef.current = true;
+          signoffTlRef.current?.restart();
+        }
+        if (rootElement.dataset.cycleSignoff !== "true") {
+          rootElement.dataset.cycleSignoff = "true";
+        }
       } else {
-        delete rootElement.dataset.cycleSignoff;
+        if (signoffActiveRef.current) {
+          signoffActiveRef.current = false;
+          signoffTlRef.current?.pause();
+          if (signoffARef.current && signoffBRef.current && signoffCRef.current) {
+            gsap.set([signoffARef.current, signoffBRef.current, signoffCRef.current], { opacity: 0 });
+          }
+        }
+        if (rootElement.dataset.cycleSignoff) {
+          delete rootElement.dataset.cycleSignoff;
+        }
       }
       if (!forcedAction && sequenceStarted && elapsed >= DIGITAL_TWIN_SIGNOFF_END_SECONDS) {
         rootElement.dataset.sequenceComplete = "true";
@@ -1323,10 +1374,9 @@ export default function PremiumDigitalTwin() {
         waterMotionTime,
       );
       drawMarineWildlife(motionTime);
+      updateFlowVectors(scene, signatureStage, motionTime);
       drawMachineryMotion();
       ctx.restore();
-
-      updateFlowVectors(scene, signatureStage, motionTime);
 
       drawHud(scene, signatureStage);
       syncPhaseUi(scene, signatureStage);
@@ -1507,13 +1557,14 @@ export default function PremiumDigitalTwin() {
           ref={canvasRef}
           aria-label="Animated Humpback Hydro operating model showing external energy input, storage, generation, and electrical dispatch; lower-stage generation is shown as a separate architecture path"
         />
+        <div className="premium-twin-telemetry" ref={telemetryRef} aria-hidden="true" />
         <FlowVectorLayer />
         <div className="premium-twin-annotations" aria-hidden="true">
           <svg viewBox="0 0 1600 900" preserveAspectRatio="none">
-            <g data-leader="upper"><circle className="callout-anchor-ring" cx="900" cy="190" r="11" /><circle className="callout-anchor-dot" cx="900" cy="190" r="4" /><path pathLength="1" d={`M 1024 ${leaderY.upper} H 960 L 900 190`} /></g>
-            <g data-leader="turbine"><circle className="callout-anchor-ring" cx="572" cy="474" r="11" /><circle className="callout-anchor-dot" cx="572" cy="474" r="4" /><path pathLength="1" d={`M 319 ${leaderY.turbine} H 485 L 572 474`} /></g>
-            <g data-leader="penstock"><circle className="callout-anchor-ring" cx="1013" cy="487" r="11" /><circle className="callout-anchor-dot" cx="1013" cy="487" r="4" /><path pathLength="1" d={`M 1278 ${leaderY.penstock} H 1120 L 1013 487`} /></g>
-            <g data-leader="lower"><circle className="callout-anchor-ring" cx="933" cy="724" r="11" /><circle className="callout-anchor-dot" cx="933" cy="724" r="4" /><path pathLength="1" d={`M 1265 ${leaderY.lower} H 1112 L 933 724`} /></g>
+            <g data-leader="upper"><circle className="callout-anchor-ring" cx="900" cy="190" r="11" /><circle className="callout-anchor-dot" cx="900" cy="190" r="4" /><path pathLength="1" d={`M 1024 ${leaderY.upper} H 964 V 190 H 900`} /></g>
+            <g data-leader="turbine"><circle className="callout-anchor-ring" cx="572" cy="474" r="11" /><circle className="callout-anchor-dot" cx="572" cy="474" r="4" /><path pathLength="1" d={`M 319 ${leaderY.turbine} H 379 V 474 H 572`} /></g>
+            <g data-leader="penstock"><circle className="callout-anchor-ring" cx="1013" cy="487" r="11" /><circle className="callout-anchor-dot" cx="1013" cy="487" r="4" /><path pathLength="1" d={`M 1278 ${leaderY.penstock} H 1218 V 487 H 1013`} /></g>
+            <g data-leader="lower"><circle className="callout-anchor-ring" cx="933" cy="724" r="11" /><circle className="callout-anchor-dot" cx="933" cy="724" r="4" /><path pathLength="1" d={`M 1265 ${leaderY.lower} H 1205 V 724 H 933`} /></g>
           </svg>
           <div className="premium-twin-callout is-upper" data-callout="upper" ref={upperRef}>
             <strong>Upper Reservoir</strong><span>Stored Water at Elevation</span>
@@ -1547,9 +1598,9 @@ export default function PremiumDigitalTwin() {
         <div className="premium-twin-cycle-signoff" aria-hidden="true">
           <i />
           <strong>
-            <span>Ocean Energy</span>
-            <span>For A Stronger</span>
-            <span>Tomorrow</span>
+            <span ref={signoffARef}>Ocean Energy</span>
+            <span ref={signoffBRef}>For A Stronger</span>
+            <span ref={signoffCRef}>Tomorrow</span>
           </strong>
         </div>
         <div className="premium-twin-frame-label" aria-hidden="true">

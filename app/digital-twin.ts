@@ -1,6 +1,6 @@
-export const DIGITAL_TWIN_CYCLE_SECONDS = 55;
+export const DIGITAL_TWIN_CYCLE_SECONDS = 61.1;
 export const DIGITAL_TWIN_SIGNOFF_START_SECONDS = 42.6;
-export const DIGITAL_TWIN_SIGNOFF_END_SECONDS = 55;
+export const DIGITAL_TWIN_SIGNOFF_END_SECONDS = 61.1;
 
 const DIGITAL_TWIN_TIMELINE = Object.freeze({
   establishEnd: 0.7,
