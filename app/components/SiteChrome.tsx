@@ -216,29 +216,38 @@ export default function SiteChrome({ children }: { children: React.ReactNode }) 
           <a className="footer-email" href="mailto:info@humpbackenergy.com">info@humpbackenergy.com</a>
         </div>
         <div className="footer-grid footer-reveal">
-          <div>
+          <div className="footer-group-explore">
             <small className="titanium-microtype">EXPLORE</small>
-            {navItems.slice(0, 3).map((item) => <Link key={item.href} href={item.href}>{item.label}</Link>)}
-            <Link data-open-homepage-calculator href="/#economics">Calculator</Link>
+            <div className="footer-explore-links">
+              <Link href="/technology">Technology</Link>
+              <Link href="/applications">Applications</Link>
+              <Link href="/impact">Impact</Link>
+              <Link data-open-homepage-calculator href="/#economics">Calculator</Link>
+              <Link href="/economics">Economics</Link>
+              <Link href="/evidence">Evidence</Link>
+              <Link href="/company" className="footer-company-link">Company</Link>
+            </div>
           </div>
-          <div>
-            <small className="titanium-microtype opacity-0 hidden md:block pointer-events-none select-none" aria-hidden="true">EXPLORE</small>
-            {navItems.slice(3).map((item) => <Link key={item.href} href={item.href}>{item.label}</Link>)}
-          </div>
-          <div>
-            <small className="titanium-microtype">PARTNER</small>
-            <Link href="/partners#pilot">Pilot Opportunity</Link>
-            <Link href="/partners#evaluate">Evaluate a Site</Link>
-            <Link href="/partners#investment">Investment</Link>
-          </div>
-          <div>
-            <small className="titanium-microtype">CONNECT</small>
-            <Link href="/partners">Contact</Link>
-            <a href="https://www.linkedin.com/company/humpback-hydro/" target="_blank" rel="noreferrer">LinkedIn</a>
+          <div className="footer-group-partner-connect">
+            <div className="footer-group">
+              <small className="titanium-microtype">PARTNER</small>
+              <div className="footer-group-links">
+                <Link href="/partners#pilot">Opportunity</Link>
+                <Link href="/partners#evaluate">Evaluate a Site</Link>
+                <Link href="/partners#investment">Investment</Link>
+              </div>
+            </div>
+            <div className="footer-group">
+              <small className="titanium-microtype">CONNECT</small>
+              <div className="footer-group-links">
+                <Link href="/partners">Contact</Link>
+                <a href="https://www.linkedin.com/company/humpback-hydro/" target="_blank" rel="noreferrer">LinkedIn</a>
+              </div>
+            </div>
           </div>
         </div>
         <div className="footer-legal footer-reveal">
-          <span>2026 &copy; HUMPBACK HYDRO</span>
+          <span>&copy; 2026 HUMPBACK HYDRO</span>
           <span>📍 VANCOUVER, CANADA</span>
           <span>SITE BY <a className="footer-credit-link" href="https://www.brycehuston.com/solutions" target="_blank" rel="noreferrer">HUSTON SOLUTION INC.</a></span>
         </div>

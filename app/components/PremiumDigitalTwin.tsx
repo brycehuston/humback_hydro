@@ -1568,51 +1568,55 @@ export default function PremiumDigitalTwin() {
         "--active-stage-duration": activeStep?.duration ?? "8.5s",
       } as CSSProperties}
     >
-      <div className="premium-twin-stage">
-        <canvas
-          ref={canvasRef}
-          aria-label="Animated Humpback Hydro operating model showing external energy input, storage, generation, and electrical dispatch; lower-stage generation is shown as a separate architecture path"
-        />
-        <div className="premium-twin-telemetry" ref={telemetryRef} aria-hidden="true" />
-        <FlowVectorLayer />
-        <div className="premium-twin-progress-bar" ref={progressBarRef} aria-hidden="true" />
-        <div className="premium-twin-phase-vignette" ref={vignetteRef} aria-hidden="true" />
-        <div className="premium-twin-annotations" aria-hidden="true">
-          <svg viewBox="0 0 1600 900" preserveAspectRatio="none">
-            <g data-leader="upper" style={{ "--pause-offset": pauseOffsets.upper } as CSSProperties}><circle className="callout-anchor-ring" cx="900" cy="190" r="11" /><circle className="callout-anchor-dot" cx="900" cy="190" r="4" /><path pathLength="1" d={`M 1024 ${leaderY.upper} H 964 L 900 190`} /></g>
-            <g data-leader="turbine" style={{ "--pause-offset": pauseOffsets.turbine } as CSSProperties}><circle className="callout-anchor-ring" cx="572" cy="474" r="11" /><circle className="callout-anchor-dot" cx="572" cy="474" r="4" /><path pathLength="1" d={`M 319 ${leaderY.turbine} H 379 L 572 474`} /></g>
-            <g data-leader="penstock" style={{ "--pause-offset": pauseOffsets.penstock } as CSSProperties}><circle className="callout-anchor-ring" cx="1013" cy="487" r="11" /><circle className="callout-anchor-dot" cx="1013" cy="487" r="4" /><path pathLength="1" d={`M 1278 ${leaderY.penstock} H 1218 L 1013 487`} /></g>
-            <g data-leader="lower" style={{ "--pause-offset": pauseOffsets.lower } as CSSProperties}><circle className="callout-anchor-ring" cx="933" cy="724" r="11" /><circle className="callout-anchor-dot" cx="933" cy="724" r="4" /><path pathLength="1" d={`M 1265 ${leaderY.lower} V ${leaderY.lower + 24} L 933 724`} /></g>
-          </svg>
-          <div className="premium-twin-callout is-upper" data-callout="upper" ref={upperRef}>
-            <strong>Upper Reservoir</strong><span>Stored Water at Elevation</span>
-            <svg className="premium-twin-callout-trace" viewBox="0 0 100 100" preserveAspectRatio="none">
-              <rect className="premium-twin-callout-base" x=".6" y=".6" width="98.8" height="98.8" />
-              <path className="premium-twin-callout-progress" pathLength="1" d="M .6 50 V .6 H 99.4 V 99.4 H .6 V 50" />
+      <div className="premium-twin-stage-wrapper" style={{ display: 'flex', flexDirection: 'column', position: 'relative' }}>
+        <div className="premium-twin-stage">
+          <canvas
+            ref={canvasRef}
+            aria-label="Animated Humpback Hydro operating model showing external energy input, storage, generation, and electrical dispatch; lower-stage generation is shown as a separate architecture path"
+          />
+          <FlowVectorLayer />
+          <div className="premium-twin-progress-bar" ref={progressBarRef} aria-hidden="true" />
+          <div className="premium-twin-phase-vignette" ref={vignetteRef} aria-hidden="true" />
+          <div className="premium-twin-annotations" aria-hidden="true">
+            <svg viewBox="0 0 1600 900" preserveAspectRatio="none">
+              <g data-leader="upper" style={{ "--pause-offset": pauseOffsets.upper } as CSSProperties}><circle className="callout-anchor-ring" cx="900" cy="190" r="11" /><circle className="callout-anchor-dot" cx="900" cy="190" r="4" /><path pathLength="1" d={`M 1024 ${leaderY.upper} H 964 L 900 190`} /></g>
+              <g data-leader="turbine" style={{ "--pause-offset": pauseOffsets.turbine } as CSSProperties}><circle className="callout-anchor-ring" cx="572" cy="474" r="11" /><circle className="callout-anchor-dot" cx="572" cy="474" r="4" /><path pathLength="1" d={`M 319 ${leaderY.turbine} H 379 L 572 474`} /></g>
+              <g data-leader="penstock" style={{ "--pause-offset": pauseOffsets.penstock } as CSSProperties}><circle className="callout-anchor-ring" cx="1013" cy="487" r="11" /><circle className="callout-anchor-dot" cx="1013" cy="487" r="4" /><path pathLength="1" d={`M 1278 ${leaderY.penstock} H 1218 L 1013 487`} /></g>
+              <g data-leader="lower" style={{ "--pause-offset": pauseOffsets.lower } as CSSProperties}><circle className="callout-anchor-ring" cx="933" cy="724" r="11" /><circle className="callout-anchor-dot" cx="933" cy="724" r="4" /><path pathLength="1" d={`M 1265 ${leaderY.lower} V ${leaderY.lower + 24} L 933 724`} /></g>
             </svg>
-          </div>
-          <div className="premium-twin-callout is-turbine" data-callout="turbine" ref={turbineRef}>
-            <strong>Reversible Machinery</strong><span>Conceptual Pump / Generate Path</span>
-            <svg className="premium-twin-callout-trace" viewBox="0 0 100 100" preserveAspectRatio="none">
-              <rect className="premium-twin-callout-base" x=".6" y=".6" width="98.8" height="98.8" />
-              <path className="premium-twin-callout-progress" pathLength="1" d="M 99.4 50 V .6 H .6 V 99.4 H 99.4 V 50" />
-            </svg>
-          </div>
-          <div className="premium-twin-callout is-penstock" data-callout="penstock" ref={penstockRef}>
-            <strong>Penstock System</strong><span>Illustrative Hydraulic Route</span>
-            <svg className="premium-twin-callout-trace" viewBox="0 0 100 100" preserveAspectRatio="none">
-              <rect className="premium-twin-callout-base" x=".6" y=".6" width="98.8" height="98.8" />
-              <path className="premium-twin-callout-progress" pathLength="1" d="M .6 50 V .6 H 99.4 V 99.4 H .6 V 50" />
-            </svg>
-          </div>
-          <div className="premium-twin-callout is-lower" data-callout="lower" ref={lowerRef}>
-            <strong>Lower Reservoir</strong><span>Integrated in Marine Structure</span>
-            <svg className="premium-twin-callout-trace" viewBox="0 0 100 100" preserveAspectRatio="none">
-              <rect className="premium-twin-callout-base" x=".6" y=".6" width="98.8" height="98.8" />
-              <path className="premium-twin-callout-progress" pathLength="1" d="M .6 50 V .6 H 99.4 V 99.4 H .6 V 50" />
-            </svg>
+            <div className="premium-twin-callout is-upper" data-callout="upper" ref={upperRef}>
+              <strong>Upper Reservoir</strong><span>Stored Water at Elevation</span>
+              <svg className="premium-twin-callout-trace" viewBox="0 0 100 100" preserveAspectRatio="none">
+                <rect className="premium-twin-callout-base" x=".6" y=".6" width="98.8" height="98.8" />
+                <path className="premium-twin-callout-progress" pathLength="1" d="M .6 50 V .6 H 99.4 V 99.4 H .6 V 50" />
+              </svg>
+            </div>
+            <div className="premium-twin-callout is-turbine" data-callout="turbine" ref={turbineRef}>
+              <strong>Reversible Machinery</strong><span>Conceptual Pump / Generate Path</span>
+              <svg className="premium-twin-callout-trace" viewBox="0 0 100 100" preserveAspectRatio="none">
+                <rect className="premium-twin-callout-base" x=".6" y=".6" width="98.8" height="98.8" />
+                <path className="premium-twin-callout-progress" pathLength="1" d="M 99.4 50 V .6 H .6 V 99.4 H 99.4 V 50" />
+              </svg>
+            </div>
+            <div className="premium-twin-callout is-penstock" data-callout="penstock" ref={penstockRef}>
+              <strong>Penstock System</strong><span>Illustrative Hydraulic Route</span>
+              <svg className="premium-twin-callout-trace" viewBox="0 0 100 100" preserveAspectRatio="none">
+                <rect className="premium-twin-callout-base" x=".6" y=".6" width="98.8" height="98.8" />
+                <path className="premium-twin-callout-progress" pathLength="1" d="M .6 50 V .6 H 99.4 V 99.4 H .6 V 50" />
+              </svg>
+            </div>
+            <div className="premium-twin-callout is-lower" data-callout="lower" ref={lowerRef}>
+              <strong>Lower Reservoir</strong><span>Integrated in Marine Structure</span>
+              <svg className="premium-twin-callout-trace" viewBox="0 0 100 100" preserveAspectRatio="none">
+                <rect className="premium-twin-callout-base" x=".6" y=".6" width="98.8" height="98.8" />
+                <path className="premium-twin-callout-progress" pathLength="1" d="M .6 50 V .6 H 99.4 V 99.4 H .6 V 50" />
+              </svg>
+            </div>
           </div>
         </div>
+
+        <div className="premium-twin-telemetry" ref={telemetryRef} aria-hidden="true" />
+
         <div className="premium-twin-cycle-signoff" aria-hidden="true">
           <i />
           <div className="premium-twin-mark-wrap" ref={markWrapRef}>
