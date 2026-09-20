@@ -11171,175 +11171,6 @@ section:has(.is-visible) .platform-rings {
 }
 
 /* =========================================================
-   RESPONSIVE DIGITAL TWIN (BOUNDED REFINEMENT)
-   ========================================================= */
-
-@media (max-width: 1440px) {
-  .premium-twin-playback-controls button,
-  .premium-twin-sequence-step,
-  .premium-twin-auxiliary-btn {
-    min-height: 44px;
-  }
-}
-
-@media (max-width: 1280px) {
-  /* iPad Portrait Reflow */
-  .premium-twin-stage-wrapper > .premium-twin-telemetry {
-    position: relative !important;
-    top: auto !important;
-    left: auto !important;
-    width: 100% !important;
-    border-left: none !important;
-    border-right: none !important;
-    border-top: none !important;
-    background: rgba(3, 18, 25, 0.95) !important;
-    padding: 16px 24px !important;
-    display: flex !important;
-    flex-direction: row !important;
-    justify-content: space-between !important;
-    align-items: center !important;
-    border-bottom: 1px solid rgba(111, 224, 217, 0.3) !important;
-  }
-  
-  .telemetry-title {
-    font-size: 16px !important;
-  }
-  
-  .premium-twin-stage-wrapper > .premium-twin-cycle-signoff {
-    position: relative !important;
-    top: auto !important;
-    left: auto !important;
-    width: 100% !important;
-    padding: 24px !important;
-    background: rgba(2, 13, 20, 0.95) !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    text-align: center !important;
-  }
-
-  .premium-twin-stage-wrapper > .premium-twin-frame-label {
-    position: relative !important;
-    bottom: auto !important;
-    right: auto !important;
-    width: 100% !important;
-    text-align: center !important;
-    justify-items: center !important;
-    background: rgba(2, 13, 20, 0.95) !important;
-    border-top: none !important;
-  }
-  
-  .premium-twin-stage-wrapper > .premium-twin-continue-cue {
-    position: relative !important;
-    bottom: auto !important;
-    left: auto !important;
-    transform: none !important;
-    width: 100% !important;
-    padding: 0 24px 24px !important;
-    background: rgba(2, 13, 20, 0.95) !important;
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: center !important;
-    justify-content: center !important;
-  }
-  
-  .premium-twin-exhibit-rail {
-    grid-template-columns: 1fr auto !important;
-    grid-template-rows: auto auto !important;
-    height: auto !important;
-    padding: 16px 24px !important;
-    gap: 16px !important;
-  }
-  
-  .premium-twin-rail-label {
-    display: none !important;
-  }
-  
-  .premium-twin-playback-controls {
-    grid-column: 1 !important;
-    grid-row: 1 !important;
-  }
-  
-  .premium-twin-auxiliary-controls {
-    grid-column: 2 !important;
-    grid-row: 1 !important;
-  }
-  
-  .premium-twin-sequence {
-    grid-column: 1 / -1 !important;
-    grid-row: 2 !important;
-    padding: 0 !important;
-    display: grid !important;
-    grid-template-columns: repeat(4, 1fr) !important;
-    gap: 8px !important;
-  }
-}
-
-@media (max-width: 768px) {
-  /* iPhone Portrait Reflow */
-  .premium-twin-stage-wrapper > .premium-twin-telemetry {
-    flex-direction: column !important;
-    align-items: flex-start !important;
-    padding: 16px !important;
-    gap: 8px !important;
-  }
-  
-  .premium-twin-exhibit-rail {
-    grid-template-columns: 1fr !important;
-    grid-template-rows: auto auto auto !important;
-    padding: 16px !important;
-    gap: 12px !important;
-  }
-  
-  .premium-twin-playback-controls {
-    grid-column: 1 !important;
-    grid-row: 1 !important;
-    width: 100% !important;
-    justify-content: center !important;
-  }
-  
-  .premium-twin-auxiliary-controls {
-    grid-column: 1 !important;
-    grid-row: 2 !important;
-    width: 100% !important;
-  }
-  
-  .premium-twin-auxiliary-btn {
-    width: 100% !important;
-  }
-  
-  .premium-twin-sequence {
-    grid-column: 1 !important;
-    grid-row: 3 !important;
-    display: flex !important;
-    width: 100% !important;
-    gap: 4px !important;
-  }
-  
-  .premium-twin-sequence-step {
-    flex: 1 !important;
-    padding: 8px 4px !important;
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: center !important;
-    text-align: center !important;
-    min-height: 56px !important;
-  }
-  
-  .premium-twin-step-copy small {
-    display: none !important;
-  }
-  
-  .premium-twin-step-copy strong {
-    font-size: 8px !important;
-    margin-top: 4px !important;
-  }
-  
-  .premium-twin-step-orbit {
-    margin-right: 0 !important;
-  }
-}
-
 /* =========================================================
    REFINED RESPONSIVE FOOTER (FINAL)
    ========================================================= */
@@ -11569,5 +11400,127 @@ section:has(.is-visible) .platform-rings {
     letter-spacing: .12em;
     color: #809aa1;
     margin: 0;
+  }
+}
+
+/* =========================================================
+   RESPONSIVE DIGITAL TWIN (PROPER HUD OVERLAYS)
+   ========================================================= */
+
+@media (max-width: 1280px) {
+  /* iPad Reflow - Keep overlays absolute but scale them to fit! */
+  .premium-twin-telemetry {
+    transform-origin: top right !important;
+    transform: scale(0.85) !important;
+  }
+
+  .premium-twin-cycle-signoff {
+    transform-origin: top left !important;
+    transform: scale(0.85) !important;
+  }
+
+  .premium-twin-frame-label {
+    transform-origin: bottom right !important;
+    transform: scale(0.85) !important;
+  }
+
+  /* Bottom rail 2x2 grid to prevent overlapping */
+  .premium-twin-exhibit-rail {
+    grid-template-columns: 1fr auto !important;
+    grid-template-rows: auto auto !important;
+    height: auto !important;
+    padding: 16px 24px !important;
+    gap: 16px !important;
+  }
+  
+  .premium-twin-rail-label {
+    display: none !important;
+  }
+  
+  .premium-twin-playback-controls {
+    grid-column: 1 !important;
+    grid-row: 1 !important;
+  }
+  
+  .premium-twin-auxiliary-controls {
+    grid-column: 2 !important;
+    grid-row: 1 !important;
+  }
+  
+  .premium-twin-sequence {
+    grid-column: 1 / -1 !important;
+    grid-row: 2 !important;
+    padding: 0 !important;
+    display: grid !important;
+    grid-template-columns: repeat(4, 1fr) !important;
+    gap: 8px !important;
+  }
+}
+
+@media (max-width: 768px) {
+  /* iPhone Portrait Reflow */
+  .premium-twin-telemetry {
+    transform: scale(0.65) !important;
+    top: 4% !important;
+  }
+
+  .premium-twin-cycle-signoff {
+    transform: scale(0.65) !important;
+    top: 12% !important;
+  }
+  
+  .premium-twin-exhibit-rail {
+    grid-template-columns: 1fr !important;
+    grid-template-rows: auto auto auto !important;
+    padding: 16px !important;
+    gap: 12px !important;
+  }
+  
+  .premium-twin-playback-controls {
+    grid-column: 1 !important;
+    grid-row: 1 !important;
+    width: 100% !important;
+    justify-content: center !important;
+  }
+  
+  .premium-twin-auxiliary-controls {
+    grid-column: 1 !important;
+    grid-row: 2 !important;
+    width: 100% !important;
+  }
+  
+  .premium-twin-auxiliary-btn {
+    width: 100% !important;
+  }
+  
+  .premium-twin-sequence {
+    grid-column: 1 !important;
+    grid-row: 3 !important;
+    display: flex !important;
+    width: 100% !important;
+    gap: 4px !important;
+  }
+  
+  .premium-twin-sequence-step {
+    flex: 1 !important;
+    padding: 8px 4px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    text-align: center !important;
+    min-height: 56px !important;
+  }
+  
+  .premium-twin-step-copy small {
+    display: none !important;
+  }
+  
+  .premium-twin-step-copy strong {
+    font-size: 8px !important;
+    margin-top: 4px !important;
+  }
+  
+  .premium-twin-step-orbit {
+    margin-right: 0 !important;
   }
 }
