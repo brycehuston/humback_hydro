@@ -11524,3 +11524,12 @@ section:has(.is-visible) .platform-rings {
     margin-right: 0 !important;
   }
 }
+
+@media (max-width: 1024px) {
+  .footer-legal {
+    align-items: center;
+  }
+  .footer-legal span {
+    text-align: center;
+  }
+}

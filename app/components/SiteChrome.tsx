@@ -211,7 +211,7 @@ export default function SiteChrome({ children }: { children: React.ReactNode }) 
             </Link>
           </div>
           <div className="footer-statement">
-            <img src="/brand/tagline-styled.png" alt="Natural Power. Real Impact." className="footer-tagline-img" />
+            <img src="/natural-power-statement.png" alt="Natural Power. Real Impact." className="footer-tagline-img" />
           </div>
           <a className="footer-email" href="mailto:info@humpbackenergy.com">info@humpbackenergy.com</a>
         </div>
@@ -247,7 +247,7 @@ export default function SiteChrome({ children }: { children: React.ReactNode }) 
           </div>
         </div>
         <div className="footer-legal footer-reveal">
-          <span>@ 2026 HUMPBACK HYDRO</span>
+          <span><span>&copy;</span> 2026 HUMPBACK HYDRO</span>
           <span>📍 VANCOUVER, CANADA</span>
           <span>SITE BY <a className="footer-credit-link" href="https://www.brycehuston.com/solutions" target="_blank" rel="noreferrer">HUSTON SOLUTION INC.</a></span>
         </div>
