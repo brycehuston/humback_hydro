@@ -11182,7 +11182,7 @@ section:has(.is-visible) .platform-rings {
   }
 }
 
-@media (max-width: 1024px) {
+@media (max-width: 1280px) {
   /* iPad Portrait Reflow */
   .premium-twin-stage-wrapper > .premium-twin-telemetry {
     position: relative !important;
