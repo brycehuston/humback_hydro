@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useMemo } from "react";
 import gsap from "gsap";
 import type { CSSProperties, KeyboardEvent } from "react";
 import {
@@ -156,27 +156,27 @@ const flowVectorRoutes: readonly FlowVectorRoute[] = [
   {
     operation: "lower",
     className: "lower-left",
-    d: "M 365 673 H 635 C 646 673 655 682 655 693 V 711 C 655 722 664 731 675 731 H 785",
+    d: "M 365 647 H 562 C 573 647 582 656 582 667 V 718 C 582 729 591 738 602 738 H 780",
   },
   {
     operation: "lower",
     className: "lower-right",
-    d: "M 1235 673 H 950 C 939 673 930 682 930 693 V 711 C 930 722 921 731 910 731 H 785",
+    d: "M 1235 647 H 1022 C 1011 647 1002 656 1002 667 V 718 C 1002 729 993 738 982 738 H 780",
   },
   {
     operation: "charge",
     className: "charge-center",
-    d: "M 785 720 V 250",
+    d: "M 780 720 V 250",
   },
   {
     operation: "upper",
     className: "upper-left",
-    d: "M 655 250 V 320 C 655 386 604 430 570 445 H 365",
+    d: "M 635 250 V 392 C 635 421 611 445 582 445 H 365",
   },
   {
     operation: "upper",
     className: "upper-right",
-    d: "M 930 250 V 320 C 930 386 968 430 1002 445 H 1235",
+    d: "M 942 250 V 400 C 942 425 962 445 987 445 H 1235",
   },
 ] as const;
 
@@ -265,11 +265,18 @@ export default function PremiumDigitalTwin() {
   const signoffARef = useRef<HTMLSpanElement>(null);
   const signoffBRef = useRef<HTMLSpanElement>(null);
   const signoffCRef = useRef<HTMLSpanElement>(null);
+  const markWrapRef = useRef<HTMLDivElement>(null);
+  const markSweepRef = useRef<HTMLDivElement>(null);
+  const markBaseRef = useRef<HTMLDivElement>(null);
   const signoffTlRef = useRef<gsap.core.Timeline | null>(null);
   const signoffActiveRef = useRef(false);
+  const progressBarRef = useRef<HTMLDivElement>(null);
+  const vignetteRef = useRef<HTMLDivElement>(null);
+  const lastVignetteStageRef = useRef<string | null>(null);
 
   const [selectedAction, setSelectedAction] = useState<TwinAction>("auto");
   const [paused, setPaused] = useState(false);
+  const [entryCueVisible, setEntryCueVisible] = useState(false);
   const [visibleStage, setVisibleStage] =
     useState<DigitalTwinSignatureStage | null>("energy");
   const [exitingCallout, setExitingCallout] = useState<TwinCallout | null>(null);
@@ -312,6 +319,25 @@ export default function PremiumDigitalTwin() {
   }, []);
 
   useEffect(() => {
+    const root = rootRef.current;
+    if (!root || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    let seen = false;
+    let hideTimer: number | undefined;
+    const observer = new IntersectionObserver(([entry]) => {
+      if (!entry?.isIntersecting || seen) return;
+      seen = true;
+      setEntryCueVisible(true);
+      hideTimer = window.setTimeout(() => setEntryCueVisible(false), 4200);
+      observer.disconnect();
+    }, { threshold: 0.32 });
+    observer.observe(root);
+    return () => {
+      observer.disconnect();
+      if (hideTimer) window.clearTimeout(hideTimer);
+    };
+  }, []);
+
+  useEffect(() => {
     const elA = signoffARef.current;
     const elB = signoffBRef.current;
     const elC = signoffCRef.current;
@@ -321,37 +347,24 @@ export default function PremiumDigitalTwin() {
     const ctx = gsap.context(() => {
       // Use repeat: -1 as requested, but with a massive delay so it NEVER naturally overlaps
       // within the 12.4s active window. We explicitly sync it to the cycle via requestAnimationFrame.
-      const tl = gsap.timeline({ repeat: -1, repeatDelay: 30, paused: true });
+      const tl = gsap.timeline({ paused: true });
       signoffTlRef.current = tl;
 
-      tl.set(elA, { opacity: 0, filter: "blur(0px)", scale: 1, letterSpacing: "0.17em" })
-        .set(elB, { opacity: 0, filter: "blur(0px)", scale: 1, letterSpacing: "0.17em" })
-        .set(elC, { opacity: 0, filter: "blur(12px)", scale: 0.9, letterSpacing: "0.05em" })
-        .to(elA, {
-          opacity: 0.96,
-          duration: 2.0,
-          ease: "power2.inOut",
-        }, "+=1.5")
-        .to(elB, {
-          opacity: 0.96,
-          duration: 2.0,
-          ease: "power2.inOut",
-        }, "+=2.0")
-        .to(elC, {
-          opacity: 0.96,
-          filter: "blur(0px)",
-          scale: 1,
-          letterSpacing: "0.17em",
-          duration: 2.0,
-          ease: "power2.inOut",
-        }, "+=1.0")
-        .to([elA, elB, elC], {
-          opacity: 0,
-          filter: "blur(2px)",
-          scale: 0.985,
-          duration: 3.0,
-          ease: "power2.inOut",
-        }, "+=3.0");
+      const wrap = markWrapRef.current;
+      const sweep = markSweepRef.current;
+      const base = markBaseRef.current;
+
+      tl.set([elA, elB, elC], { opacity: 0, x: -15, filter: "none", scale: 1, letterSpacing: "0.17em" })
+        .set([sweep, base], { opacity: 0 })
+        .set(sweep, { rotation: 0 })
+        .to(elA, { opacity: 1, x: 0, duration: 1.6, ease: "power2.out" }, 2.0)
+        .to(elB, { opacity: 1, x: 0, duration: 1.4, ease: "power2.out" }, "+=2.5")
+        .to(elC, { opacity: 1, x: 0, duration: 1.6, ease: "power2.out" }, "+=1.5")
+        .to(sweep, { opacity: 1, duration: 0.2, ease: "power1.inOut" }, "+=0.5")
+        .to(sweep, { rotation: 360, duration: 1.4, ease: "power2.inOut" }, "<")
+        .to(base, { opacity: 1, duration: 0.6, ease: "power2.out" }, "-=0.4")
+        .to(sweep, { opacity: 0, duration: 0.6, ease: "power2.out" }, "-=0.6")
+        .to([elA, elB, elC, base], { opacity: 0, x: 15, duration: 1.6, ease: "power1.inOut" }, "+=4.0");
     });
 
     return () => {
@@ -460,15 +473,15 @@ export default function PremiumDigitalTwin() {
             strength = scene.activity;
           }
         }
-        
-        let speed = 0.08; 
+
+        let speed = 0.08;
         let particleOpacity = strength;
-        
+
         if (signatureStage === "store") {
           speed = 0;
-          particleOpacity = 0; 
+          particleOpacity = 0;
         } else if (operation === "charge" && (signatureStage === "energy" || scene.phase === "charge")) {
-          speed = 0.22; 
+          speed = 0.22;
         }
 
         group.style.setProperty(
@@ -490,34 +503,34 @@ export default function PremiumDigitalTwin() {
           const fraction = reducedMotion
             ? (index + 0.5) / particleCount
             : (seconds * speed + index / particleCount) % 1;
-            
+
           const distance = fraction * length;
           const point = path.getPointAtLength(distance);
           const nextPoint = path.getPointAtLength(Math.min(length, distance + 2));
           const dx = nextPoint.x - point.x;
           const dy = nextPoint.y - point.y;
           const magnitude = Math.max(0.001, Math.hypot(dx, dy));
-          
+
           const lane = 0;
           const px = point.x + (-dy / magnitude) * lane;
           const py = point.y + (dx / magnitude) * lane;
           const angle = Math.atan2(dy, dx);
-          
+
           ctx.save();
           ctx.translate(px, py);
           ctx.rotate(angle);
-          
+
           ctx.globalAlpha = Math.min(1, particleOpacity * 1.5);
-          
+
           const size = 6.5;
-          
+
           ctx.beginPath();
           ctx.moveTo(size * 1.1, 0);
           ctx.lineTo(-size * 0.9, size * 1.15);
           ctx.lineTo(-size * 0.25, 0);
           ctx.lineTo(-size * 0.9, -size * 1.15);
           ctx.closePath();
-          
+
           ctx.fill();
           ctx.stroke();
           ctx.restore();
@@ -695,8 +708,8 @@ export default function PremiumDigitalTwin() {
         ctx.moveTo(
           left,
           surface +
-            (contour[0] + Math.sin(surfacePhase) * 0.16) * surfaceAmplitude +
-            offset,
+          (contour[0] + Math.sin(surfacePhase) * 0.16) * surfaceAmplitude +
+          offset,
         );
         for (let index = 0; index < segments; index += 1) {
           const endX = left + segmentWidth * (index + 1);
@@ -704,13 +717,13 @@ export default function PremiumDigitalTwin() {
             surface +
             (contour[index + 1] +
               Math.sin(surfacePhase + index * 0.91) * 0.14) *
-              surfaceAmplitude +
+            surfaceAmplitude +
             offset;
           const controlY =
             surface +
             (contour[index] * 0.65 +
               Math.sin(surfacePhase * 0.78 + index * 1.47 + 0.65) * 0.42) *
-              surfaceAmplitude +
+            surfaceAmplitude +
             offset;
           ctx.quadraticCurveTo(
             endX - segmentWidth * 0.5,
@@ -1101,38 +1114,6 @@ export default function PremiumDigitalTwin() {
       activity: number,
       motionTime: number,
     ) {
-      ctx.save();
-      const upperVoid = ctx.createLinearGradient(
-        0,
-        0.11 * canvas.height,
-        0,
-        levels.upper * canvas.height,
-      );
-      upperVoid.addColorStop(0, "rgba(2,11,16,.84)");
-      upperVoid.addColorStop(1, "rgba(3,18,24,.64)");
-      ctx.fillStyle = upperVoid;
-      ctx.fillRect(
-        0.395 * canvas.width,
-        0.11 * canvas.height,
-        0.21 * canvas.width,
-        Math.max(0, levels.upper - 0.11) * canvas.height,
-      );
-      const lowerVoid = ctx.createLinearGradient(
-        0,
-        0.64 * canvas.height,
-        0,
-        levels.lower * canvas.height,
-      );
-      lowerVoid.addColorStop(0, "rgba(2,11,16,.78)");
-      lowerVoid.addColorStop(1, "rgba(3,18,24,.58)");
-      ctx.fillStyle = lowerVoid;
-      ctx.fillRect(
-        0.405 * canvas.width,
-        0.64 * canvas.height,
-        0.19 * canvas.width,
-        Math.max(0, levels.lower - 0.64) * canvas.height,
-      );
-      ctx.restore();
 
       drawReservoirWater(
         0.395,
@@ -1232,7 +1213,7 @@ export default function PremiumDigitalTwin() {
 
       const announcement = signatureStage
         ? signatureSteps.find((step) => step.id === signatureStage)?.label ??
-          phaseCopy[scene.phase].title
+        phaseCopy[scene.phase].title
         : scene.phase === "lower"
           ? "Lower Generation — Separate Architecture Path"
           : phaseCopy[scene.phase].title.replace(" / ", " and ");
@@ -1256,10 +1237,10 @@ export default function PremiumDigitalTwin() {
       const signatureStage = forcedAction && isSignatureStage(forcedAction)
         ? forcedAction
         : forcedAction === "lower"
-            ? null
-            : reducedMotion
-              ? "energy"
-              : digitalTwinSignatureStageAt(elapsed);
+          ? null
+          : reducedMotion
+            ? "energy"
+            : digitalTwinSignatureStageAt(elapsed);
       const scene = forcedAction && isSignatureStage(forcedAction)
         ? manualSceneForSignature(forcedAction)
         : forcedAction === "lower"
@@ -1287,9 +1268,9 @@ export default function PremiumDigitalTwin() {
         ? manualLevelsForSignature(forcedAction)
         : forcedAction === "lower"
           ? manualReservoirLevels("lower")
-        : reducedMotion
-          ? manualLevelsForSignature("energy")
-          : reservoirLevelsAt(elapsed);
+          : reducedMotion
+            ? manualLevelsForSignature("energy")
+            : reservoirLevelsAt(elapsed);
       const cycleTime =
         ((elapsed % DIGITAL_TWIN_CYCLE_SECONDS) + DIGITAL_TWIN_CYCLE_SECONDS) %
         DIGITAL_TWIN_CYCLE_SECONDS;
@@ -1363,8 +1344,8 @@ export default function PremiumDigitalTwin() {
 
       const waterMotionTime = motionTime * (
         signatureStage === "energy" ||
-        signatureStage === "generate" ||
-        scene.phase === "lower"
+          signatureStage === "generate" ||
+          scene.phase === "lower"
           ? 1
           : 0.16
       );
@@ -1380,6 +1361,24 @@ export default function PremiumDigitalTwin() {
 
       drawHud(scene, signatureStage);
       syncPhaseUi(scene, signatureStage);
+
+      // Progress bar
+      if (progressBarRef.current && sequenceStarted && !forcedAction) {
+        const pct = (cycleTime / DIGITAL_TWIN_CYCLE_SECONDS) * 100;
+        progressBarRef.current.style.width = `${Math.min(100, pct)}%`;
+      }
+
+      // Phase transition vignette
+      if (vignetteRef.current) {
+        const currentStageKey = String(signatureStage || scene.phase);
+        if (lastVignetteStageRef.current && lastVignetteStageRef.current !== currentStageKey && !forcedAction) {
+          vignetteRef.current.classList.add('is-pulsing');
+          setTimeout(() => {
+            vignetteRef.current?.classList.remove('is-pulsing');
+          }, 350);
+        }
+        lastVignetteStageRef.current = currentStageKey;
+      }
     }
 
     function shouldAnimate() {
@@ -1410,7 +1409,7 @@ export default function PremiumDigitalTwin() {
             automaticSuspensionStarted = null;
             delete rootElement.dataset.animationSuspended;
             scheduleFrame();
-          }, 1500);
+          }, 3000);
         } else if (!active && entryStartTimer !== null) {
           window.clearTimeout(entryStartTimer);
           entryStartTimer = null;
@@ -1539,6 +1538,22 @@ export default function PremiumDigitalTwin() {
     selectAction(nextStep.id);
   };
 
+  const pauseOffsets = useMemo(() => {
+    const getOffset = (seg1: number, dx2: number, dy2: number) => {
+      const total = seg1 + Math.sqrt(dx2 * dx2 + dy2 * dy2);
+      // Stop slightly before the bend (96% of the first segment) to prevent linecap spillage
+      const stopRatio = (seg1 / total) * 0.96;
+      return 1 - stopRatio;
+    };
+
+    return {
+      upper: getOffset(60, 64, Math.abs(leaderY.upper - 190)),
+      turbine: getOffset(60, 193, Math.abs(474 - leaderY.turbine)),
+      penstock: getOffset(60, 205, Math.abs(487 - leaderY.penstock)),
+      lower: getOffset(24, 332, Math.abs(724 - (leaderY.lower + 24))),
+    };
+  }, [leaderY]);
+
   return (
     <div
       className="premium-digital-twin"
@@ -1548,6 +1563,7 @@ export default function PremiumDigitalTwin() {
       data-paused={paused}
       data-active-signature-stage={visibleStage ?? undefined}
       data-exiting-callout={exitingCallout ?? undefined}
+      data-entry-cue={entryCueVisible || undefined}
       style={{
         "--active-stage-duration": activeStep?.duration ?? "8.5s",
       } as CSSProperties}
@@ -1559,12 +1575,14 @@ export default function PremiumDigitalTwin() {
         />
         <div className="premium-twin-telemetry" ref={telemetryRef} aria-hidden="true" />
         <FlowVectorLayer />
+        <div className="premium-twin-progress-bar" ref={progressBarRef} aria-hidden="true" />
+        <div className="premium-twin-phase-vignette" ref={vignetteRef} aria-hidden="true" />
         <div className="premium-twin-annotations" aria-hidden="true">
           <svg viewBox="0 0 1600 900" preserveAspectRatio="none">
-            <g data-leader="upper"><circle className="callout-anchor-ring" cx="900" cy="190" r="11" /><circle className="callout-anchor-dot" cx="900" cy="190" r="4" /><path pathLength="1" d={`M 1024 ${leaderY.upper} H 964 V 190 H 900`} /></g>
-            <g data-leader="turbine"><circle className="callout-anchor-ring" cx="572" cy="474" r="11" /><circle className="callout-anchor-dot" cx="572" cy="474" r="4" /><path pathLength="1" d={`M 319 ${leaderY.turbine} H 379 V 474 H 572`} /></g>
-            <g data-leader="penstock"><circle className="callout-anchor-ring" cx="1013" cy="487" r="11" /><circle className="callout-anchor-dot" cx="1013" cy="487" r="4" /><path pathLength="1" d={`M 1278 ${leaderY.penstock} H 1218 V 487 H 1013`} /></g>
-            <g data-leader="lower"><circle className="callout-anchor-ring" cx="933" cy="724" r="11" /><circle className="callout-anchor-dot" cx="933" cy="724" r="4" /><path pathLength="1" d={`M 1265 ${leaderY.lower} H 1205 V 724 H 933`} /></g>
+            <g data-leader="upper" style={{ "--pause-offset": pauseOffsets.upper } as CSSProperties}><circle className="callout-anchor-ring" cx="900" cy="190" r="11" /><circle className="callout-anchor-dot" cx="900" cy="190" r="4" /><path pathLength="1" d={`M 1024 ${leaderY.upper} H 964 L 900 190`} /></g>
+            <g data-leader="turbine" style={{ "--pause-offset": pauseOffsets.turbine } as CSSProperties}><circle className="callout-anchor-ring" cx="572" cy="474" r="11" /><circle className="callout-anchor-dot" cx="572" cy="474" r="4" /><path pathLength="1" d={`M 319 ${leaderY.turbine} H 379 L 572 474`} /></g>
+            <g data-leader="penstock" style={{ "--pause-offset": pauseOffsets.penstock } as CSSProperties}><circle className="callout-anchor-ring" cx="1013" cy="487" r="11" /><circle className="callout-anchor-dot" cx="1013" cy="487" r="4" /><path pathLength="1" d={`M 1278 ${leaderY.penstock} H 1218 L 1013 487`} /></g>
+            <g data-leader="lower" style={{ "--pause-offset": pauseOffsets.lower } as CSSProperties}><circle className="callout-anchor-ring" cx="933" cy="724" r="11" /><circle className="callout-anchor-dot" cx="933" cy="724" r="4" /><path pathLength="1" d={`M 1265 ${leaderY.lower} V ${leaderY.lower + 24} L 933 724`} /></g>
           </svg>
           <div className="premium-twin-callout is-upper" data-callout="upper" ref={upperRef}>
             <strong>Upper Reservoir</strong><span>Stored Water at Elevation</span>
@@ -1597,6 +1615,10 @@ export default function PremiumDigitalTwin() {
         </div>
         <div className="premium-twin-cycle-signoff" aria-hidden="true">
           <i />
+          <div className="premium-twin-mark-wrap" ref={markWrapRef}>
+            <div className="premium-twin-mark-sweep" ref={markSweepRef} />
+            <div className="premium-twin-mark-base" ref={markBaseRef} />
+          </div>
           <strong>
             <span ref={signoffARef}>Ocean Energy</span>
             <span ref={signoffBRef}>For A Stronger</span>
@@ -1607,82 +1629,77 @@ export default function PremiumDigitalTwin() {
           <span>Illustrated State</span>
           <strong>Conceptual Model · Not To Scale</strong>
         </div>
-        <div className="premium-twin-continue-cue" aria-hidden="true">
-          <span>Continue</span>
+        <a href="#economics" className="premium-twin-continue-cue">
+          <span>Scroll To Explore</span>
           <svg viewBox="0 0 20 20">
             <path d="M 4 7 L 10 13 L 16 7" />
           </svg>
-        </div>
+        </a>
       </div>
       <div className="premium-twin-exhibit-rail">
-          <div className="premium-twin-rail-label">
-            <small>Operating Sequence</small>
-          </div>
-          <span className="sr-only">Energy In → Store → Generate → Dispatch</span>
-          <div className="premium-twin-sequence" role="group" aria-label="Select an operating stage">
-            {signatureSteps.map((step, index) => {
-              const active = visibleStage === step.id;
-              return (
-                <button
-                  ref={(button) => { signatureButtonRefs.current[index] = button; }}
-                  type="button"
-                  className="premium-twin-sequence-step"
-                  data-active={active}
-                  aria-label={step.label}
-                  aria-current={active ? "step" : undefined}
-                  aria-pressed={selectedAction === step.id}
-                  onClick={() => selectAction(step.id)}
-                  onKeyDown={(event) => handleSignatureKeyDown(event, index)}
-                  key={step.id}
-                >
-                  <span className="premium-twin-step-orbit">0{index + 1}</span>
-                  <span className="premium-twin-step-copy">
-                    <strong>{step.label}</strong>
-                    <small>{step.rail}</small>
-                  </span>
-                  <i className="premium-twin-step-connector" aria-hidden="true" />
-                </button>
-              );
-            })}
-          </div>
-          <section className="premium-twin-signature" aria-labelledby="premium-twin-signature-title" data-signature-rail>
-            <h3 className="sr-only" id="premium-twin-signature-title">Energy In, Store, Generate and Dispatch Operating Sequence</h3>
-            <div className="premium-twin-utility">
-              <p className="premium-twin-utility-note">
-                <span>External Electricity Powers Pumping • System Losses Require Make-Up Energy</span>
-              </p>
-              <button
-                type="button"
-                className="premium-twin-secondary-path"
-                aria-label="Lower-Stage Generation"
-                aria-pressed={selectedAction === "lower"}
-                data-active={selectedAction === "lower"}
-                onClick={() => selectAction("lower")}
-              >
-                <small>Secondary Path</small>
-                <strong>Lower-Stage Generation</strong>
-              </button>
-              <div className="premium-twin-mode-controls" aria-label="Sequence playback controls">
-                <button
-                  type="button"
-                  aria-pressed={selectedAction === "auto"}
-                  className={selectedAction === "auto" ? "is-selected" : undefined}
-                  onClick={() => selectAction("auto")}
-                >
-                  Auto Cycle
-                </button>
-                <button
-                  type="button"
-                  className="pause-control"
-                  aria-pressed={paused}
-                  onClick={togglePause}
-                >
-                  {paused ? "Play" : "Pause"}
-                </button>
-              </div>
-            </div>
-          </section>
+        <div className="premium-twin-playback-controls" aria-label="Sequence playback controls">
+          <button
+            type="button"
+            aria-pressed={selectedAction === "auto"}
+            className={selectedAction === "auto" ? "is-selected" : undefined}
+            onClick={() => selectAction("auto")}
+          >
+            Auto
+          </button>
+          <button
+            type="button"
+            className="pause-control"
+            aria-pressed={paused}
+            onClick={togglePause}
+          >
+            {paused ? "Play" : "Pause"}
+          </button>
         </div>
+        <div className="premium-twin-rail-label">
+          <small>Operating Sequence</small>
+          <span>Pumping using external power<br />Storage has system losses</span>
+        </div>
+        <span className="sr-only">Energy In &#x203A; Store &#x203A; Generate &#x203A; Dispatch</span>
+        <div className="premium-twin-sequence" role="group" aria-label="Select an operating stage">
+          <div className="premium-twin-progress-track" aria-hidden="true">
+            <div className="premium-twin-progress-fill" />
+          </div>
+          {signatureSteps.map((step, index) => {
+            const active = visibleStage === step.id;
+            return (
+              <button
+                ref={(button) => { signatureButtonRefs.current[index] = button; }}
+                type="button"
+                className="premium-twin-sequence-step"
+                data-active={active}
+                aria-label={step.label}
+                aria-current={active ? "step" : undefined}
+                aria-pressed={selectedAction === step.id}
+                onClick={() => selectAction(step.id)}
+                onKeyDown={(event) => handleSignatureKeyDown(event, index)}
+                key={step.id}
+              >
+                <span className="premium-twin-step-orbit">0{index + 1}</span>
+                <span className="premium-twin-step-copy">
+                  <strong>{step.label}</strong>
+                  <small>{step.rail}</small>
+                </span>
+                <i className="premium-twin-step-connector" aria-hidden="true" />
+              </button>
+            );
+          })}
+        </div>
+        <div className="premium-twin-auxiliary-controls">
+          <button
+            type="button"
+            className="premium-twin-auxiliary-btn"
+            aria-pressed={selectedAction === "lower"}
+            onClick={() => selectAction("lower")}
+          >
+            Lower Reservoir
+          </button>
+        </div>
+      </div>
       <div className="premium-twin-mobile-state" aria-hidden="true">
         <span data-mobile-stage="energy">External Energy In → Pump</span>
         <span data-mobile-stage="store">Elevated Storage · Flow Stopped</span>

@@ -35,7 +35,7 @@ export default function EconomicsPage() {
         eyebrow="Economics"
         title="Generation. Storage. Dispatch."
         copy="A transparent user-driven sensitivity for generation arithmetic, with storage and integrated economics held to project-specific engineering boundaries."
-        image="/grid-data-center-night.webp"
+        image="/grid-data-center-night-approved.webp"
         nextHref="#economics-model"
         nextLabel="Review the Sensitivity"
       />

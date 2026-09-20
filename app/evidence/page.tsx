@@ -17,7 +17,7 @@ const evidenceHierarchy = [
 export default function EvidencePage() {
   return (
     <main>
-      <RouteHero index="05" eyebrow="Engineering Foundation" title="Evidence Before Scale." copy="A structured view of the public record, modeled study results and the validation pathway supporting engineering and commercial advancement." image="/turbine-macro-approved.jpg" nextHref="#vault" nextLabel="Open the Evidence Vault" />
+      <RouteHero index="05" eyebrow="Engineering Foundation" title="Evidence Before Scale." copy="A structured view of the public record, modeled study results and the validation pathway supporting engineering and commercial advancement." image="/turbine-macro-approved.webp" nextHref="#vault" nextLabel="Open the Evidence Vault" />
       <section className="evidence-vault section-shell" id="vault">
         <div className="chapter-label"><span>01</span>CLAIMS REGISTER</div>
         <div className="section-intro split" data-reveal>

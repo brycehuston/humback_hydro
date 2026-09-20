@@ -22,7 +22,7 @@ export default function TechnologyPage() {
         <div className="section-shell">
           <div className="chapter-label light"><span>02</span>SYSTEM ANATOMY</div>
           <div className="anatomy-grid">
-            <div className="anatomy-visual" data-reveal><img src="/turbine-macro.webp" alt="Conceptual technology illustration of reversible hydro machinery" loading="lazy" decoding="async" /><span className="concept-tag">CONCEPTUAL TECHNOLOGY ILLUSTRATION — NOT TO SCALE</span></div>
+            <div className="anatomy-visual" data-reveal><img src="/turbine-macro-approved.webp" alt="Conceptual technology illustration of reversible hydro machinery" loading="lazy" decoding="async" /><span className="concept-tag">CONCEPTUAL TECHNOLOGY ILLUSTRATION — NOT TO SCALE</span></div>
             <div className="anatomy-list">
               <article data-reveal><span>01</span><div><small>STORAGE</small><h3>Two Engineered Reservoirs</h3><p>Upper and lower reservoirs create vertical separation inside the fixed structure.</p></div></article>
               <article data-reveal><span>02</span><div><small>GENERATION</small><h3>Bilateral Turbine Stages</h3><p>The concept model shows paired upper and lower turbine paths without asserting final equipment count or scale.</p></div></article>

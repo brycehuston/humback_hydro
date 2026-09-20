@@ -47,7 +47,7 @@ export default function CompanyPage() {
         eyebrow="Company"
         title="Built by People Who Build Infrastructure"
         copy="Founded in Vancouver, British Columbia, Humpback Hydro brings practical construction, engineering, operations and digital-infrastructure experience to a modular hydroelectric generation and energy-storage technology."
-        image="/company/humpback-team-vancouver-approved.jpg"
+        image="/company/humpback-team-vancouver.webp"
         imagePosition="80% center"
         imageAlt="Humpback Hydro team members meeting in Vancouver beside the British Columbia flag"
         mediaLabel="PROJECT PHOTOGRAPH"
@@ -100,14 +100,18 @@ export default function CompanyPage() {
             {publishedLeadership.map((member, index) => (
               <article key={member.name} data-reveal>
                 <span>0{index + 1}</span>
-                <div className="leader-image">
+                <div className="leader-image" style={{ "--leader-bg": member.imageBg || "radial-gradient(circle at 50% 35%, #164658, #08232f 70%)" } as React.CSSProperties}>
                   {member.image ? (
                     <img
                       src={member.image}
                       loading="lazy"
                       decoding="async"
                       alt={member.imageAlt}
-                      style={{ objectPosition: member.imagePosition }}
+                      style={{
+                        objectPosition: member.imagePosition,
+                        "--base-scale": member.imageScale || 0.88,
+                        "--hover-scale": member.imageHoverScale || 0.90
+                      } as React.CSSProperties}
                     />
                   ) : (
                     <span

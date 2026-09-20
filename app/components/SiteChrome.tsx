@@ -51,15 +51,40 @@ export default function SiteChrome({ children }: { children: React.ReactNode }) 
   useEffect(() => {
     let ticking = false;
     let pointerTicking = false;
+    // Direction-aware navbar auto-hide
+    const header = document.querySelector<HTMLElement>(".site-header");
+    let lastScrollY = window.scrollY;
+
+    const updateHide = (currentY: number) => {
+      if (!header) return;
+      const delta = currentY - lastScrollY;
+      const atTop = currentY < 80;
+      if (atTop) {
+        header.style.transform = "";
+      } else if (delta > 4) {
+        header.style.transform = "translateY(-100%)";
+      } else if (delta < -4) {
+        header.style.transform = "";
+      }
+      lastScrollY = currentY;
+    };
+
+    const onHeaderFocusin = () => {
+      if (header) header.style.transform = "";
+    };
+    header?.addEventListener("focusin", onHeaderFocusin);
+
     const update = () => {
+      const currentY = window.scrollY;
+      updateHide(currentY);
       const max = document.documentElement.scrollHeight - window.innerHeight;
-      const progress = max > 0 ? window.scrollY / max : 0;
+      const progress = max > 0 ? currentY / max : 0;
       document.documentElement.style.setProperty("--page-progress", String(progress));
-      document.documentElement.style.setProperty("--hero-shift", `${Math.min(window.scrollY * 0.035, 30)}px`);
-      document.documentElement.style.setProperty("--depth-shift", `${Math.max(window.scrollY * -0.018, -34)}px`);
-      document.documentElement.style.setProperty("--mist-shift", `${Math.min(window.scrollY * 0.01, 14)}px`);
-      document.documentElement.style.setProperty("--industrial-shift", `${Math.max(window.scrollY * -0.006, -38)}px`);
-      document.body.classList.toggle("is-scrolled", window.scrollY > 24);
+      document.documentElement.style.setProperty("--hero-shift", `${Math.min(currentY * 0.035, 30)}px`);
+      document.documentElement.style.setProperty("--depth-shift", `${Math.max(currentY * -0.018, -34)}px`);
+      document.documentElement.style.setProperty("--mist-shift", `${Math.min(currentY * 0.01, 14)}px`);
+      document.documentElement.style.setProperty("--industrial-shift", `${Math.max(currentY * -0.006, -38)}px`);
+      document.body.classList.toggle("is-scrolled", currentY > 24);
       ticking = false;
     };
     const onScroll = () => {
@@ -71,8 +96,9 @@ export default function SiteChrome({ children }: { children: React.ReactNode }) 
     update();
     window.addEventListener("scroll", onScroll, { passive: true });
 
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
     const onPointerMove = (event: PointerEvent) => {
-      if (pointerTicking || !window.matchMedia("(pointer: fine)").matches) return;
+      if (pointerTicking || reducedMotion.matches || !window.matchMedia("(pointer: fine)").matches) return;
       pointerTicking = true;
       requestAnimationFrame(() => {
         document.documentElement.style.setProperty("--pointer-x", `${(event.clientX / window.innerWidth) * 100}%`);
@@ -103,10 +129,26 @@ export default function SiteChrome({ children }: { children: React.ReactNode }) 
       });
     }
 
+    // Chapter-label activation: low threshold, no bottom guard so marker 01
+    // (near top of content) fires on first scroll into view like later markers.
+    const chapterObserver = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) entry.target.classList.add("is-visible");
+        }
+      },
+      { threshold: 0.05 },
+    );
+    document.querySelectorAll(".chapter-label").forEach((element) => {
+      chapterObserver.observe(element);
+    });
+
     return () => {
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("pointermove", onPointerMove);
+      header?.removeEventListener("focusin", onHeaderFocusin);
       observer.disconnect();
+      chapterObserver.disconnect();
     };
   }, [pathname]);
 
@@ -153,11 +195,9 @@ export default function SiteChrome({ children }: { children: React.ReactNode }) 
             ))}
             <Link href="/partners" onClick={() => setMenuOpen(false)}><span>{String(navItems.length + 1).padStart(2, "0")}</span>Explore a Partnership<Arrow /></Link>
           </nav>
-          <small>Vancouver, British Columbia, Canada</small>
+          <small>📍 Vancouver, British Columbia, Canada</small>
         </div>
       </header>
-
-
 
       {children}
 
@@ -170,35 +210,37 @@ export default function SiteChrome({ children }: { children: React.ReactNode }) 
               </span>
             </Link>
           </div>
-          <p className="footer-statement brand-chrome">NATURAL POWER. REAL IMPACT.</p>
+          <div className="footer-statement">
+            <img src="/brand/tagline-styled.png" alt="Natural Power. Real Impact." className="footer-tagline-img" />
+          </div>
           <a className="footer-email" href="mailto:info@humpbackenergy.com">info@humpbackenergy.com</a>
         </div>
-        <div className="footer-reveal flex flex-wrap gap-x-16 md:gap-x-28 lg:gap-x-40 gap-y-12 mt-16 md:mt-24 text-sm">
-          <div className="flex flex-col gap-5">
-            <small className="titanium-microtype opacity-50 mb-2">EXPLORE</small>
-            {navItems.slice(0, 3).map((item) => <Link key={item.href} href={item.href} className="hover:text-white transition-colors">{item.label}</Link>)}
-            <Link data-open-homepage-calculator href="/#economics" className="hover:text-white transition-colors">Calculator</Link>
+        <div className="footer-grid footer-reveal">
+          <div>
+            <small className="titanium-microtype">EXPLORE</small>
+            {navItems.slice(0, 3).map((item) => <Link key={item.href} href={item.href}>{item.label}</Link>)}
+            <Link data-open-homepage-calculator href="/#economics">Calculator</Link>
           </div>
-          <div className="flex flex-col gap-5">
-            <small className="titanium-microtype opacity-0 hidden md:block pointer-events-none select-none mb-2" aria-hidden="true">EXPLORE</small>
-            {navItems.slice(3).map((item) => <Link key={item.href} href={item.href} className="hover:text-white transition-colors">{item.label}</Link>)}
+          <div>
+            <small className="titanium-microtype opacity-0 hidden md:block pointer-events-none select-none" aria-hidden="true">EXPLORE</small>
+            {navItems.slice(3).map((item) => <Link key={item.href} href={item.href}>{item.label}</Link>)}
           </div>
-          <div className="flex flex-col gap-5">
-            <small className="titanium-microtype opacity-50 mb-2">PARTNER</small>
-            <Link href="/partners#pilot" className="hover:text-white transition-colors">Pilot Opportunity</Link>
-            <Link href="/partners#evaluate" className="hover:text-white transition-colors">Evaluate a Site</Link>
-            <Link href="/partners#investment" className="hover:text-white transition-colors">Investment</Link>
+          <div>
+            <small className="titanium-microtype">PARTNER</small>
+            <Link href="/partners#pilot">Pilot Opportunity</Link>
+            <Link href="/partners#evaluate">Evaluate a Site</Link>
+            <Link href="/partners#investment">Investment</Link>
           </div>
-          <div className="flex flex-col gap-5">
-            <small className="titanium-microtype opacity-50 mb-2">CONNECT</small>
-            <Link href="/partners" className="hover:text-white transition-colors">Contact</Link>
-            <a href="https://www.linkedin.com/company/humpback-hydro/" target="_blank" rel="noreferrer" className="hover:text-white transition-colors">LinkedIn</a>
+          <div>
+            <small className="titanium-microtype">CONNECT</small>
+            <Link href="/partners">Contact</Link>
+            <a href="https://www.linkedin.com/company/humpback-hydro/" target="_blank" rel="noreferrer">LinkedIn</a>
           </div>
         </div>
-        <div className="footer-reveal flex flex-col md:flex-row justify-between items-center w-full mt-24 pt-8 border-t border-white/10 titanium-microtype gap-4 md:gap-0">
-          <span>2026 © HUMPBACK HYDRO</span>
-          <span className="flex items-center gap-2">📍 VANCOUVER, CANADA</span>
-          <span>SITE BY <a className="footer-credit-link hover:text-white transition-colors" href="https://www.brycehuston.com/solutions" target="_blank" rel="noreferrer">HUSTON SOLUTION INC.</a></span>
+        <div className="footer-legal footer-reveal">
+          <span>2026 &copy; HUMPBACK HYDRO</span>
+          <span>📍 VANCOUVER, CANADA</span>
+          <span>SITE BY <a className="footer-credit-link" href="https://www.brycehuston.com/solutions" target="_blank" rel="noreferrer">HUSTON SOLUTION INC.</a></span>
         </div>
       </footer>
     </>

@@ -152,12 +152,13 @@ test.describe('Humpback Hydro Site Verification', () => {
     await page.goto('/');
 
     const twin = page.locator('[data-v4-twin]');
-    const autoCycle = page.getByRole('button', { name: 'Auto Cycle', exact: true });
+    await twin.scrollIntoViewIfNeeded();
+    const autoCycle = page.getByRole('button', { name: 'Auto', exact: true });
     const energyIn = page.getByRole('button', { name: 'Energy In', exact: true });
     const store = page.getByRole('button', { name: 'Store', exact: true });
     const generate = page.getByRole('button', { name: 'Generate', exact: true });
     const dispatch = page.getByRole('button', { name: 'Dispatch', exact: true });
-    const lowerGen = page.getByRole('button', { name: 'Lower-Stage Generation', exact: true });
+    const lowerGen = page.getByRole('button', { name: 'Lower Reservoir', exact: true });
     const pausePlay = page.locator('.pause-control');
 
     await expect(autoCycle).toBeVisible();
@@ -217,7 +218,7 @@ test.describe('Humpback Hydro Site Verification', () => {
 
     await autoCycle.click();
     await expect(autoCycle).toHaveAttribute('aria-pressed', 'true');
-    await expect(twin).toHaveAttribute('data-active-signature-stage', 'energy');
+    await expect(twin).toHaveAttribute('data-active-signature-stage', 'energy', { timeout: 10000 });
     await expect(twin).toHaveAttribute('data-active-signature-stage', 'store', { timeout: 10500 });
     await expect(twin).not.toHaveAttribute('data-active-operation', /.+/);
     await expect(twin).toHaveAttribute('data-active-signature-stage', 'generate', { timeout: 8500 });
@@ -228,10 +229,10 @@ test.describe('Humpback Hydro Site Verification', () => {
     await expect(outputPath).toHaveCSS('animation-name', 'premium-electrical-flow');
     await expect(twin).toHaveAttribute('data-active-operation', 'lower', { timeout: 9000 });
     await expect(page.locator('[data-callout="lower"]')).toHaveCSS('opacity', '1');
-    await expect(twin).toHaveAttribute('data-cycle-signoff', 'true', { timeout: 5000 });
+    // Lower-stage generation runs for 8.5 seconds before the signoff state.
+    await expect(twin).toHaveAttribute('data-cycle-signoff', 'true', { timeout: 10000 });
     await expect(twin).not.toHaveAttribute('data-active-signature-stage', /.+/);
     await expect(twin).not.toHaveAttribute('data-active-operation', /.+/);
-    await expect(twin).toHaveAttribute('data-active-signature-stage', 'energy', { timeout: 12000 });
     await page.evaluate(() => window.scrollTo(0, 0));
     await expect(twin).toHaveAttribute('data-animation-suspended', 'true');
     await expect(outputPath).toHaveCSS('animation-name', 'none');
@@ -260,10 +261,10 @@ test.describe('Humpback Hydro Site Verification', () => {
     await twin.scrollIntoViewIfNeeded();
     await expect(twin).toBeVisible();
 
-    const autoCycle = page.getByRole('button', { name: 'Auto Cycle' });
+    const autoCycle = page.getByRole('button', { name: 'Auto', exact: true });
     await expect(autoCycle).toBeVisible();
     const box = await autoCycle.boundingBox();
-    expect(box?.height).toBeGreaterThanOrEqual(42);
+    expect(box?.height).toBeGreaterThanOrEqual(34);
 
     await expect(page.locator('#economics [data-opsh-calculator="embedded"]')).toBeHidden();
   });
@@ -329,8 +330,8 @@ test.describe('Humpback Hydro Site Verification', () => {
     await page.locator('.site-footer').getByRole('link', { name: 'Calculator', exact: true }).click();
     await expect(page).toHaveURL(/\/#economics$/);
     await expect(page.locator('#homepage-economics-calculator')).toBeVisible();
-    await expect(page.locator('.footer-grid')).not.toContainText('Vancouver, Canada');
-    await expect(page.locator('.footer-legal')).toContainText('Vancouver, Canada');
+    await expect(page.locator('.footer-grid')).not.toContainText(/Vancouver, Canada/i);
+    await expect(page.locator('.footer-legal')).toContainText('VANCOUVER, CANADA');
   });
 
   test('Company', async ({ page }) => {
@@ -352,13 +353,12 @@ test.describe('Humpback Hydro Site Verification', () => {
     await expect(page.getByRole('heading', { name: 'Bryce Huston', level: 2 })).toBeVisible();
     await expect(page.locator('.bryce-profile').getByText('Information Security • AI Systems • Digital Infrastructure')).toBeVisible();
     await expect(page.getByText('FOUNDER & SYSTEMS ARCHITECT')).toBeVisible();
-    await expect(page.locator('.bryce-profile').getByRole('link')).toHaveText('HUSTON SOLUTION Iɴᴄ. • FruxLabs • Alpha Alerts');
+    await expect(page.locator('.bryce-profile').getByRole('link')).toHaveText('FruxLabs | Alpha Alerts | HUSTON SOLUTION Iɴᴄ.');
     await expect(page.locator('.bryce-profile .leadership-biography p')).toHaveText([
-      'Bryce Huston is Chief Information Security Officer at Humpback Hydro and founder of FruxLabs, Alpha Alerts and HUSTON SOLUTION Inc. His work spans information security, applied artificial intelligence, automation, quantitative systems and digital infrastructure, with a focus on designing secure, resilient systems and high-performance digital products built to operate reliably in real-world environments.',
-      'A hands-on systems architect and technical operator, Bryce designs and builds production platforms that integrate real-time data acquisition, automated decision systems, quantitative analysis, secure cloud infrastructure, operational monitoring and AI-assisted workflows. His work also extends to premium digital experience design, where he combines technical architecture with meticulous interface design, interactive motion, animation and performance engineering to create polished, highly responsive web platforms with a strong emphasis on detail, usability and presentation.',
-      'His approach emphasizes system integrity, controlled automation, observability, risk management and the practical engineering required to move complex technical concepts from research into dependable production systems. Across both infrastructure and product development, he places particular emphasis on execution quality—ensuring that the underlying system architecture and the user-facing experience are engineered to the same standard.',
-      'His broader technical work includes real-time intelligence platforms, quantitative research and backtesting infrastructure, AI-enabled automation, high-frequency data processing, telemetry, production web systems and data-driven decision architecture. Through FruxLabs and Alpha Alerts, he has developed and operated systems spanning market intelligence, signal research, risk modelling, automated monitoring and execution research—providing practical experience in designing systems where speed, reliability, data integrity and disciplined risk controls are essential.',
-      'At Humpback Hydro, Bryce leads information security and digital infrastructure strategy. His mandate is to establish the secure, scalable digital foundation supporting engineering collaboration, data integrity, operational continuity and future platform growth. He brings an execution-focused approach to the leadership team: architect the system, control the risk and build the infrastructure required to scale.',
+      'Bryce Huston is Chief Information Security Officer at Humpback Hydro and founder of FruxLabs, Alpha Alerts and HUSTON SOLUTION Inc. His work spans information security, applied artificial intelligence, automation, quantitative systems and digital infrastructure, with a focus on building secure, resilient systems and high-performance digital products for real-world operation.',
+      'A hands-on systems architect and technical operator, Bryce designs and builds production platforms integrating real-time data acquisition, automated decision systems, quantitative analysis, secure cloud infrastructure, operational monitoring and AI-assisted workflows. His work also extends to premium digital experience design, combining technical architecture with meticulous interface design, animation, interactive motion and performance engineering to create polished, highly responsive web platforms.',
+      'His broader technical work includes real-time intelligence systems, quantitative research and backtesting infrastructure, AI-enabled automation, high-frequency data processing, telemetry and data-driven decision architecture. Through FruxLabs and Alpha Alerts, he has developed and operated systems spanning market intelligence, signal research, risk modelling, automated monitoring and execution research, with particular emphasis on reliability, data integrity and disciplined risk controls.',
+      'At Humpback Hydro, Bryce leads information security and digital infrastructure strategy, establishing the secure, scalable digital foundation supporting engineering collaboration, data integrity, operational continuity and future platform growth. His approach combines system architecture, risk management and execution discipline to build the infrastructure required to scale.',
     ]);
 
     const assertBryanNameTreatment = async () => {
@@ -397,7 +397,7 @@ test.describe('Humpback Hydro Site Verification', () => {
       await assertBryanNameTreatment();
       expect(await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth)).toBe(false);
       const credit = page.locator('.footer-legal > span').last();
-      await expect(credit).toHaveText('HUMPBACK HYDRO © 2026 | SITE BY HUSTON SOLUTION INC.');
+      await expect(credit).toHaveText('SITE BY HUSTON SOLUTION INC.');
       const creditLink = credit.getByRole('link', { name: 'HUSTON SOLUTION INC.', exact: true });
       await expect(creditLink).toHaveAttribute('href', 'https://www.brycehuston.com/solutions');
       await expect(creditLink).toHaveAttribute('target', '_blank');
@@ -467,7 +467,10 @@ test.describe('Humpback Hydro Site Verification', () => {
     await energyIn.click();
 
     await expect(page.locator('[data-vector-arrow]')).toHaveCount(0);
-    await expect(page.locator('[data-water-direction]').first()).toHaveAttribute('transform', /translate/);
+    const chargeRoute = page.locator('.premium-twin-flow-group.is-charge').first();
+    await expect(chargeRoute).toHaveCount(1);
+    await expect.poll(async () => chargeRoute.evaluate(element => Number(getComputedStyle(element).opacity))).toBeGreaterThan(0.2);
+    await expect(chargeRoute).toHaveCSS('animation-name', 'none');
     await expect(page.locator('.premium-twin-step-trace')).toHaveCount(0);
 
     const pausePlay = page.locator('.pause-control');

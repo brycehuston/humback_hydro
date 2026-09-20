@@ -84,13 +84,12 @@ export const leadership: readonly LeadershipProfile[] = [
     profileLabel: "SECURITY & DIGITAL INFRASTRUCTURE",
     specialty: "Information Security • AI Systems • Digital Infrastructure",
     credentialLabel: "FOUNDER & SYSTEMS ARCHITECT",
-    credentialValue: "HUSTON SOLUTION Iɴᴄ. • FruxLabs • Alpha Alerts",
+    credentialValue: "FruxLabs | Alpha Alerts | HUSTON SOLUTION Iɴᴄ.",
     biography: [
-      "Bryce Huston is Chief Information Security Officer at Humpback Hydro and founder of FruxLabs, Alpha Alerts and HUSTON SOLUTION Inc. His work spans information security, applied artificial intelligence, automation, quantitative systems and digital infrastructure, with a focus on designing secure, resilient systems and high-performance digital products built to operate reliably in real-world environments.",
-      "A hands-on systems architect and technical operator, Bryce designs and builds production platforms that integrate real-time data acquisition, automated decision systems, quantitative analysis, secure cloud infrastructure, operational monitoring and AI-assisted workflows. His work also extends to premium digital experience design, where he combines technical architecture with meticulous interface design, interactive motion, animation and performance engineering to create polished, highly responsive web platforms with a strong emphasis on detail, usability and presentation.",
-      "His approach emphasizes system integrity, controlled automation, observability, risk management and the practical engineering required to move complex technical concepts from research into dependable production systems. Across both infrastructure and product development, he places particular emphasis on execution quality—ensuring that the underlying system architecture and the user-facing experience are engineered to the same standard.",
-      "His broader technical work includes real-time intelligence platforms, quantitative research and backtesting infrastructure, AI-enabled automation, high-frequency data processing, telemetry, production web systems and data-driven decision architecture. Through FruxLabs and Alpha Alerts, he has developed and operated systems spanning market intelligence, signal research, risk modelling, automated monitoring and execution research—providing practical experience in designing systems where speed, reliability, data integrity and disciplined risk controls are essential.",
-      "At Humpback Hydro, Bryce leads information security and digital infrastructure strategy. His mandate is to establish the secure, scalable digital foundation supporting engineering collaboration, data integrity, operational continuity and future platform growth. He brings an execution-focused approach to the leadership team: architect the system, control the risk and build the infrastructure required to scale.",
+      "Bryce Huston is Chief Information Security Officer at Humpback Hydro and founder of FruxLabs, Alpha Alerts and HUSTON SOLUTION Inc. His work spans information security, applied artificial intelligence, automation, quantitative systems and digital infrastructure, with a focus on building secure, resilient systems and high-performance digital products for real-world operation.",
+      "A hands-on systems architect and technical operator, Bryce designs and builds production platforms integrating real-time data acquisition, automated decision systems, quantitative analysis, secure cloud infrastructure, operational monitoring and AI-assisted workflows. His work also extends to premium digital experience design, combining technical architecture with meticulous interface design, animation, interactive motion and performance engineering to create polished, highly responsive web platforms.",
+      "His broader technical work includes real-time intelligence systems, quantitative research and backtesting infrastructure, AI-enabled automation, high-frequency data processing, telemetry and data-driven decision architecture. Through FruxLabs and Alpha Alerts, he has developed and operated systems spanning market intelligence, signal research, risk modelling, automated monitoring and execution research, with particular emphasis on reliability, data integrity and disciplined risk controls.",
+      "At Humpback Hydro, Bryce leads information security and digital infrastructure strategy, establishing the secure, scalable digital foundation supporting engineering collaboration, data integrity, operational continuity and future platform growth. His approach combines system architecture, risk management and execution discipline to build the infrastructure required to scale.",
     ],
     publicationStatus: "published-qualified",
   },
@@ -286,7 +285,7 @@ export const applications = [
     description:
       "A long-duration platform designed to support renewable integration, capacity planning and grid stability.",
     points: ["Energy Shifting", "Potential Grid Services", "Firm Capacity Pathway"],
-    image: "/hero-ai-power-campus.webp",
+    image: "/grid-data-center-night-approved.webp",
     cta: "Discuss Utility Integration",
   },
   {
@@ -297,7 +296,7 @@ export const applications = [
     description:
       "For energy-intensive AI infrastructure, Humpback is designed to provide rapid access to stored energy, continuous dispatchable power and greater energy security—helping address the speed-to-power and reliability constraints facing data-center development.",
     points: ["Rapid Stored-Energy Access", "Continuous Dispatchable Power", "Energy Security"],
-    image: "/grid-data-center-night.webp",
+    image: "/hero-ai-power-campus.webp",
     cta: "Explore Data-Center Power",
   },
   {
@@ -308,7 +307,7 @@ export const applications = [
     description:
       "Modular infrastructure designed for ports, industrial zones, and critical or defense facilities evaluating reliable power close to demand.",
     points: ["Critical-Site Planning", "On-Site Reliability", "Scalable Architecture"],
-    image: "/manufacturing-campus-approved.jpg",
+    image: "/manufacturing-campus-approved.webp",
     cta: "Explore Industrial Deployment",
   },
   {
@@ -319,7 +318,7 @@ export const applications = [
     description:
       "A marine platform aligned with island and remote regions pursuing energy security, water security and lower fuel dependence.",
     points: ["Local Energy Resilience", "Renewable Integration", "Water-System Potential"],
-    image: "/island-energy-water-approved.jpg",
+    image: "/island-energy-water-approved.webp",
     cta: "Evaluate a Regional Opportunity",
   },
   {
@@ -330,7 +329,7 @@ export const applications = [
     description:
       "A platform whose broader mission includes water security and potential alignment with desalination infrastructure.",
     points: ["Energy and Water Planning", "Co-Location Potential", "Climate Resilience"],
-    image: "/island-energy-water-approved.jpg",
+    image: "/hero-ocean-infrastructure.webp",
     cta: "Discuss Water Infrastructure",
   },
   {
@@ -341,7 +340,7 @@ export const applications = [
     description:
       "A potential infrastructure pathway for food-production regions evaluating dependable power, water resilience and integrated resource planning.",
     points: ["Reliable Energy Supply", "Water-System Integration", "Regional Resilience"],
-    image: "/island-energy-water-approved.jpg",
+    image: "/island-energy-water-approved.webp",
     cta: "Discuss Food-System Infrastructure",
   },
 ];

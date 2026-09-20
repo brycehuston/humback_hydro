@@ -13,8 +13,8 @@ export const metadata: Metadata = {
     "codex-preview": "development",
   },
   icons: {
-    icon: "/brandmark.webp",
-    shortcut: "/brandmark.webp",
+    icon: "/brandmark.svg",
+    shortcut: "/brandmark.svg",
   },
 };
 

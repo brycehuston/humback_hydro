@@ -116,9 +116,9 @@ test("renders leadership portraits and generic delivery capabilities", async () 
   const teamFiles = await readdir(new URL("../public/team/", import.meta.url));
 
   for (const file of [
-    "bryce-huston.jpg",
-    "col-bryan-green.jpg",
-    "mark-legacy.jpg",
+    "bryce-huston.webp",
+    "col-bryan-green.webp",
+    "mark-legacy.webp",
   ]) {
     assert.ok(teamFiles.includes(file), `missing public/team/${file}`);
   }
@@ -131,14 +131,14 @@ test("renders leadership portraits and generic delivery capabilities", async () 
     /Portrait of Bryce Huston/,
     /Portrait of Col\. Bryan Green \(Ret\.\)/,
     /CHIEF INFORMATION SECURITY OFFICER/,
-    /HUSTON SOLUTION Iɴᴄ\. • FruxLabs • Alpha Alerts/,
+    /FruxLabs \| Alpha Alerts \| HUSTON SOLUTION Iɴᴄ\./,
     /SECURITY &amp; DIGITAL INFRASTRUCTURE/,
     /Information Security • AI Systems • Digital Infrastructure/,
     /FOUNDER &amp; SYSTEMS ARCHITECT/,
     /Bryce Huston is Chief Information Security Officer at Humpback Hydro and founder of FruxLabs, Alpha Alerts and HUSTON SOLUTION Inc\./,
     /A hands-on systems architect and technical operator, Bryce designs and builds production platforms/,
-    /architect the system, control the risk and build the infrastructure required to scale/,
-    /\/company\/humpback-team-vancouver-approved\.jpg/,
+    /build the infrastructure required to scale/,
+    /\/company\/humpback-team-vancouver\.webp/,
     /PROJECT PHOTOGRAPH/,
     /U\.S\. Army Corps of Engineers retired colonel and former commander and military laboratory director/i,
     /3,000 researchers and scientists and budgets exceeding \$2 billion/i,
@@ -192,16 +192,16 @@ test("publishes the approved homepage hierarchy and native V4 controls", async (
     /Generation • Storage • Dispatch Architecture/,
     /A Canadian energy technology company developing modular hydroelectric generation and long-duration energy storage infrastructure\./,
     /data-v4-twin/,
-    /Auto Cycle/,
-    /Lower-Stage Generation/,
+    /Auto/,
+    /Lower Reservoir/,
     /Energy In/,
     /Store/,
     /Generate/,
     /Dispatch/,
-    /Energy In → Store → Generate → Dispatch/,
+    /Energy In (?:›|&#x203A;) Store (?:›|&#x203A;) Generate (?:›|&#x203A;) Dispatch/,
     /External Energy In/i,
-    /External electricity powers pumping/i,
-    /System losses require make-up energy/i,
+    /Pumping using external power/i,
+    /Storage has system losses/i,
     /Pause/,
     /Engineering &amp; Operational Roadmap/,
     /Standards Roadmap/,
@@ -217,9 +217,9 @@ test("publishes the approved homepage hierarchy and native V4 controls", async (
 });
 
 test("uses the authoritative calm cycle with causal signature-stage pacing", () => {
-  assert.equal(DIGITAL_TWIN_CYCLE_SECONDS, 55);
+  assert.equal(DIGITAL_TWIN_CYCLE_SECONDS, 61.1);
   assert.equal(digitalTwinSceneAt(0).phase, "establish");
-  assert.equal(digitalTwinSceneAt(0.71).phase, "charge");
+  assert.equal(digitalTwinSceneAt(0.81).phase, "charge");
   assert.deepEqual(
     { phase: digitalTwinSceneAt(9.21).phase, from: digitalTwinSceneAt(9.21).from, to: digitalTwinSceneAt(9.21).to },
     { phase: "handoff", from: "charge", to: "summary" },
@@ -231,7 +231,7 @@ test("uses the authoritative calm cycle with causal signature-stage pacing", () 
   assert.equal(digitalTwinSceneAt(34.11).phase, "lower");
   assert.equal(digitalTwinSceneAt(42.59).phase, "lower");
   assert.equal(digitalTwinSceneAt(42.61).phase, "summary");
-  assert.equal(digitalTwinSceneAt(55).phase, "establish");
+  assert.equal(digitalTwinSceneAt(61.1).phase, "establish");
   assert.equal(manualDigitalTwinScene("lower").activity, 1);
 
   assert.equal(digitalTwinSignatureStageAt(1), "energy");
@@ -257,8 +257,8 @@ test("uses the authoritative calm cycle with causal signature-stage pacing", () 
   assert.deepEqual(reservoirLevelsAt(25.41), { upper: 0.18, lower: 0.73 });
   assert.deepEqual(reservoirLevelsAt(35), { upper: 0.18, lower: 0.73 });
 
-  const justBeforeWrap = reservoirLevelsAt(55 - 1e-6);
-  const atWrap = reservoirLevelsAt(55);
+  const justBeforeWrap = reservoirLevelsAt(61.1 - 1e-6);
+  const atWrap = reservoirLevelsAt(61.1);
   assert.ok(Math.abs(justBeforeWrap.upper - atWrap.upper) < 1e-9);
   assert.ok(Math.abs(justBeforeWrap.lower - atWrap.lower) < 1e-9);
 });
@@ -298,10 +298,10 @@ test("pins the corrected base geometry and state-mapped SVG vectors", async () =
   assert.match(component, /premium-twin-flow-vectors/);
   assert.match(component, /data-flow-vector-route/);
   assert.match(component, /is-\$\{route\.operation\}/);
-  assert.match(component, /M 365 660 H 550 C 561 660 570 669 570 680 V 698 C 570 709 579 718 590 718 H 780/);
+  assert.match(component, /M 365 647 H 562 C 573 647 582 656 582 667 V 718 C 582 729 591 738 602 738 H 780/);
   assert.match(component, /M 780 720 V 250/);
-  assert.match(component, /M 650 250 V 320 C 650 386 604 420 570 432 H 365/);
-  assert.match(component, /M 950 250 V 320 C 950 386 968 420 1002 432 H 1235/);
+  assert.match(component, /M 635 250 V 392 C 635 421 611 445 582 445 H 365/);
+  assert.match(component, /M 942 250 V 400 C 942 425 962 445 987 445 H 1235/);
   assert.match(component, /humpback-digital-twin-approved-dusk-no-rays\.png/);
   assert.doesNotMatch(component, /humpback-digital-twin-v4-geometry\.jpg/);
   assert.doesNotMatch(component, /function drawFlow/);
@@ -317,7 +317,7 @@ test("pins the corrected base geometry and state-mapped SVG vectors", async () =
   assert.match(component, /signatureStage === "store"/);
   assert.match(component, /signatureStage === "dispatch"/);
   assert.doesNotMatch(component, /data-water-particle/);
-  assert.match(component, /data-water-direction/);
+  assert.match(component, /data-flow-vector-route/);
   assert.match(component, /pathLength="1" d="M 1030 420 H 1525"/);
   assert.doesNotMatch(component, /premium-twin-flow-pulse|premium-twin-flow-core/);
   assert.doesNotMatch(component, /premium-twin-step-trace/);
@@ -333,8 +333,8 @@ test("pins the corrected base geometry and state-mapped SVG vectors", async () =
   assert.equal(flagBreezeActivityAt(0), 0);
   assert.ok(flagBreezeActivityAt(2.3) > 0.99);
   assert.equal(flagBreezeActivityAt(8), 0);
-  assert.ok(flagBreezeActivityAt(44.55) > 0.99);
-  assert.equal(flagBreezeActivityAt(55), 0);
+  assert.ok(flagBreezeActivityAt(47.6) > 0.99);
+  assert.equal(flagBreezeActivityAt(61.1), 0);
 });
 
 test("removes standalone seeking language and external V4 payloads", async () => {
@@ -385,7 +385,7 @@ test("renders the linked company credit without the obsolete website link on eve
   const worker = await loadWorker();
   for (const route of publicRoutes) {
     const { html } = await fetchRoute(worker, route);
-    assert.match(html, /HUMPBACK HYDRO © 2026 \| SITE BY/, route);
+    assert.match(html, /2026 © HUMPBACK HYDRO/, route);
     assert.match(html, /<a[^>]*href="https:\/\/www\.brycehuston\.com\/solutions"[^>]*target="_blank"[^>]*rel="noreferrer">HUSTON SOLUTION INC\.<\/a>/, route);
     assert.doesNotMatch(html, /Huston Solutions|Current Website/i, route);
   }

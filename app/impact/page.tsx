@@ -124,7 +124,7 @@ export default function ImpactPage() {
         eyebrow="Impact"
         title="Measure Impact From the Baseline."
         copy="A balanced framework for evaluating the proposed environmental profile, potential development alignment and the monitoring required to establish project-level outcomes."
-        image="/island-energy-water-approved.jpg"
+        image="/island-energy-water-approved.webp"
         nextHref="#impact-boundary"
         nextLabel="Review the Impact Framework"
       />

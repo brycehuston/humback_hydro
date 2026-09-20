@@ -11,6 +11,7 @@ import {
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { CameraShake, OrbitControls, Sky, useAnimations, useGLTF } from "@react-three/drei";
 import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
+import type { AmbientLight, DirectionalLight, HemisphereLight } from "three";
 import {
   ACESFilmicToneMapping,
   AdditiveBlending,
@@ -1438,12 +1439,13 @@ function SceneContent({
   | "resetSignal"
 >) {
   const controlsRef = useRef<OrbitControlsImpl>(null);
-  const shakeRef = useRef<any>(null);
-  const ambientRef = useRef<any>(null);
-  const dirRef = useRef<any>(null);
-  const hemiRef = useRef<any>(null);
-  const skyRef = useRef<any>(null);
+  const shakeRef = useRef<{ setIntensity: (val: number) => void } | null>(null);
+  const ambientRef = useRef<AmbientLight>(null);
+  const dirRef = useRef<DirectionalLight>(null);
+  const hemiRef = useRef<HemisphereLight>(null);
+  const skyRef = useRef<Mesh>(null);
   const sunPosRef = useRef(new Vector3(0, -1, 0));
+  const initialSunPos = useMemo(() => new Vector3(0, -1, 0), []);
   
   const sunCurve = useMemo(() => new CatmullRomCurve3([
     new Vector3(0, -1, 0),    // Stage 1 (Night / Off-Peak Pumping)
@@ -1487,7 +1489,7 @@ function SceneContent({
 
   return (
     <>
-      <Sky ref={skyRef} sunPosition={sunPosRef.current} />
+      <Sky ref={skyRef} sunPosition={initialSunPos} />
       <fog attach="fog" args={[COLORS.fog, 18, 45]} />
 
       <CameraShake

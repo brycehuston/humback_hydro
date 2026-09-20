@@ -19,6 +19,9 @@ export default function Home() {
       <section className="home-hero" id="top">
         <img className="home-hero-image" src="/company-hero-approved.jpg" alt="Conceptual technology illustration of coastal hydroelectric infrastructure" fetchPriority="high" />
         <div className="hero-atmosphere" />
+        <div className="hero-grid" aria-hidden="true" />
+        <div className="hero-depth-rings" aria-hidden="true"><i /><i /><i /><span /></div>
+        <div className="hero-water-scan" aria-hidden="true"><i /><i /></div>
         <div className="hero-copy" data-reveal>
           <p className="eyebrow"><span />Marine Pumped-Hydro Infrastructure</p>
           <h1 className="home-positioning-title"><span>Hydropower</span>{" "}<span>Reimagined.</span></h1>
@@ -181,7 +184,7 @@ export default function Home() {
       </section>
 
       <section className="industrial-break">
-        <img src="/manufacturing-campus-approved.jpg" alt="Conceptual technology illustration of modular hydro infrastructure manufacturing" loading="lazy" decoding="async" />
+        <img src="/manufacturing-campus-approved.webp" alt="Conceptual technology illustration of modular hydro infrastructure manufacturing" loading="lazy" decoding="async" />
         <div className="industrial-overlay" />
         <div className="industrial-copy" data-reveal>
           <p className="eyebrow"><span />Designed for Industrialization</p>
@@ -202,7 +205,7 @@ export default function Home() {
           </div>
 
           <div className="cta-visual" data-reveal>
-            <img src="/grid-data-center-night.webp" alt="Conceptual technology illustration of a coastal data-center power campus" loading="lazy" decoding="async" />
+            <img src="/grid-data-center-night-approved.webp" alt="Conceptual technology illustration of a coastal data-center power campus" loading="lazy" decoding="async" />
             <div className="cta-visual-shade" />
             <div className="cta-sonar" aria-hidden="true"><i /><i /><i /><span /></div>
             <div className="cta-visual-status"><small>VALIDATION &amp; PILOT PATHWAY</small><strong>Partner Engagement Pathway</strong></div>
