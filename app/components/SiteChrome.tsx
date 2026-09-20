@@ -247,7 +247,7 @@ export default function SiteChrome({ children }: { children: React.ReactNode }) 
           </div>
         </div>
         <div className="footer-legal footer-reveal">
-          <span>&copy; 2026 HUMPBACK HYDRO</span>
+          <span>@ 2026 HUMPBACK HYDRO</span>
           <span>📍 VANCOUVER, CANADA</span>
           <span>SITE BY <a className="footer-credit-link" href="https://www.brycehuston.com/solutions" target="_blank" rel="noreferrer">HUSTON SOLUTION INC.</a></span>
         </div>
