@@ -9566,17 +9566,17 @@ svg {
   border-bottom: 1px solid rgba(22, 141, 168, .26);
 }
 
-.route-hero>img[src*="humpback-team-vancouver-approved"] {
+.route-hero>img[src*="humpback-team-vancouver"] {
   filter: brightness(.86) contrast(1.04) saturate(.84);
 }
 
 @media (min-width: 761px) {
-  .route-hero>img[src*="humpback-team-vancouver-approved"] {
-    transform: translateX(4%) scale(1.03);
+  .route-hero>img[src*="humpback-team-vancouver"] {
+    transform: translateX(5%) scale(1.03);
     transform-origin: left center;
   }
 
-  .route-hero>img[src*="humpback-team-vancouver-approved"]~.route-hero-copy {
+  .route-hero>img[src*="humpback-team-vancouver"]~.route-hero-copy {
     width: min(470px, 36vw);
   }
 }
@@ -10516,18 +10516,18 @@ svg {
 }
 
 @media (min-width: 761px) {
-  .route-hero>img[src*="humpback-team-vancouver-approved"]~.route-hero-copy {
+  .route-hero>img[src*="humpback-team-vancouver"]~.route-hero-copy {
     top: 51%;
     width: min(540px, 39vw);
   }
 
-  .route-hero>img[src*="humpback-team-vancouver-approved"]~.route-hero-copy h1 {
+  .route-hero>img[src*="humpback-team-vancouver"]~.route-hero-copy h1 {
     max-width: 620px;
     font-size: clamp(68px, 7vw, 100px);
     line-height: .91;
   }
 
-  .route-hero>img[src*="humpback-team-vancouver-approved"]~.route-hero-copy>p:not(.eyebrow) {
+  .route-hero>img[src*="humpback-team-vancouver"]~.route-hero-copy>p:not(.eyebrow) {
     max-width: 510px;
     margin-block: 25px;
     color: #a9bdc1;
@@ -10622,16 +10622,12 @@ svg {
     margin-inline: 0;
   }
 
-  .route-hero>img[src*="humpback-team-vancouver-approved"] {
-    object-position: 64% center !important;
-  }
-
-  .route-hero>img[src*="humpback-team-vancouver-approved"]~.route-hero-copy h1 {
+  .route-hero>img[src*="humpback-team-vancouver"]~.route-hero-copy h1 {
     font-size: clamp(40px, 11vw, 48px);
     line-height: .94;
   }
 
-  .route-hero>img[src*="humpback-team-vancouver-approved"]~.route-hero-copy>p:not(.eyebrow) {
+  .route-hero>img[src*="humpback-team-vancouver"]~.route-hero-copy>p:not(.eyebrow) {
     color: #afc1c5;
     font: 560 9.5px/1.68 var(--font-geist-mono);
     letter-spacing: .035em;
