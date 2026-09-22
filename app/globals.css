@@ -864,7 +864,7 @@ svg {
   position: absolute;
   z-index: 2;
   left: clamp(24px, 5vw, 84px);
-  top: 51%;
+  top: 54.5%;
   width: min(930px, 66vw);
   transform: translateY(-42%);
 }
