@@ -37,7 +37,7 @@ export default function ApplicationSelector({ expanded = false }: { expanded?: b
       </div>
 
       <div className="application-stage" role="tabpanel" id={`${id}-panel`} aria-labelledby={`${id}-${active.id}`} tabIndex={0}>
-        <img key={active.image} src={active.image} alt={`${active.label} conceptual technology illustration`} loading="lazy" decoding="async" />
+        <img key={active.image} src={active.image} alt={`${active.label} conceptual technology illustration`} data-application-id={active.id} loading="lazy" decoding="async" />
         <div className="application-overlay" />
         <div className="application-copy" key={active.id}>
           <small>{active.kicker}</small>

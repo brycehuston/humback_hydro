@@ -340,7 +340,7 @@ export const applications = [
     description:
       "A potential infrastructure pathway for food-production regions evaluating dependable power, water resilience and integrated resource planning.",
     points: ["Reliable Energy Supply", "Water-System Integration", "Regional Resilience"],
-    image: "/island-energy-water-approved.webp",
+    image: "/food-systems-approved.webp",
     cta: "Discuss Food-System Infrastructure",
   },
 ];

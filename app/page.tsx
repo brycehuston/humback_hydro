@@ -3,6 +3,7 @@ import { pageMetadata } from "./page-metadata";
 import { Arrow } from "./components/Icons";
 import HomepageEconomics from "./components/HomepageEconomics";
 import PremiumDigitalTwin from "./components/PremiumDigitalTwin";
+import PlatformRings from "./components/PlatformRings";
 import {
   engineeringPillars,
   evidence,
@@ -84,7 +85,7 @@ export default function Home() {
       </section>
 
       <section className="platform-section" id="platform">
-        <div className="platform-rings" aria-hidden="true"><i /><i /><i /></div>
+        <PlatformRings />
         <div className="section-shell">
           <div className="chapter-label light"><span>02</span>THE PLATFORM</div>
           <div className="section-intro inverse" data-reveal>

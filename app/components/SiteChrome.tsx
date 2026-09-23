@@ -213,7 +213,10 @@ export default function SiteChrome({ children }: { children: React.ReactNode }) 
           <div className="footer-statement">
             <img src="/natural-power-statement.png" alt="Natural Power. Real Impact." className="footer-tagline-img" />
           </div>
-          <a className="footer-email" href="mailto:info@humpbackenergy.com">info@humpbackenergy.com</a>
+          <div className="footer-contact-module">
+            <small className="titanium-microtype">CONTACT</small>
+            <a className="footer-email" href="mailto:info@humpbackenergy.com">info@humpbackenergy.com</a>
+          </div>
         </div>
         <div className="footer-grid footer-reveal">
           <div className="footer-group-explore">
