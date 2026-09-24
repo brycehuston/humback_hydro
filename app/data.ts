@@ -13,12 +13,15 @@ export interface LeadershipProfile {
   image?: string;
   imageAlt?: string;
   imagePosition?: string;
+  imageBg?: string;
+  imageScale?: number;
+  imageHoverScale?: number;
   initials?: string;
   focus: string;
   profileLabel?: string;
   specialty?: string;
   credentialLabel?: string;
-  credentialValue?: string;
+  credentialValue?: string | readonly string[];
   biography?: readonly string[];
   publicationStatus: LeadershipPublicationStatus;
 }
@@ -83,8 +86,8 @@ export const leadership: readonly LeadershipProfile[] = [
     focus: "Information Security • AI Systems • Digital Infrastructure",
     profileLabel: "SECURITY & DIGITAL INFRASTRUCTURE",
     specialty: "Information Security • AI Systems • Digital Infrastructure",
-    credentialLabel: "FOUNDER & SYSTEMS ARCHITECT",
-    credentialValue: "FruxLabs | Alpha Alerts | HUSTON SOLUTION Iɴᴄ.",
+    credentialLabel: "TECH CONSULTANT & SYSTEMS ARCHITECT",
+    credentialValue: ["HUSTON SOLUTION Inc.", "FruxLabs", "Alpha Alerts"],
     biography: [
       "Bryce Huston is Chief Information Security Officer at Humpback Hydro and founder of FruxLabs, Alpha Alerts and HUSTON SOLUTION Inc. His work spans information security, applied artificial intelligence, automation, quantitative systems and digital infrastructure, with a focus on building secure, resilient systems and high-performance digital products for real-world operation.",
       "A hands-on systems architect and technical operator, Bryce designs and builds production platforms integrating real-time data acquisition, automated decision systems, quantitative analysis, secure cloud infrastructure, operational monitoring and AI-assisted workflows. His work also extends to premium digital experience design, combining technical architecture with meticulous interface design, animation, interactive motion and performance engineering to create polished, highly responsive web platforms.",

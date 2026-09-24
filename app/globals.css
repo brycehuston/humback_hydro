@@ -11869,3 +11869,269 @@ section:has(.is-visible) .platform-rings {
     text-align: center;
   }
 }
+@keyframes frux-shimmer { 0% { transform: translateX(-150%); } 50%, 100% { transform: translateX(150%); } }
+.animate-frux-shimmer { animation: frux-shimmer 4s ease-in-out infinite; }
+
+.site-header .brandmark-wrap {
+  filter: brightness(1.2) saturate(1.05);
+}
+
+.site-header .brandmark-wrap img {
+  filter: none;
+}
+
+.logo-trace-svg {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  z-index: 1;
+  width: 21.4558%;
+  height: auto;
+  aspect-ratio: 466 / 349;
+  overflow: hidden;
+  pointer-events: none;
+  transform: translateY(-50%);
+  filter: brightness(var(--logo-brightness));
+}
+
+.logo-current-path {
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: var(--logo-trail-length) 1;
+  stroke-dashoffset: var(--logo-trail-length);
+  opacity: 0;
+  animation: logo-current-travel var(--logo-current-duration) linear var(--logo-current-delay) both;
+}
+
+.logo-current-path--bloom {
+  stroke: rgba(var(--logo-glow-color), var(--logo-glow-strength));
+  stroke-width: var(--logo-glow-width);
+}
+
+.logo-current-path--trail {
+  stroke: rgba(var(--logo-glow-color), var(--logo-trail-strength));
+  stroke-width: var(--logo-trail-width);
+}
+
+.logo-current-path--body {
+  stroke: var(--logo-cyan-color);
+  stroke-width: var(--logo-cyan-width);
+  filter: url("#logo-current-noise");
+}
+
+.logo-current-path--core {
+  stroke: var(--logo-core-color);
+  stroke-opacity: var(--logo-core-strength);
+  stroke-width: var(--logo-core-width);
+  stroke-dasharray: var(--logo-core-trail-length) 1;
+}
+
+.logo-current-head {
+  opacity: 0;
+  animation: logo-current-head-visibility var(--logo-current-duration) linear var(--logo-current-delay) both;
+}
+
+.logo-current-head__bloom {
+  fill: url("#logo-current-radial");
+}
+
+.logo-current-head__body {
+  fill: var(--logo-head-cyan-color);
+  animation: logo-current-flicker var(--logo-flicker-speed) steps(2, jump-none) infinite;
+}
+
+.logo-current-head__core {
+  fill: var(--logo-core-color);
+  animation: logo-current-core-flicker var(--logo-core-flicker-speed) steps(2, jump-none) infinite;
+}
+
+.logo-current-head__arc {
+  fill: none;
+  stroke: var(--logo-micro-arc-color);
+  stroke-width: var(--logo-micro-arc-width);
+  stroke-linecap: round;
+  opacity: 0;
+}
+
+.logo-current-head__arc--one {
+  animation: logo-current-arc-one var(--logo-micro-arc-one-speed) steps(2, jump-none) infinite;
+}
+
+.logo-current-head__arc--two {
+  animation: logo-current-arc-two var(--logo-micro-arc-two-speed) steps(2, jump-none) var(--logo-micro-arc-two-delay) infinite;
+}
+
+.logo-current-spark path {
+  fill: none;
+  stroke: var(--logo-spark-color);
+  stroke-width: var(--logo-spark-width);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0;
+  animation: logo-current-spark var(--logo-spark-lifetime) ease-out var(--logo-spark-delay) both;
+}
+
+.logo-current-junction {
+  fill: url("#logo-current-radial");
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.logo-current-junction--lower {
+  animation: logo-current-surge var(--logo-junction-pulse-speed) ease-out var(--logo-lower-junction-delay) both;
+}
+
+.logo-current-junction--upper {
+  animation: logo-current-surge var(--logo-junction-pulse-speed) ease-out var(--logo-upper-junction-delay) both;
+}
+
+.logo-current-exit {
+  opacity: 0;
+  color: var(--logo-exit-color);
+  animation: logo-current-exit var(--logo-exit-pulse-speed) ease-out var(--logo-exit-pulse-delay) both;
+}
+
+.logo-current-exit circle {
+  fill: url("#logo-current-radial");
+}
+
+.logo-current-exit path {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: var(--logo-exit-arc-width);
+  stroke-linecap: round;
+}
+
+@keyframes logo-current-travel {
+  0% {
+    stroke-dashoffset: var(--logo-trail-length);
+    opacity: 0;
+  }
+
+  4%, 92% {
+    opacity: 1;
+  }
+
+  100% {
+    stroke-dashoffset: -1;
+    opacity: 0;
+  }
+}
+
+@keyframes logo-current-head-visibility {
+  0% {
+    opacity: 0;
+  }
+
+  3%, 93% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes logo-current-flicker {
+  0%, 100% {
+    opacity: var(--logo-flicker-mid);
+  }
+
+  45% {
+    opacity: 1;
+  }
+
+  70% {
+    opacity: var(--logo-flicker-low);
+  }
+}
+
+@keyframes logo-current-core-flicker {
+  0%, 100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: var(--logo-core-flicker-low);
+  }
+}
+
+@keyframes logo-current-arc-one {
+  0%, 45%, 100% {
+    opacity: 0;
+  }
+
+  50%, 72% {
+    opacity: var(--logo-micro-arc-one-strength);
+  }
+}
+
+@keyframes logo-current-arc-two {
+  0%, 60%, 100% {
+    opacity: 0;
+  }
+
+  64%, 82% {
+    opacity: var(--logo-micro-arc-two-strength);
+  }
+}
+
+@keyframes logo-current-spark {
+  0% {
+    opacity: 0;
+  }
+
+  14% {
+    opacity: var(--logo-spark-opacity);
+  }
+
+  48% {
+    opacity: var(--logo-spark-opacity);
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes logo-current-surge {
+  0% {
+    opacity: 0;
+    transform: scale(var(--logo-junction-start-scale));
+  }
+
+  38% {
+    opacity: var(--logo-pulse-strength);
+    transform: scale(var(--logo-junction-peak-scale));
+  }
+
+  100% {
+    opacity: 0;
+    transform: scale(var(--logo-junction-end-scale));
+  }
+}
+
+@keyframes logo-current-exit {
+  0% {
+    opacity: 0;
+    transform: scale(var(--logo-exit-start-scale));
+  }
+
+  34% {
+    opacity: var(--logo-pulse-strength);
+    transform: scale(var(--logo-exit-peak-scale));
+  }
+
+  100% {
+    opacity: 0;
+    transform: scale(var(--logo-exit-end-scale));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .logo-trace-svg {
+    display: none;
+  }
+}

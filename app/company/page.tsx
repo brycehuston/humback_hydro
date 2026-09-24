@@ -170,14 +170,49 @@ export default function CompanyPage() {
                     <small className="font-mono text-[0.64rem] font-semibold tracking-[0.14em] text-[#78969e] uppercase">
                       {bryceHuston.credentialLabel}
                     </small>
-                    <a
-                      className="mt-2 block text-base font-semibold text-white underline decoration-[#59acc2]/50 underline-offset-4"
-                      href="https://www.brycehuston.com/solutions"
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      {bryceHuston.credentialValue}
-                    </a>
+                    <div className="mt-3.5 flex flex-wrap gap-2.5 -ml-3">
+                      {(Array.isArray(bryceHuston.credentialValue) ? bryceHuston.credentialValue : [bryceHuston.credentialValue]).map((company, index) => {
+                        if (company === "Alpha Alerts") {
+                          return (
+                            <a
+                              key={index}
+                              href="https://alphaalerts.dev/"
+                              target="_blank"
+                              rel="noreferrer"
+                              className="rounded-md border border-white/10 bg-black/20 px-3 py-1 text-[0.85rem] font-medium text-[#9caeb4] transition-all duration-300 hover:-translate-y-0.5 hover:border-white/20 hover:text-[#d3e3e8] outline-none focus-visible:ring-2 focus-visible:ring-[#59acc2]/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#082f40]"
+                            >
+                              {company}
+                            </a>
+                          );
+                        }
+                        if (company === "FruxLabs") {
+                          return (
+                            <span key={index} className="relative overflow-hidden flex items-center rounded-md border border-white/10 bg-black/20 px-3 py-1 text-[0.85rem] font-medium text-[#9caeb4]">
+                              <span className="relative z-10">{company}</span>
+                              <span className="absolute inset-0 z-0 -translate-x-full bg-gradient-to-r from-transparent via-[#59acc2]/15 to-transparent motion-safe:animate-frux-shimmer" aria-hidden="true"></span>
+                            </span>
+                          );
+                        }
+                        if (company === "HUSTON SOLUTION Inc.") {
+                          return (
+                            <a
+                              key={index}
+                              href="https://www.brycehuston.com/solutions"
+                              target="_blank"
+                              rel="noreferrer"
+                              className="rounded-md border border-white/10 bg-black/20 px-3 py-1 text-[0.85rem] font-medium text-[#9caeb4] transition-all duration-300 hover:-translate-y-0.5 hover:border-white/20 hover:text-[#d3e3e8] outline-none focus-visible:ring-2 focus-visible:ring-[#59acc2]/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#082f40]"
+                            >
+                              {company}
+                            </a>
+                          );
+                        }
+                        return (
+                          <span key={index} className="rounded-md border border-white/10 bg-black/20 px-3 py-1 text-[0.85rem] font-medium text-[#9caeb4]">
+                            {company}
+                          </span>
+                        );
+                      })}
+                    </div>
                   </div>
                 </div>
                 <CompanyBiography id="bryce-huston-biography" paragraphs={bryceHuston.biography} className="leadership-biography grid gap-6 text-[0.95rem] leading-8 text-[#a9bbc1]" />

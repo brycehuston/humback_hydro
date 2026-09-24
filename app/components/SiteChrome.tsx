@@ -5,9 +5,11 @@ import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { brandLockupFull, brandLockupNav, navItems } from "../data";
 import { Arrow } from "./Icons";
+import LogoTrace, { LOGO_TRACE } from "./LogoTrace";
 
 export default function SiteChrome({ children }: { children: React.ReactNode }) {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [logoTraceActive, setLogoTraceActive] = useState(false);
   const pathname = usePathname();
   const menuTrigger = useRef<HTMLButtonElement>(null);
   const menuPanel = useRef<HTMLDivElement>(null);
@@ -152,6 +154,33 @@ export default function SiteChrome({ children }: { children: React.ReactNode }) 
     };
   }, [pathname]);
 
+  useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    const structuralLine = document.querySelector<HTMLElement>(".home-hero .eyebrow > span");
+    let settleTimer: ReturnType<typeof setTimeout> | undefined;
+    let started = false;
+
+    const startAfterSettle = () => {
+      if (started) return;
+      started = true;
+      clearTimeout(fallbackTimer);
+      settleTimer = setTimeout(() => setLogoTraceActive(true), LOGO_TRACE.startDelayMs);
+    };
+    const onAnimationEnd = (event: AnimationEvent) => {
+      if (event.animationName === "section-rule-draw") startAfterSettle();
+    };
+
+    structuralLine?.addEventListener("animationend", onAnimationEnd);
+    const fallbackTimer = setTimeout(startAfterSettle, LOGO_TRACE.fallbackStartMs);
+
+    return () => {
+      structuralLine?.removeEventListener("animationend", onAnimationEnd);
+      clearTimeout(fallbackTimer);
+      clearTimeout(settleTimer);
+    };
+  }, []);
+
   return (
     <>
       <div className="page-progress" aria-hidden="true" />
@@ -159,6 +188,7 @@ export default function SiteChrome({ children }: { children: React.ReactNode }) 
         <Link className="brand brand-lockup" href="/" aria-label="Humpback Hydro home">
           <span className="brandmark-wrap" aria-hidden="true">
             <img src={brandLockupNav} alt="" />
+            {logoTraceActive ? <LogoTrace /> : null}
           </span>
         </Link>
 
