@@ -131,10 +131,12 @@ test("renders leadership portraits and generic delivery capabilities", async () 
     /Portrait of Bryce Huston/,
     /Portrait of Col\. Bryan Green \(Ret\.\)/,
     /CHIEF INFORMATION SECURITY OFFICER/,
-    /FruxLabs \| Alpha Alerts \| HUSTON SOLUTION Iɴᴄ\./,
+    /HUSTON SOLUTION Inc\./,
+    /FruxLabs/,
+    /Alpha Alerts/,
     /SECURITY &amp; DIGITAL INFRASTRUCTURE/,
     /Information Security • AI Systems • Digital Infrastructure/,
-    /FOUNDER &amp; SYSTEMS ARCHITECT/,
+    /TECH CONSULTANT &amp; SYSTEMS ARCHITECT/,
     /Bryce Huston is Chief Information Security Officer at Humpback Hydro and founder of FruxLabs, Alpha Alerts and HUSTON SOLUTION Inc\./,
     /A hands-on systems architect and technical operator, Bryce designs and builds production platforms/,
     /build the infrastructure required to scale/,
@@ -385,7 +387,7 @@ test("renders the linked company credit without the obsolete website link on eve
   const worker = await loadWorker();
   for (const route of publicRoutes) {
     const { html } = await fetchRoute(worker, route);
-    assert.match(html, /2026 © HUMPBACK HYDRO/, route);
+    assert.match(html, /©(?:<[^>]+>|\s)*2026 HUMPBACK HYDRO/, route);
     assert.match(html, /<a[^>]*href="https:\/\/www\.brycehuston\.com\/solutions"[^>]*target="_blank"[^>]*rel="noreferrer">HUSTON SOLUTION INC\.<\/a>/, route);
     assert.doesNotMatch(html, /Huston Solutions|Current Website/i, route);
   }
