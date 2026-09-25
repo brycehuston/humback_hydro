@@ -13,7 +13,8 @@ export default function SiteChrome({ children }: { children: React.ReactNode }) 
   const pathname = usePathname();
   const menuTrigger = useRef<HTMLButtonElement>(null);
   const menuPanel = useRef<HTMLDivElement>(null);
-
+  const footerRef = useRef<HTMLElement>(null);
+  const [logoTraceKey, setLogoTraceKey] = useState(0);
 
   useEffect(() => {
     if (!menuOpen) return;
@@ -182,6 +183,29 @@ export default function SiteChrome({ children }: { children: React.ReactNode }) 
     };
   }, []);
 
+  useEffect(() => {
+    if (!footerRef.current) return;
+    const observer = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting) {
+        // Tagline sweep is 9.1s (5.7s delay + 3.4s duration) + 1.2s pause = ~10.3s
+        setTimeout(() => {
+          const header = document.querySelector<HTMLElement>(".site-header");
+          if (header) {
+            header.classList.add("header-slow-entrance");
+            header.style.transform = "";
+            setTimeout(() => {
+              header.classList.remove("header-slow-entrance");
+              setLogoTraceKey((k) => k + 1);
+            }, 1600);
+          }
+        }, 10300);
+        observer.disconnect();
+      }
+    }, { threshold: 0.1 });
+    observer.observe(footerRef.current);
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <>
       <div className="page-progress" aria-hidden="true" />
@@ -189,7 +213,7 @@ export default function SiteChrome({ children }: { children: React.ReactNode }) 
         <Link className="brand brand-lockup" href="/" aria-label="Humpback Hydro home">
           <span className="brandmark-wrap" aria-hidden="true">
             <img src={brandLockupNav} alt="" />
-            {logoTraceActive ? <LogoTrace /> : null}
+            {logoTraceActive ? <LogoTrace key={logoTraceKey} /> : null}
           </span>
         </Link>
 
@@ -233,7 +257,7 @@ export default function SiteChrome({ children }: { children: React.ReactNode }) 
 
       {children}
 
-      <footer className="site-footer footer-reveal-root" data-reveal>
+      <footer ref={footerRef} className="site-footer footer-reveal-root" data-reveal>
         <div className="footer-primary footer-reveal">
           <div className="footer-brand-zone">
             <Link className="brand brand-lockup footer-brand" href="/" aria-label="Humpback Hydro home">
