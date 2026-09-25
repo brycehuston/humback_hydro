@@ -137,7 +137,7 @@ test("renders leadership portraits and generic delivery capabilities", async () 
     /SECURITY &amp; DIGITAL INFRASTRUCTURE/,
     /Information Security • AI Systems • Digital Infrastructure/,
     /TECH CONSULTANT &amp; SYSTEMS ARCHITECT/,
-    /Bryce Huston is Chief Information Security Officer at Humpback Hydro and founder of FruxLabs, Alpha Alerts and HUSTON SOLUTION Inc\./,
+    /Bryce Huston is Chief Information Security Officer at Humpback Hydro and Principal of HUSTON SOLUTION Inc\., FruxLabs and Alpha Alerts\./,
     /A hands-on systems architect and technical operator, Bryce designs and builds production platforms/,
     /build the infrastructure required to scale/,
     /\/company\/humpback-team-vancouver\.webp/,

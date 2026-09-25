@@ -1,11 +1,39 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { brandLockupFull, brandLockupNav, navItems } from "../data";
 import { Arrow } from "./Icons";
 import LogoTrace, { LOGO_TRACE } from "./LogoTrace";
+
+const FOOTER_CHOREOGRAPHY = {
+  naturalStartMs: 1000,
+  naturalRevealMs: 3500,
+  interPhrasePauseMs: 500,
+  realRevealMs: 3500,
+  postStatementPauseMs: 650,
+  headerEntranceMs: 1250,
+  logoBreathMs: 1000,
+} as const;
+
+const FOOTER_TIMELINE = {
+  realStartMs: FOOTER_CHOREOGRAPHY.naturalStartMs
+    + FOOTER_CHOREOGRAPHY.naturalRevealMs
+    + FOOTER_CHOREOGRAPHY.interPhrasePauseMs,
+  headerReturnDelayMs: FOOTER_CHOREOGRAPHY.naturalStartMs
+    + FOOTER_CHOREOGRAPHY.naturalRevealMs
+    + FOOTER_CHOREOGRAPHY.interPhrasePauseMs
+    + FOOTER_CHOREOGRAPHY.realRevealMs
+    + FOOTER_CHOREOGRAPHY.postStatementPauseMs,
+} as const;
+
+const footerTimingStyle = {
+  "--footer-natural-start": `${FOOTER_CHOREOGRAPHY.naturalStartMs}ms`,
+  "--footer-natural-reveal": `${FOOTER_CHOREOGRAPHY.naturalRevealMs}ms`,
+  "--footer-real-start": `${FOOTER_TIMELINE.realStartMs}ms`,
+  "--footer-real-reveal": `${FOOTER_CHOREOGRAPHY.realRevealMs}ms`,
+} as CSSProperties;
 
 export default function SiteChrome({ children }: { children: React.ReactNode }) {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -159,7 +187,7 @@ export default function SiteChrome({ children }: { children: React.ReactNode }) 
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
-    const structuralLine = document.querySelector<HTMLElement>(".home-hero .eyebrow > span");
+    const finalNavPlate = document.querySelector<HTMLElement>(".desktop-nav .roll-link:last-child");
     let settleTimer: ReturnType<typeof setTimeout> | undefined;
     let started = false;
 
@@ -170,14 +198,14 @@ export default function SiteChrome({ children }: { children: React.ReactNode }) 
       settleTimer = setTimeout(() => setLogoTraceActive(true), LOGO_TRACE.startDelayMs);
     };
     const onAnimationEnd = (event: AnimationEvent) => {
-      if (event.animationName === "section-rule-draw") startAfterSettle();
+      if (event.animationName === "nav-plate-settle") startAfterSettle();
     };
 
-    structuralLine?.addEventListener("animationend", onAnimationEnd);
+    finalNavPlate?.addEventListener("animationend", onAnimationEnd);
     const fallbackTimer = setTimeout(startAfterSettle, LOGO_TRACE.fallbackStartMs);
 
     return () => {
-      structuralLine?.removeEventListener("animationend", onAnimationEnd);
+      finalNavPlate?.removeEventListener("animationend", onAnimationEnd);
       clearTimeout(fallbackTimer);
       clearTimeout(settleTimer);
     };
@@ -185,25 +213,38 @@ export default function SiteChrome({ children }: { children: React.ReactNode }) 
 
   useEffect(() => {
     if (!footerRef.current) return;
+    const timers = new Set<number>();
+    const schedule = (callback: () => void, delay: number) => {
+      const timer = window.setTimeout(() => {
+        timers.delete(timer);
+        callback();
+      }, delay);
+      timers.add(timer);
+    };
     const observer = new IntersectionObserver((entries) => {
       if (entries[0].isIntersecting) {
-        // Tagline sweep is 9.1s (5.7s delay + 3.4s duration) + 1.2s pause = ~10.3s
-        setTimeout(() => {
+        schedule(() => {
           const header = document.querySelector<HTMLElement>(".site-header");
           if (header) {
             header.classList.add("header-slow-entrance");
             header.style.transform = "";
-            setTimeout(() => {
+            schedule(() => {
               header.classList.remove("header-slow-entrance");
-              setLogoTraceKey((k) => k + 1);
-            }, 1600);
+              schedule(() => {
+                setLogoTraceActive(true);
+                setLogoTraceKey((key) => key + 1);
+              }, FOOTER_CHOREOGRAPHY.logoBreathMs);
+            }, FOOTER_CHOREOGRAPHY.headerEntranceMs);
           }
-        }, 10300);
+        }, FOOTER_TIMELINE.headerReturnDelayMs);
         observer.disconnect();
       }
     }, { threshold: 0.1 });
     observer.observe(footerRef.current);
-    return () => observer.disconnect();
+    return () => {
+      observer.disconnect();
+      timers.forEach((timer) => window.clearTimeout(timer));
+    };
   }, []);
 
   return (
@@ -212,7 +253,10 @@ export default function SiteChrome({ children }: { children: React.ReactNode }) 
       <header className="site-header">
         <Link className="brand brand-lockup" href="/" aria-label="Humpback Hydro home">
           <span className="brandmark-wrap" aria-hidden="true">
-            <img src={brandLockupNav} alt="" />
+            <picture>
+              <source srcSet="/brand/humpback-hydro-lockup-nav.webp" type="image/webp" />
+              <img src={brandLockupNav} alt="" />
+            </picture>
             {logoTraceActive ? <LogoTrace key={logoTraceKey} /> : null}
           </span>
         </Link>
@@ -243,26 +287,29 @@ export default function SiteChrome({ children }: { children: React.ReactNode }) 
 
       </header>
       <div id="mobile-navigation" ref={menuPanel} className={`mobile-panel ${menuOpen ? "open" : ""}`} aria-hidden={!menuOpen}>
-          <nav aria-label="Mobile navigation">
-            {navItems.map((item, index) => (
-              <Link key={item.href} href={item.href} aria-current={pathname === item.href ? "page" : undefined} onClick={() => setMenuOpen(false)}>
-                <span>0{index + 1}</span>{item.label}<Arrow />
-              </Link>
-            ))}
-            <Link href="/partners" onClick={() => setMenuOpen(false)}><span>{String(navItems.length + 1).padStart(2, "0")}</span>Explore a Partnership<Arrow /></Link>
-          </nav>
-          <small>📍 Vancouver, British Columbia, Canada</small>
-        </div>
+        <nav aria-label="Mobile navigation">
+          {navItems.map((item, index) => (
+            <Link key={item.href} href={item.href} aria-current={pathname === item.href ? "page" : undefined} onClick={() => setMenuOpen(false)}>
+              <span>0{index + 1}</span>{item.label}<Arrow />
+            </Link>
+          ))}
+          <Link href="/partners" onClick={() => setMenuOpen(false)}><span>{String(navItems.length + 1).padStart(2, "0")}</span>Explore a Partnership<Arrow /></Link>
+        </nav>
+        <small>📍 Vancouver, British Columbia, Canada</small>
+      </div>
 
 
       {children}
 
-      <footer ref={footerRef} className="site-footer footer-reveal-root" data-reveal>
+      <footer ref={footerRef} className="site-footer footer-reveal-root" data-reveal style={footerTimingStyle}>
         <div className="footer-primary footer-reveal">
           <div className="footer-brand-zone">
             <Link className="brand brand-lockup footer-brand" href="/" aria-label="Humpback Hydro home">
               <span className="brandmark-wrap footer-brandmark" aria-hidden="true">
-                <img src={brandLockupFull} alt="" />
+                <picture>
+                  <source srcSet="/brand/humpback-hydro-lockup-full.webp" type="image/webp" />
+                  <img src={brandLockupFull} alt="" />
+                </picture>
 
               </span>
             </Link>
@@ -293,7 +340,7 @@ export default function SiteChrome({ children }: { children: React.ReactNode }) 
               <small className="titanium-microtype">PARTNER</small>
               <div className="footer-group-links">
                 <Link href="/partners#pilot">Opportunity</Link>
-                <Link href="/partners#evaluate">Evaluate a Site</Link>
+                <Link href="/partners#pilot">Evaluate a Site</Link>
                 <Link href="/partners#investment">Investment</Link>
               </div>
             </div>

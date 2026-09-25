@@ -1,5 +1,14 @@
 import { Arrow } from "./Icons";
 
+const mobileHeroImages: Record<string, string> = {
+  "/brand/hh-tech-module-transfer.webp": "/brand/hh-tech-module-transfer-mobile.webp",
+  "/brand/hh-impact-framework.webp": "/brand/hh-impact-framework-mobile.webp",
+  "/island-energy-water-approved.webp": "/island-energy-water-approved-mobile.webp",
+  "/grid-data-center-night-approved.webp": "/grid-data-center-night-approved-mobile.webp",
+  "/turbine-macro-approved.webp": "/turbine-macro-approved-mobile.webp",
+  "/company/humpback-team-vancouver.webp": "/company/humpback-team-vancouver-mobile.webp",
+};
+
 export default function RouteHero({
   index,
   eyebrow,
@@ -25,9 +34,14 @@ export default function RouteHero({
   nextLabel?: string;
   variant?: "decision";
 }) {
+  const mobileImage = mobileHeroImages[image];
+
   return (
     <section className={`route-hero${variant ? ` route-hero--${variant}` : ""}`}>
-      <img src={image} alt={imageAlt} fetchPriority="high" style={imagePosition ? { objectPosition: imagePosition } : undefined} />
+      <picture>
+        {mobileImage ? <source media="(max-width: 760px)" srcSet={mobileImage} type="image/webp" /> : null}
+        <img src={image} alt={imageAlt} fetchPriority="high" style={imagePosition ? { objectPosition: imagePosition } : undefined} />
+      </picture>
       <div className="route-hero-overlay" />
       <div className="route-index">{index}</div>
       <div className="route-hero-copy">

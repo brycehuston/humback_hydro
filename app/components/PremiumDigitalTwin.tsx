@@ -278,9 +278,9 @@ export default function PremiumDigitalTwin() {
   const [paused, setPaused] = useState(false);
   const [entryCueVisible, setEntryCueVisible] = useState(false);
   const [visibleStage, setVisibleStage] =
-    useState<DigitalTwinSignatureStage | null>("energy");
+    useState<DigitalTwinSignatureStage | null>(null);
   const [exitingCallout, setExitingCallout] = useState<TwinCallout | null>(null);
-  const [announcedPhase, setAnnouncedPhase] = useState("Energy In");
+  const [announcedPhase, setAnnouncedPhase] = useState("System Orientation");
   const [leaderY, setLeaderY] = useState({
     upper: 155,
     turbine: 331,
@@ -426,7 +426,7 @@ export default function PremiumDigitalTwin() {
     let reducedMotion = motionQuery.matches;
     let renderedUiPhase = "";
     let renderedAnnouncement = "";
-    let renderedCallout: TwinCallout | null = "turbine";
+    let renderedCallout: TwinCallout | null = null;
     let calloutExitTimer: number | null = null;
     let wildlifeStage: DigitalTwinSignatureStage | null = "energy";
     let transitionCount = 0;
@@ -1277,6 +1277,7 @@ export default function PremiumDigitalTwin() {
         ((elapsed % DIGITAL_TWIN_CYCLE_SECONDS) + DIGITAL_TWIN_CYCLE_SECONDS) %
         DIGITAL_TWIN_CYCLE_SECONDS;
       const cycleComplete =
+        !reducedMotion &&
         !forcedAction &&
         cycleTime >= DIGITAL_TWIN_SIGNOFF_START_SECONDS &&
         cycleTime < DIGITAL_TWIN_SIGNOFF_END_SECONDS;
@@ -1401,7 +1402,20 @@ export default function PremiumDigitalTwin() {
       const now = performance.now();
       if (!sequenceStarted) {
         rootElement.dataset.animationSuspended = "true";
-        if (active && !reducedMotion && entryStartTimer === null) {
+        if (active) rootElement.dataset.entryReady = "true";
+        if (active && reducedMotion) {
+          sequenceStarted = true;
+          start = now;
+          lastFrame = now;
+          automaticSuspensionStarted = null;
+          delete rootElement.dataset.animationSuspended;
+          scheduleFrame();
+          return;
+        }
+        if (active && entryStartTimer === null) {
+          const entryDelay = window.matchMedia("(max-width: 760px)").matches
+            ? 2200
+            : 3000;
           entryStartTimer = window.setTimeout(() => {
             entryStartTimer = null;
             if (disposed || !documentVisible || !inViewport) return;
@@ -1411,7 +1425,7 @@ export default function PremiumDigitalTwin() {
             automaticSuspensionStarted = null;
             delete rootElement.dataset.animationSuspended;
             scheduleFrame();
-          }, 3000);
+          }, entryDelay);
         } else if (!active && entryStartTimer !== null) {
           window.clearTimeout(entryStartTimer);
           entryStartTimer = null;

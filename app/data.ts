@@ -89,7 +89,7 @@ export const leadership: readonly LeadershipProfile[] = [
     credentialLabel: "TECH CONSULTANT & SYSTEMS ARCHITECT",
     credentialValue: ["HUSTON SOLUTION Inc.", "FruxLabs", "Alpha Alerts"],
     biography: [
-      "Bryce Huston is Chief Information Security Officer at Humpback Hydro and founder of FruxLabs, Alpha Alerts and HUSTON SOLUTION Inc. His work spans information security, applied artificial intelligence, automation, quantitative systems and digital infrastructure, with a focus on building secure, resilient systems and high-performance digital products for real-world operation.",
+      "Bryce Huston is Chief Information Security Officer at Humpback Hydro and Principal of HUSTON SOLUTION Inc., FruxLabs and Alpha Alerts. His work spans information security, applied artificial intelligence, automation, quantitative systems and digital infrastructure, with a focus on building secure, resilient systems and high-performance digital products for real-world operation.",
       "A hands-on systems architect and technical operator, Bryce designs and builds production platforms integrating real-time data acquisition, automated decision systems, quantitative analysis, secure cloud infrastructure, operational monitoring and AI-assisted workflows. His work also extends to premium digital experience design, combining technical architecture with meticulous interface design, animation, interactive motion and performance engineering to create polished, highly responsive web platforms.",
       "His broader technical work includes real-time intelligence systems, quantitative research and backtesting infrastructure, AI-enabled automation, high-frequency data processing, telemetry and data-driven decision architecture. Through FruxLabs and Alpha Alerts, he has developed and operated systems spanning market intelligence, signal research, risk modelling, automated monitoring and execution research, with particular emphasis on reliability, data integrity and disciplined risk controls.",
       "At Humpback Hydro, Bryce leads information security and digital infrastructure strategy, establishing the secure, scalable digital foundation supporting engineering collaboration, data integrity, operational continuity and future platform growth. His approach combines system architecture, risk management and execution discipline to build the infrastructure required to scale.",
@@ -187,7 +187,7 @@ export const evidence = [
     description: "Static-system results are summarized separately with their modeled status and limitations.",
     status: "University Engineering Study",
     statusTone: "documented",
-    href: "#technical-study-record",
+    href: "/evidence#technical-study-record",
     external: false,
     action: "READ STUDY SUMMARIES",
   },

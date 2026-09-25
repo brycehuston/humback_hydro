@@ -8,7 +8,7 @@ export const metadata = pageMetadata("/technology", "Technology", "Explore Humpb
 export default function TechnologyPage() {
   return (
     <main className="technology-page">
-      <RouteHero index="01" eyebrow="Technology" title="Elevation, Engineered Within." copy="A modular energy-transfer platform that receives, stores, generates and dispatches electricity through an integrated hydraulic system—creating the required elevation internally rather than relying on mountainous terrain." image="/ocean-infrastructure-approved.jpg" nextHref="#operating-cycle" nextLabel="Enter the Operating Cycle" />
+      <RouteHero index="01" eyebrow="Technology" title="Elevation, Engineered Within." copy="A modular energy-transfer platform that receives, stores, generates and dispatches electricity through an integrated hydraulic system—creating the required elevation internally rather than relying on mountainous terrain." image="/brand/hh-tech-module-transfer.webp" nextHref="#operating-cycle" nextLabel="Enter the Operating Cycle" />
       <section className="route-intro section-shell" id="operating-cycle">
         <div className="chapter-label"><span>01</span>OPERATING PRINCIPLE</div>
         <div className="section-intro split" data-reveal>
@@ -22,7 +22,7 @@ export default function TechnologyPage() {
         <div className="section-shell">
           <div className="chapter-label light"><span>02</span>SYSTEM ANATOMY</div>
           <div className="anatomy-grid">
-            <div className="anatomy-visual" data-reveal><img src="/turbine-macro-approved.webp" alt="Conceptual technology illustration of reversible hydro machinery" loading="lazy" decoding="async" /><span className="concept-tag">CONCEPTUAL TECHNOLOGY ILLUSTRATION — NOT TO SCALE</span></div>
+            <div className="anatomy-visual" data-reveal><img src="/brand/hh-system-anatomy.png" alt="Conceptual technology illustration of reversible hydro machinery" loading="lazy" decoding="async" /><span className="concept-tag">CONCEPTUAL TECHNOLOGY ILLUSTRATION — NOT TO SCALE</span></div>
             <div className="anatomy-list">
               <article data-reveal><span>01</span><div><small>STORAGE</small><h3>Two Engineered Reservoirs</h3><p>Upper and lower reservoirs create vertical separation inside the fixed structure.</p></div></article>
               <article data-reveal><span>02</span><div><small>GENERATION</small><h3>Bilateral Turbine Stages</h3><p>The concept model shows paired upper and lower turbine paths without asserting final equipment count or scale.</p></div></article>

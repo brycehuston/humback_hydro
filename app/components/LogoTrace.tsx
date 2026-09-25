@@ -8,23 +8,23 @@ import type { CSSProperties } from "react";
    Flicker: smaller speed = faster; larger intensity = more contrast.
    ============================================================================ */
 export const LOGO_TRACE = {
-  // Trigger timing after the homepage structural line finishes.
-  startDelayMs: 250,
-  fallbackStartMs: 5500,
+  // Trigger after the last navigation plate settles, then leave a short breath.
+  startDelayMs: 240,
+  fallbackStartMs: 1450,
 
   // Route timing.
   // Sequence: down -> lower hold -> up -> split to tips -> tiny tip hold -> release down.
-  speedMultiplier: 2.4,
+  speedMultiplier: 2,
 
-  stageDownMs: 1000,
-  stageUpMs: 450,
-  stageExitMs: 900,
+  stageDownMs: 980,
+  stageUpMs: 800,
+  stageExitMs: 700,
 
   stageOverlapMs: 0,
 
-  pauseAfterDownMs: 575,
+  pauseAfterDownMs: 260,
   pauseAfterUpMs: 0,
-  pauseAtTipsMs: 130,
+  pauseAtTipsMs: 210,
 
   // First share of stageExitMs = center -> upper tips.
   // Remaining share = upper tips -> lower outside exits.

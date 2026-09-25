@@ -18,7 +18,10 @@ export default function Home() {
   return (
     <main>
       <section className="home-hero" id="top">
-        <img className="home-hero-image" src="/company-hero-approved.jpg" alt="Conceptual technology illustration of coastal hydroelectric infrastructure" fetchPriority="high" />
+        <picture>
+          <source media="(max-width: 760px)" srcSet="/company-hero-approved-mobile.webp" type="image/webp" />
+          <img className="home-hero-image" src="/company-hero-approved.jpg" alt="Conceptual technology illustration of coastal hydroelectric infrastructure" fetchPriority="high" />
+        </picture>
         <div className="hero-atmosphere" />
         <div className="hero-grid" aria-hidden="true" />
         <div className="hero-depth-rings" aria-hidden="true"><i /><i /><i /><span /></div>

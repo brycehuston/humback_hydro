@@ -8,7 +8,7 @@ export const metadata = pageMetadata("/applications", "Applications", "Explore p
 export default function ApplicationsPage() {
   return (
     <main className="applications-page">
-      <RouteHero index="02" eyebrow="Applications" title="Power Where It Matters." copy="A modular energy-transfer platform designed to capture otherwise wasted energy, provide reliable power when needed, and support clean water and food security—strengthening the water–energy–food nexus." image="/ocean-infrastructure-approved.jpg" nextHref="#application-selector" nextLabel="Choose an Application" />
+      <RouteHero index="02" eyebrow="Applications" title="Power Where It Matters." copy="A modular energy-transfer platform designed to capture otherwise wasted energy, provide reliable power when needed, and support clean water and food security—strengthening the water–energy–food nexus." image="/brand/hh-impact-framework.webp" nextHref="#application-selector" nextLabel="Choose an Application" />
       <section className="route-intro section-shell" id="application-selector">
         <i className="applications-entry-rule" data-reveal aria-hidden="true" />
         <div className="chapter-label"><span>01</span>SELECT A MARKET</div>

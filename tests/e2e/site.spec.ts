@@ -58,6 +58,52 @@ test.describe('Humpback Hydro Site Verification', () => {
     await context.close();
   });
 
+  test('Homepage platform rings ignore interaction until their reveal completes', async ({ page }) => {
+    for (const width of [1440, 390]) {
+      await page.setViewportSize({ width, height: 900 });
+      await page.goto('/', { waitUntil: 'networkidle' });
+      const rings = page.locator('.platform-rings');
+      await rings.scrollIntoViewIfNeeded();
+
+      await expect(rings).toHaveAttribute('data-interaction-ready', 'false');
+      await expect(rings).toHaveAttribute('aria-disabled', 'true');
+
+      for (let attempt = 0; attempt < 3; attempt += 1) {
+        await rings.dispatchEvent('click', { clientX: 0, clientY: 0 });
+      }
+      await rings.evaluate((element) => (element as HTMLElement).focus());
+      await page.keyboard.press('Enter');
+      await page.keyboard.press('Space');
+      await expect(rings.locator('i.is-active')).toHaveCount(0);
+
+      await rings.evaluate((element) => {
+        const reveal = element.getAnimations().find(
+          (animation) => animation instanceof CSSAnimation && animation.animationName === 'arc-layer-fill',
+        );
+        if (!reveal) throw new Error('Platform ring reveal animation did not start');
+        reveal.playbackRate = 20;
+      });
+
+      await expect(rings).toHaveAttribute('data-interaction-ready', 'true', { timeout: 5000 });
+      await expect(rings).not.toHaveAttribute('aria-disabled', 'true');
+      await rings.evaluate((element) => {
+        const rect = element.getBoundingClientRect();
+        element.dispatchEvent(new MouseEvent('click', {
+          bubbles: true,
+          clientX: rect.left + 310,
+          clientY: rect.top + 310,
+        }));
+      });
+      await expect(rings.locator('i.inner')).toHaveClass(/is-active/);
+      await expect(rings.locator('i.mid')).not.toHaveClass(/is-active/);
+      await expect(rings.locator('i.out')).not.toHaveClass(/is-active/);
+    }
+
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await page.goto('/', { waitUntil: 'networkidle' });
+    await expect(page.locator('.platform-rings')).toHaveAttribute('data-interaction-ready', 'true');
+  });
+
   test('Public routes reflow and serve canonical metadata', async ({ page }) => {
     test.setTimeout(120000);
     for (const width of [1440, 390]) {
@@ -339,7 +385,7 @@ test.describe('Humpback Hydro Site Verification', () => {
     await page.goto('/company');
 
     await expect(page.locator('#leadership')).toBeVisible();
-    await expect(page.locator('img[src*="humpback-team-vancouver-approved.jpg"]')).toBeVisible();
+    await expect(page.locator('img[src="/company/humpback-team-vancouver.webp"]')).toBeVisible();
 
     const bryceImg = page.locator('img[src*="bryce-huston.webp"]');
     await bryceImg.scrollIntoViewIfNeeded();
@@ -352,10 +398,12 @@ test.describe('Humpback Hydro Site Verification', () => {
 
     await expect(page.getByRole('heading', { name: 'Bryce Huston', level: 2 })).toBeVisible();
     await expect(page.locator('.bryce-profile').getByText('Information Security • AI Systems • Digital Infrastructure')).toBeVisible();
-    await expect(page.getByText('FOUNDER & SYSTEMS ARCHITECT')).toBeVisible();
-    await expect(page.locator('.bryce-profile').getByRole('link')).toHaveText('FruxLabs | Alpha Alerts | HUSTON SOLUTION Iɴᴄ.');
+    await expect(page.getByText('TECH CONSULTANT & SYSTEMS ARCHITECT')).toBeVisible();
+    await expect(page.locator('.bryce-profile').getByText('HUSTON SOLUTION Inc.', { exact: true })).toBeVisible();
+    await expect(page.locator('.bryce-profile').getByText('FruxLabs', { exact: true })).toBeVisible();
+    await expect(page.locator('.bryce-profile').getByText('Alpha Alerts', { exact: true })).toBeVisible();
     await expect(page.locator('.bryce-profile .leadership-biography p')).toHaveText([
-      'Bryce Huston is Chief Information Security Officer at Humpback Hydro and founder of FruxLabs, Alpha Alerts and HUSTON SOLUTION Inc. His work spans information security, applied artificial intelligence, automation, quantitative systems and digital infrastructure, with a focus on building secure, resilient systems and high-performance digital products for real-world operation.',
+      'Bryce Huston is Chief Information Security Officer at Humpback Hydro and Principal of HUSTON SOLUTION Inc., FruxLabs and Alpha Alerts. His work spans information security, applied artificial intelligence, automation, quantitative systems and digital infrastructure, with a focus on building secure, resilient systems and high-performance digital products for real-world operation.',
       'A hands-on systems architect and technical operator, Bryce designs and builds production platforms integrating real-time data acquisition, automated decision systems, quantitative analysis, secure cloud infrastructure, operational monitoring and AI-assisted workflows. His work also extends to premium digital experience design, combining technical architecture with meticulous interface design, animation, interactive motion and performance engineering to create polished, highly responsive web platforms.',
       'His broader technical work includes real-time intelligence systems, quantitative research and backtesting infrastructure, AI-enabled automation, high-frequency data processing, telemetry and data-driven decision architecture. Through FruxLabs and Alpha Alerts, he has developed and operated systems spanning market intelligence, signal research, risk modelling, automated monitoring and execution research, with particular emphasis on reliability, data integrity and disciplined risk controls.',
       'At Humpback Hydro, Bryce leads information security and digital infrastructure strategy, establishing the secure, scalable digital foundation supporting engineering collaboration, data integrity, operational continuity and future platform growth. His approach combines system architecture, risk management and execution discipline to build the infrastructure required to scale.',
