@@ -178,7 +178,7 @@ svg {
   color: white;
   border-bottom: 1px solid rgba(255, 255, 255, .13);
   background: linear-gradient(180deg, rgba(2, 13, 20, .72), rgba(2, 13, 20, .12));
-  transition: height .35s ease, background .35s ease, backdrop-filter .35s ease, transform .35s cubic-bezier(.22, 1, .36, 1);
+  transition: height .35s ease, background .35s ease, backdrop-filter .35s ease, transform .65s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .is-scrolled .site-header {
@@ -2938,9 +2938,11 @@ svg {
   left: 25px;
   bottom: 25px;
   padding: 18px 20px;
-  background: rgba(2, 13, 20, .78);
+  background: rgba(2, 13, 20, .96);
+  z-index: 10;
   border: 1px solid rgba(166, 211, 221, .2);
-  backdrop-filter: blur(12px);
+
+  transform: translateZ(0);
 }
 
 .cta-visual-status small {
@@ -3544,6 +3546,7 @@ svg {
   gap: 22px;
   align-items: center;
   border-bottom: 1px solid var(--line);
+  padding-inline: 24px;
 }
 
 .network-list span {
@@ -3613,6 +3616,7 @@ svg {
   gap: 22px;
   align-items: center;
   border-bottom: 1px solid var(--line);
+  padding-inline: 24px;
 }
 
 .capability-row span {
@@ -4160,6 +4164,43 @@ svg {
   background: linear-gradient(180deg, #f2f7f9 0%, #a4bcc5 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+  max-width: 280px;
+  position: relative;
+  display: block;
+}
+
+.footer-statement::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url("/natural-power-statement.png");
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  filter: brightness(2.2) drop-shadow(0 0 3px rgba(166, 211, 221, 0.4));
+  mask-image: linear-gradient(90deg, transparent 0%, rgba(0,0,0,1) 50%, transparent 100%);
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, rgba(0,0,0,1) 50%, transparent 100%);
+  mask-size: 70px 100%;
+  -webkit-mask-size: 70px 100%;
+  mask-repeat: no-repeat;
+  -webkit-mask-repeat: no-repeat;
+  mask-position: -100px 0;
+  -webkit-mask-position: -100px 0;
+  pointer-events: none;
+  opacity: 0;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .footer-reveal-root.is-visible .footer-statement::after {
+    animation: tagline-sweep 3.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    animation-delay: 1.0s;
+  }
+}
+
+@keyframes tagline-sweep {
+  0% { mask-position: -100px 0; -webkit-mask-position: -100px 0; opacity: 1; }
+  99% { mask-position: 360px 0; -webkit-mask-position: 360px 0; opacity: 1; }
+  100% { mask-position: 360px 0; -webkit-mask-position: 360px 0; opacity: 0; }
 }
 
 @media (min-width: 1360px) {
@@ -4388,7 +4429,7 @@ svg {
   background: var(--signal-cyan);
   transform: scaleX(0);
   transform-origin: left;
-  transition: transform .45s cubic-bezier(.16, 1, .3, 1);
+  transition: transform .85s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .application-tabs button[aria-selected="true"] {
@@ -5626,7 +5667,7 @@ svg {
 
   .mobile-panel {
     position: fixed;
-    z-index: -1;
+    z-index: 99;
     inset: 0;
     padding: 105px 22px 30px;
     display: flex;
@@ -5634,7 +5675,8 @@ svg {
     justify-content: space-between;
     visibility: hidden;
     opacity: 0;
-    background: rgba(2, 13, 20, .98);
+    background: #020d14;
+
     transform: translateY(-10px);
     transition: opacity .3s ease, transform .3s ease, visibility 0s linear .3s;
   }
@@ -5657,6 +5699,8 @@ svg {
     align-items: center;
     border-bottom: 1px solid var(--line-light);
     font-size: 21px;
+    color: #e5edef;
+    text-decoration: none;
   }
 
   .mobile-panel nav a>span {
@@ -7722,12 +7766,12 @@ svg {
   --phase-pulse-bg: #081d26;
 }
 .standards-roadmap article:nth-child(2) {
-  --phase-resting-bg: #071b24;
-  --phase-pulse-bg: #09232e;
+  --phase-resting-bg: #081e28;
+  --phase-pulse-bg: #0a2430;
 }
 .standards-roadmap article:nth-child(3) {
-  --phase-resting-bg: #08212b;
-  --phase-pulse-bg: #0a2936;
+  --phase-resting-bg: #0a2734;
+  --phase-pulse-bg: #0c2e3d;
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -10697,23 +10741,23 @@ svg {
 }
 
 .evidence-hierarchy-sequence.is-visible article:nth-child(1) span {
-  animation: hierarchy-node-on .46s ease-out both;
+  animation: hierarchy-node-on 1s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
 }
 
 .evidence-hierarchy-sequence.is-visible article:nth-child(1)::after {
-  animation: hierarchy-link-draw .42s .38s ease-out both;
+  animation: hierarchy-link-draw 1.2s .6s cubic-bezier(0.4, 0, 0.2, 1) both;
 }
 
 .evidence-hierarchy-sequence.is-visible article:nth-child(2) span {
-  animation: hierarchy-node-on .46s .76s ease-out both;
+  animation: hierarchy-node-on 1s 1.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
 }
 
 .evidence-hierarchy-sequence.is-visible article:nth-child(2)::after {
-  animation: hierarchy-link-draw .42s 1.12s ease-out both;
+  animation: hierarchy-link-draw 1.2s 4.6s cubic-bezier(0.4, 0, 0.2, 1) both;
 }
 
 .evidence-hierarchy-sequence.is-visible article:nth-child(3) span {
-  animation: hierarchy-node-on .46s 1.5s ease-out both;
+  animation: hierarchy-node-on 1s 5.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
 }
 
 @keyframes hierarchy-link-draw {
@@ -11378,15 +11422,15 @@ section:has(.is-visible) .platform-rings {
 }
 
 .validation-pathway.is-visible article:nth-child(1) .roadmap-node i {
-  animation: pathway-link-draw 850ms 7.0s cubic-bezier(.16, 1, .3, 1) both;
+  animation: pathway-link-draw 1.2s 7.0s cubic-bezier(0.4, 0, 0.2, 1) both;
 }
 
 .validation-pathway.is-visible article:nth-child(2) .roadmap-node i {
-  animation: pathway-link-draw 850ms 10.3s cubic-bezier(.16, 1, .3, 1) both;
+  animation: pathway-link-draw 1.2s 10.3s cubic-bezier(0.4, 0, 0.2, 1) both;
 }
 
 .validation-pathway.is-visible article:nth-child(3) .roadmap-node i {
-  animation: pathway-link-draw 850ms 13.6s cubic-bezier(.16, 1, .3, 1) both;
+  animation: pathway-link-draw 1.2s 13.6s cubic-bezier(0.4, 0, 0.2, 1) both;
 }
 
 @keyframes pathway-node-fill {
@@ -11580,6 +11624,7 @@ section:has(.is-visible) .platform-rings {
 }
 
 @media (min-width: 768px) and (max-width: 1023px) {
+
   .footer-grid {
     grid-template-columns: 1.5fr 1fr;
     gap: 32px;

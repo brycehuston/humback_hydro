@@ -14,6 +14,7 @@ export default function SiteChrome({ children }: { children: React.ReactNode }) 
   const menuTrigger = useRef<HTMLButtonElement>(null);
   const menuPanel = useRef<HTMLDivElement>(null);
 
+
   useEffect(() => {
     if (!menuOpen) return;
     const previousOverflow = document.body.style.overflow;
@@ -216,7 +217,8 @@ export default function SiteChrome({ children }: { children: React.ReactNode }) 
           <span /><span />
         </button>
 
-        <div id="mobile-navigation" ref={menuPanel} className={`mobile-panel ${menuOpen ? "open" : ""}`} aria-hidden={!menuOpen}>
+      </header>
+      <div id="mobile-navigation" ref={menuPanel} className={`mobile-panel ${menuOpen ? "open" : ""}`} aria-hidden={!menuOpen}>
           <nav aria-label="Mobile navigation">
             {navItems.map((item, index) => (
               <Link key={item.href} href={item.href} aria-current={pathname === item.href ? "page" : undefined} onClick={() => setMenuOpen(false)}>
@@ -227,7 +229,7 @@ export default function SiteChrome({ children }: { children: React.ReactNode }) 
           </nav>
           <small>📍 Vancouver, British Columbia, Canada</small>
         </div>
-      </header>
+
 
       {children}
 
@@ -237,6 +239,7 @@ export default function SiteChrome({ children }: { children: React.ReactNode }) 
             <Link className="brand brand-lockup footer-brand" href="/" aria-label="Humpback Hydro home">
               <span className="brandmark-wrap footer-brandmark" aria-hidden="true">
                 <img src={brandLockupFull} alt="" />
+
               </span>
             </Link>
           </div>
